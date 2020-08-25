@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class GameSystem : MonoBehaviour
 {
     public static GameSystem instance;
+    public Animator platformAnimator;
     private StateMachine _stateMachine;
     private GameManager _gameManager;
     private void Awake()
@@ -20,23 +21,34 @@ public class GameSystem : MonoBehaviour
         _gameManager = GameManager.instance;
         _stateMachine = new StateMachine();
 
-        var beginning = new Begin(_gameManager);
-        var throwPhase = new ThrowPhase(_gameManager);
-        var throwResultsPhase = new ThrowResultsPhase(_gameManager);
+        var initialize = new Initialize();
+        var orderingPhase = new OrderDecidingPhase();
+        var orderingResultPhase = new OrderReultsPhase();
+        var throwPhase = new ThrowPhase();
+        var throwResultsPhase = new ThrowResultsPhase();
         var movePiecePhase = new MovePiecePhase();
         var moveResultsPhase = new MoveResultsPhase();
         var minigamePhase = new MinigamePhase();
         var finalResultsPhase = new FinalResultsPhase();
 
-        At(beginning, throwPhase, dicesReadyToPlay());
+        At(initialize, orderingPhase, orderNotDefined());
+        At(initialize, throwPhase, orderDefined());
+        At(orderingPhase, orderingResultPhase, throwFinished());
+        At(orderingResultPhase, initialize, playerQueueReady());
         At(throwPhase, throwResultsPhase, throwFinished());
-        At(throwResultsPhase, movePiecePhase, diceOnDisplay());
-        _stateMachine.SetState(beginning);
+        At(throwResultsPhase, movePiecePhase, yourTurn());
+        At(movePiecePhase, moveResultsPhase, nothingElseToDo());
+        At(moveResultsPhase, initialize, nextRoundReady());
+        _stateMachine.SetState(initialize);
 
         void At(IState to, IState from, Func<bool> condition) => _stateMachine.AddTransition(to, from, condition);
-        Func<bool> dicesReadyToPlay() => () => GameManager.instance.throwController.DicesReadyToPlay();
+        Func<bool> orderDefined() => () => GameManager.instance.throwController.DicesReadyToPlay() && GameManager.instance.PlayersSet();
         Func<bool> throwFinished() => () => GameManager.instance.throwController.IsThrowFinished();
-        Func<bool> diceOnDisplay() => () => GameManager.instance.DiceOnDisplay();
+        Func<bool> yourTurn() => () => GameManager.instance.YourTurn();
+        Func<bool> orderNotDefined() => () => !GameManager.instance.PlayersSet() && GameManager.instance.throwController.DicesReadyToPlay();
+        Func<bool> playerQueueReady() => () => GameManager.instance.PlayersSet();
+        Func<bool> nothingElseToDo() => () => GameManager.instance.GetRound() == 0;
+        Func<bool> nextRoundReady() => () => GameManager.instance.NextRoundReady();
     }
 
     private void Update() => _stateMachine.Tick();

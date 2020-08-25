@@ -1,14 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-internal class Begin : IState
+internal class Initialize : IState
 {
-    private readonly GameManager _gameManager;
-
-    private BoxAccelController throwController;
-    public Begin(GameManager gameManager)
+    public Initialize()
     {
-        _gameManager = gameManager;
     }
     public void Tick()
     {
@@ -22,6 +18,7 @@ internal class Begin : IState
 
     public void OnExit()
     {
+        GameManager.instance.throwController?.AnimateReadyToPlay();
         Debug.Log("FINISHED BEGINNING");
     }
 }

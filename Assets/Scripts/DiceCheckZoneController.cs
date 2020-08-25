@@ -30,7 +30,6 @@ public class DiceCheckZoneController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Debug.Log($"DICESSTOPPED: {gameManager.DicesStopped()}");
         if (gameManager.DicesStopped() && sideColliders.Count != 0)
         {
             float totalAmount = 0f;

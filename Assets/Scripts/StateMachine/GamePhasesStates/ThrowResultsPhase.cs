@@ -3,16 +3,14 @@ using UnityEngine.AI;
 
 internal class ThrowResultsPhase : IState
 {
-    private readonly GameManager _gameManager;
-
-    public ThrowResultsPhase(GameManager gameManager)
+    public ThrowResultsPhase()
     {
-        _gameManager = gameManager;
     }
 
     public void Tick()
     {
-        GameManager.instance.ShowDicesOnCamera();
+        if (!GameManager.instance.DiceOnDisplay())
+            GameManager.instance.ShowDicesOnCamera();
     }
 
     public void OnEnter()

@@ -3,10 +3,9 @@ using UnityEngine.AI;
 
 internal class ThrowPhase : IState
 {
-    private readonly GameManager _gameManager;
-    public ThrowPhase(GameManager gameManager)
+    private readonly Animator _platformAnimator;
+    public ThrowPhase()
     {
-        _gameManager = gameManager;
     }
     public void Tick()
     {
@@ -19,7 +18,7 @@ internal class ThrowPhase : IState
 
     public void OnExit()
     {
-
+        GameManager.instance.throwController?.AnimateFinishedThrow();
         Debug.Log("FINISHED THROWPHASE");
     }
 }

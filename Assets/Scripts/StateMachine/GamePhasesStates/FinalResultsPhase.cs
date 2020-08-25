@@ -3,10 +3,9 @@ using UnityEngine.AI;
 
 internal class FinalResultsPhase : IState
 {
-    private readonly GameObject _gameManager;
-
     public void Tick()
     {
+
     }
 
     public void OnEnter()
