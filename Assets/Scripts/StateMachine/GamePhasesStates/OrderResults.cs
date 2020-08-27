@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.AI;
-
-internal class OrderReultsPhase : IState
+﻿internal class OrderReultsPhase : IState
 {
 
     public OrderReultsPhase()
@@ -16,11 +13,11 @@ internal class OrderReultsPhase : IState
 
     public void OnEnter()
     {
-        Debug.Log("ENTERED THROWRESULTSPHASE");
+        GameManager.instance.ShowMessage("Así quedaron y que wea");
     }
 
     public void OnExit()
     {
-        Debug.Log("FINISHED THROWRESULTSPHASE");
+        //ORDENAR LISTA
     }
 }

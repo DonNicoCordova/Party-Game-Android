@@ -9,11 +9,14 @@ internal class ThrowPhase : IState
     }
     public void Tick()
     {
+        GameManager.instance.throwController?.CheckInput();
     }
 
     public void OnEnter()
     {
         Debug.Log("ENTERED THROWPHASE");
+        GameManager.instance.ShowMessage("¡Lanza tus dados!");
+        GameManager.instance.StartNextRound();
     }
 
     public void OnExit()

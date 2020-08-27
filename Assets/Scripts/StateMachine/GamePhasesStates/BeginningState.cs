@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 using UnityEngine.AI;
 
 internal class Initialize : IState
@@ -8,12 +9,12 @@ internal class Initialize : IState
     }
     public void Tick()
     {
-        GameManager.instance.throwController?.Initialize();
     }
 
     public void OnEnter()
     {
-        Debug.Log("ENTERING BEGINNING");
+        GameManager.instance.ShowMessage("¡Bienvenido a tu fiestita!");
+        GameManager.instance.CreatePlayers();
     }
 
     public void OnExit()

@@ -11,6 +11,7 @@ internal class MoveResultsPhase : IState
 
     public void OnEnter()
     {
+        GameManager.instance.ShowMessage("Este mensaje da risa... creo");
     }
 
     public void OnExit()

@@ -8,15 +8,21 @@ public class PlayerStats
     [SerializeField]
     public float capturedZones;
     [SerializeField]
-    public float ladderPosition;
+    public float ladderPosition = 1;
     [SerializeField]
-    public float mainColor;
+    public Color mainColor;
     [SerializeField]
-    public int money;
+    public int money = 0;
     [SerializeField]
-    public int mana;
+    public int mana = 20;
     [SerializeField]
     public string nickName;
     [SerializeField]
-    public bool isPlayer;
+    public bool isPlayer = false;
+    [SerializeField]
+    public bool moved = false;
+    [SerializeField]
+    public bool usedSkill = false;
+    [SerializeField]
+    public bool passed = false;
 }

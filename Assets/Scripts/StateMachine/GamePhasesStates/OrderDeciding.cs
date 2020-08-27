@@ -13,12 +13,13 @@ internal class OrderDecidingPhase : IState
 
     public void OnEnter()
     {
-        Debug.Log("ENTERED THROWPHASE");
+        Debug.Log("ENTERED ORDERING PHASE");
+        GameManager.instance.ShowMessage("Decidamos el orden de juego");
     }
 
     public void OnExit()
     {
         GameManager.instance.throwController?.AnimateFinishedThrow();
-        Debug.Log("FINISHED THROWPHASE");
+        Debug.Log("FINISHED ORDERING");
     }
 }

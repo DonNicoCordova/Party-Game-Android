@@ -11,6 +11,7 @@ internal class MovePiecePhase : IState
 
     public void OnEnter()
     {
+        GameManager.instance.ShowMessage("¡Te toca mover!");
     }
 
     public void OnExit()

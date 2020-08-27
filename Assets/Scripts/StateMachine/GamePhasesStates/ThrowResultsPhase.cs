@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.AI;
-
+﻿
 internal class ThrowResultsPhase : IState
 {
     public ThrowResultsPhase()
@@ -15,11 +13,10 @@ internal class ThrowResultsPhase : IState
 
     public void OnEnter()
     {
-        Debug.Log("ENTERED THROWRESULTSPHASE");
+        GameManager.instance.ShowMessage("¡Que mala cuea! ajkajskkadj");
     }
 
     public void OnExit()
     {
-        Debug.Log("FINISHED THROWRESULTSPHASE");
     }
 }

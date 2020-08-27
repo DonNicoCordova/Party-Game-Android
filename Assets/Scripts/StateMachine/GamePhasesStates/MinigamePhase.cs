@@ -11,6 +11,7 @@ internal class MinigamePhase : IState
 
     public void OnEnter()
     {
+        GameManager.instance.ShowMessage("Ahora deberia estar un juego");
     }
 
     public void OnExit()

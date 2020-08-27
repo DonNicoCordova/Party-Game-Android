@@ -10,6 +10,8 @@ internal class FinalResultsPhase : IState
 
     public void OnEnter()
     {
+
+        GameManager.instance.ShowMessage("Final de la ronda! WOOOOOOO");
     }
 
     public void OnExit()

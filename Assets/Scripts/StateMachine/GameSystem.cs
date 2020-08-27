@@ -1,12 +1,9 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class GameSystem : MonoBehaviour
 {
     public static GameSystem instance;
-    public Animator platformAnimator;
     private StateMachine _stateMachine;
     private GameManager _gameManager;
     private void Awake()
@@ -47,11 +44,10 @@ public class GameSystem : MonoBehaviour
         Func<bool> yourTurn() => () => GameManager.instance.YourTurn();
         Func<bool> orderNotDefined() => () => !GameManager.instance.PlayersSet() && GameManager.instance.throwController.DicesReadyToPlay();
         Func<bool> playerQueueReady() => () => GameManager.instance.PlayersSet();
-        Func<bool> nothingElseToDo() => () => GameManager.instance.GetRound() == 0;
+        Func<bool> nothingElseToDo() => () => GameManager.instance.NothingElseToDo();
         Func<bool> nextRoundReady() => () => GameManager.instance.NextRoundReady();
     }
 
     private void Update() => _stateMachine.Tick();
-
 
 }

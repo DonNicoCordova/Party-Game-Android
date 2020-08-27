@@ -6,11 +6,13 @@ public class DiceController : MonoBehaviour
     public SideStats[] sides;
     private Rigidbody diceRb;
     private Collider diceCollider;
+    private Animator animator;
     // Start is called before the first frame update
     private void Start()
     {
         diceRb = gameObject.GetComponent<Rigidbody>();
         diceCollider = gameObject.GetComponent<Collider>();
+        animator = gameObject.GetComponent<Animator>();
     }
     public void ShakeDice(float diceRotationAcceleration, float shakeForceMultiplier)
     {
@@ -51,5 +53,29 @@ public class DiceController : MonoBehaviour
             }
         }
         return -1;
+    }
+    public void MoveToPlayArea()
+    {
+        animator.ResetTrigger("MoveToScreen");
+        animator.SetTrigger("MoveToPlayArea");
+    }
+    public void MoveToScreen()
+    {
+        animator.SetTrigger("MoveToPlayArea");
+        animator.SetTrigger("MoveToScreen");
+    }
+    public bool AnimatorIsPlaying()
+    {
+        return animator.GetCurrentAnimatorStateInfo(0).length >
+               animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+    }
+
+    public void DisableAnimator()
+    {
+        animator.enabled = false;
+    }
+    public void EnableAnimator()
+    {
+        animator.enabled = true;
     }
 }

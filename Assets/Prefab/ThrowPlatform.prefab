@@ -749,6 +749,7 @@ MonoBehaviour:
   minShakeInterval: 1
   shakeForceMultiplier: 300
   maxShakes: 3
+  diceDetectionZone: {fileID: 0}
 --- !u!95 &8461239786009074980
 Animator:
   serializedVersion: 3
