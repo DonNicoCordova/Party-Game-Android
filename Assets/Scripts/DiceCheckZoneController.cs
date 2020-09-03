@@ -30,16 +30,23 @@ public class DiceCheckZoneController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (gameManager.DicesStopped() && sideColliders.Count != 0)
+        if (!gameManager.throwController.IsThrowFinished())
         {
-            float totalAmount = 0f;
-            foreach(Collider collider in sideColliders)
+            if (gameManager.DicesStopped() && sideColliders.Count == 2)
             {
-                DiceController controller = collider.GetComponentInParent<DiceController>();
-                totalAmount += 7-controller.GetSideValue(collider);
+                float totalAmount = 0f;
+                Throw actualThrow = new Throw();
+                actualThrow.isMainPlayer = true;
+                foreach(Collider collider in sideColliders)
+                {
+                    DiceController controller = collider.GetComponentInParent<DiceController>();
+                    actualThrow.throwValues.Add(controller.GetSideStats(collider));
+                    totalAmount += 7-controller.GetSideValue(collider);
+                }
+                resultText.text = totalAmount.ToString();
+                gameManager.throwController.FinishedThrow();
+                gameManager.AddThrow(actualThrow);
             }
-            resultText.text = totalAmount.ToString();
-            gameManager.throwController.FinishedThrow();
         }
 
     }

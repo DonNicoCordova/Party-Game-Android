@@ -14,13 +14,19 @@ internal class ThrowPhase : IState
 
     public void OnEnter()
     {
+        if (GameSystem.instance.throwPhaseDone)
+            GameSystem.instance.throwPhaseDone = false;
         Debug.Log("ENTERED THROWPHASE");
+        GameManager.instance.throwController?.DisableDicesAnimations();
         GameManager.instance.ShowMessage("¡Lanza tus dados!");
         GameManager.instance.StartNextRound();
     }
 
     public void OnExit()
     {
+        if (GameSystem.instance.throwPhaseDone)
+            GameSystem.instance.throwPhaseDone = false;
+        GameManager.instance.throwController?.EnableDicesAnimations();
         GameManager.instance.throwController?.AnimateFinishedThrow();
         Debug.Log("FINISHED THROWPHASE");
     }

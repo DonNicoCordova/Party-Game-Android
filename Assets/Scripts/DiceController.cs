@@ -28,8 +28,10 @@ public class DiceController : MonoBehaviour
 
     public void Throw(float diceRotationAcceleration, float shakeForceMultiplier)
     {
-        diceRb.useGravity = true;
-        diceCollider.isTrigger = false;
+        if (!diceRb.useGravity)
+            diceRb.useGravity = true;
+        if (diceCollider.isTrigger)
+            diceCollider.isTrigger = false;
         float dirx = UnityEngine.Random.Range(0, 360);
         float diry = UnityEngine.Random.Range(0, 360);
         float dirz = UnityEngine.Random.Range(0, 360);
@@ -54,6 +56,18 @@ public class DiceController : MonoBehaviour
         }
         return -1;
     }
+
+    public SideStats GetSideStats(Collider colliderTriggered)
+    {
+        foreach (SideStats stats in sides)
+        {
+            if (colliderTriggered == stats.GetSideCollider())
+            {
+                return stats;
+            }
+        }
+        return null;
+    }
     public void MoveToPlayArea()
     {
         animator.ResetTrigger("MoveToScreen");
@@ -61,7 +75,7 @@ public class DiceController : MonoBehaviour
     }
     public void MoveToScreen()
     {
-        animator.SetTrigger("MoveToPlayArea");
+        animator.ResetTrigger("MoveToPlayArea");
         animator.SetTrigger("MoveToScreen");
     }
     public bool AnimatorIsPlaying()
@@ -72,6 +86,7 @@ public class DiceController : MonoBehaviour
 
     public void DisableAnimator()
     {
+        transform.position = transform.position;
         animator.enabled = false;
     }
     public void EnableAnimator()

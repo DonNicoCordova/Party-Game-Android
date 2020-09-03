@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Diagnostics;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -27,11 +28,9 @@ public class GameManager : MonoBehaviour
     public Transform diceOnCameraPosition1;
     public Transform diceOnCameraPosition2;
     private bool allDiceStopped;
-    private Rigidbody dice1Rigidbody;
-    private Rigidbody dice2Rigidbody;
 
 
-    private Throw[] throws;
+    private List<Throw> roundThrows = new List<Throw>();
     private Queue<PlayerStats> notActionTakenPlayers = new Queue<PlayerStats>();
     private Queue<PlayerStats> actionTakenPlayers = new Queue<PlayerStats>();
     private PlayerStats actualPlayer = null;
@@ -40,6 +39,7 @@ public class GameManager : MonoBehaviour
     private int numberOfPlayers;
     private TextMeshProUGUI phaseText;
     private Animator phaseAnimator;
+    private Boolean playersOrdered = false;
     void OnEnable() => numberOfPlayers = PlayerPrefs.GetInt("players");
     private void Awake()
     {
@@ -50,8 +50,6 @@ public class GameManager : MonoBehaviour
         instance = this;
         allDiceStopped = false;
         shakesText.text = throwController.maxShakes.ToString();
-        dice1Rigidbody = dicesInPlay[0].GetComponent<Rigidbody>();
-        dice2Rigidbody = dicesInPlay[1].GetComponent<Rigidbody>();
 
         phaseText = phaseIndicator.GetComponentInChildren<TextMeshProUGUI>();
         phaseAnimator = phaseIndicator.GetComponent<Animator>();
@@ -71,50 +69,42 @@ public class GameManager : MonoBehaviour
         }
         allDiceStopped = tempValue;
     }
-
     public bool DicesStopped() => allDiceStopped;
-
-    public void ShowDicesOnCamera()
-    {
-        MoveDie(dice1Rigidbody, diceOnCameraPosition1);
-        MoveDie(dice2Rigidbody, diceOnCameraPosition2);
-        
-        if (Vector3.Distance(diceOnCameraPosition1.position, dice1Rigidbody.position) < Vector3.kEpsilon &&
-            Vector3.Distance(diceOnCameraPosition2.position, dice2Rigidbody.position) < Vector3.kEpsilon)
-        {
-            diceOnDisplay = true;
-        }
-    }
-
-    public void MoveDie(Rigidbody die, Transform moveTo)
-    {
-        UnityEngine.Debug.Log($"MOVING DIE FROM: {die.position} TO: {moveTo.position} die.position != moveTo.position: {die.position != moveTo.position}");
-        if (die.position != moveTo.position)
-        {
-            if (die.useGravity)
-            {
-                die.useGravity = false;
-                Collider boxCollider = die.GetComponent<Collider>();
-                boxCollider.isTrigger = true;
-            }
-            die.rotation = Quaternion.Slerp(die.rotation, moveTo.rotation, lerpTime * Time.deltaTime);
-            die.position = Vector3.Lerp(die.position, moveTo.position, lerpTime * Time.deltaTime);
-            Transform diceTransform = die.GetComponent<Transform>();
-            diceTransform.localScale = Vector3.Lerp(diceTransform.localScale, moveTo.localScale, lerpTime * Time.deltaTime);
-        }
-    }
     public void CreatePlayers()
     {
-        UnityEngine.Debug.Log("CREATING PLAYERS");
-        UnityEngine.Debug.Log(numberOfPlayers);
-        while (notActionTakenPlayers.Count < numberOfPlayers)
+        if (notActionTakenPlayers.Count == 0)
         {
-            PlayerStats playerStats = new PlayerStats();
-            playerStats.id = notActionTakenPlayers.Count;
-            playerStats.nickName = $"Jugador {notActionTakenPlayers.Count+1}";
-            playerStats.mainColor = playerColors[notActionTakenPlayers.Count];
-            notActionTakenPlayers.Enqueue(playerStats);
+            UnityEngine.Debug.Log("CREATING PLAYERS");
+            UnityEngine.Debug.Log(numberOfPlayers);
+            while (notActionTakenPlayers.Count < numberOfPlayers)
+            {
+                PlayerStats playerStats = new PlayerStats();
+                playerStats.id = notActionTakenPlayers.Count;
+                playerStats.nickName = $"Jugador {notActionTakenPlayers.Count+1}";
+                playerStats.mainColor = playerColors[notActionTakenPlayers.Count];
+                notActionTakenPlayers.Enqueue(playerStats);
+            }
         }
+
+    }
+    public void OrderPlayers()
+    {
+        while (roundThrows.Count < numberOfPlayers)
+        {
+            Throw newThrow = new Throw();
+            roundThrows.Add(newThrow);
+        }
+        List<Throw> orderedThrows = roundThrows.OrderByDescending(o => o.GetValue()).ToList();
+        foreach (Throw playerThrow in orderedThrows)
+        {
+            PlayerStats tempPlayer = notActionTakenPlayers.Dequeue();
+            tempPlayer.nickName = playerThrow.playerNickname;
+            tempPlayer.id = playerThrow.playerId;
+            if (playerThrow.isMainPlayer)
+                tempPlayer.isPlayer = true;
+            notActionTakenPlayers.Enqueue(tempPlayer);
+        }
+        playersOrdered = true;
     }
     public void StartNextRound() 
     { 
@@ -146,13 +136,10 @@ public class GameManager : MonoBehaviour
     public bool DiceOnDisplay() => diceOnDisplay;
     public bool YourTurn() => diceOnDisplay && actualPlayer.isPlayer;
     public float GetRound() => round;
-    public bool PlayersSet()
-    {
-        UnityEngine.Debug.Log($"CALLING PLAYERSSET {notActionTakenPlayers.Count} == {numberOfPlayers}: {notActionTakenPlayers.Count == numberOfPlayers}");
-        return notActionTakenPlayers.Count == numberOfPlayers;
-    }
-   public bool NextRoundReady() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers;
+    public bool PlayersSetAndOrdered() => notActionTakenPlayers.Count == numberOfPlayers && playersOrdered;
+    public bool NextRoundReady() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers;
     public void ShowMessage(string message) => StartCoroutine(processShowMessage(message));
+    public void AddThrow(Throw newThrow) => roundThrows.Add(newThrow);
     private IEnumerator processShowMessage(string message)
     {
         phaseText.text = message;
@@ -160,9 +147,10 @@ public class GameManager : MonoBehaviour
         {
             phaseAnimator.gameObject.SetActive(true);
         }
-        yield return new WaitForSeconds(2);
+        phaseAnimator.Play("PhaseInAnimation");
+        yield return new WaitForSeconds(1.5f);
         phaseAnimator.SetTrigger("SlideOut");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         phaseText.text = "";
         phaseAnimator.gameObject.SetActive(false);
     }

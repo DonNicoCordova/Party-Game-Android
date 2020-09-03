@@ -11,10 +11,16 @@ internal class MoveResultsPhase : IState
 
     public void OnEnter()
     {
+        if (GameSystem.instance.moveResultsPhaseDone)
+            GameSystem.instance.moveResultsPhaseDone = false;
+        Debug.Log("ENTERED MOVERESULTSPHASE");
         GameManager.instance.ShowMessage("Este mensaje da risa... creo");
     }
 
     public void OnExit()
     {
+        if (GameSystem.instance.moveResultsPhaseDone)
+            GameSystem.instance.moveResultsPhaseDone = false;
+        Debug.Log("EXITED MOVERESULTSPHASE");
     }
 }

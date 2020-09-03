@@ -11,10 +11,16 @@ internal class MovePiecePhase : IState
 
     public void OnEnter()
     {
+        if (GameSystem.instance.movePiecePhaseDone)
+            GameSystem.instance.movePiecePhaseDone = false;
+        Debug.Log("ENTERED MOVEPIECE");
         GameManager.instance.ShowMessage("¡Te toca mover!");
     }
 
     public void OnExit()
     {
+        if (GameSystem.instance.movePiecePhaseDone)
+            GameSystem.instance.movePiecePhaseDone = false;
+        Debug.Log("EXITED MOVEPIECE");
     }
 }

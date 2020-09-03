@@ -18,6 +18,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     private Boolean dicesReadyToPlay = false;
     private Boolean throwFinished = false;
 
+    private Throw actualThrow;
     private GameManager gameManager;
     private Vector2 prevPoint;
     private Vector2 newPoint;
@@ -26,7 +27,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     private Animator boxAnimator;
     public void OnPointerDown(PointerEventData data)
     {
-        if (!IsThrowFinished() && dicesReadyToPlay)
+        if (!throwFinished && DicesReadyToPlay())
         {
             shakesLeft = maxShakes;
             GameManager.instance.shakesText.text = shakesLeft.ToString();
@@ -36,7 +37,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void OnDrag(PointerEventData data)
     {
-        if (!IsThrowFinished() && dicesReadyToPlay)
+        if (!throwFinished && DicesReadyToPlay())
         {
             newPoint = data.position;
             screenTravel = newPoint - prevPoint;
@@ -46,7 +47,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void OnPointerUp(PointerEventData data)
     {
-        if (!IsThrowFinished() && dicesReadyToPlay)
+        if (!throwFinished && DicesReadyToPlay())
         {
             foreach (DiceController die in gameManager.dicesInPlay)
             {
@@ -69,24 +70,27 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void CheckInput()
     {
-        if (Input.acceleration.sqrMagnitude >= sqrShakeDetectionThreshold && Time.unscaledTime >= timeSinceLastShake + minShakeInterval && shakesLeft > 0)
+        if (!throwFinished && DicesReadyToPlay())
         {
-            ShakeRigidBodies();
-            timeSinceLastShake = Time.unscaledTime;
-        }
-        if (Input.GetMouseButtonDown(0))
-        {
-            Debug.Log("DETECTED MOUSE BUTTON 0");
-            foreach (DiceController die in gameManager.dicesInPlay)
+            if (Input.acceleration.sqrMagnitude >= sqrShakeDetectionThreshold && Time.unscaledTime >= timeSinceLastShake + minShakeInterval && shakesLeft > 0)
             {
-                die.Throw(diceRotationAcceleration, shakeForceMultiplier);
+                ShakeRigidBodies();
+                timeSinceLastShake = Time.unscaledTime;
+            }
+            if (Input.GetMouseButtonUp(0))
+            {
+                DisableDicesAnimations();
+                foreach (DiceController die in gameManager.dicesInPlay)
+                {
+                    die.Throw(diceRotationAcceleration, shakeForceMultiplier);
+                }
             }
         }
     }
 
     public void ShakeRigidBodies()
     {
-        if (!IsThrowFinished() && dicesReadyToPlay)
+        if (!throwFinished && DicesReadyToPlay())
         {
             shakesLeft -= 1;
             GameManager.instance.shakesText.text = shakesLeft.ToString();
@@ -97,64 +101,35 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
         }
     }
 
-    public void Initialize()
-    {
-        Debug.Log("INITIALIZING...");
-        bool finishedMoving = true;
-        for (int i = 0; i < gameManager.dicesInPlay.Length; i++)
-        {
-            Debug.Log($"dicesInPlay: {i}");
-            Rigidbody rigidbody = gameManager.dicesInPlay[i].GetComponent<Rigidbody>();
-            gameManager.MoveDie(rigidbody, dropPosition[i]);
-            Debug.Log($"distance to dropPosition: {Vector3.Distance(dropPosition[i].position, rigidbody.position)}");
-            if (Vector3.Distance(dropPosition[i].position, rigidbody.position) > 0.2f)
-            {
-                finishedMoving = false;
-            }
-        }
-
-        if (finishedMoving != dicesReadyToPlay)
-        {
-            dicesReadyToPlay = finishedMoving;
-            foreach (DiceController controller in gameManager.dicesInPlay)
-            {
-                Rigidbody rigidbody = controller.GetComponent<Rigidbody>();
-                rigidbody.velocity = Vector3.zero;
-                float dirx = UnityEngine.Random.Range(0, 360);
-                float diry = UnityEngine.Random.Range(0, 360);
-                float dirz = UnityEngine.Random.Range(0, 360);
-                Vector3 torqueDirection = new Vector3(dirx, diry, dirz);
-                rigidbody.AddTorque(torqueDirection * diceRotationAcceleration, ForceMode.Acceleration);
-            }
-
-        }
-
-
-
-    }
+    
     public float GetShakesLeft() => shakesLeft;
 
     public bool DicesReadyToPlay() {
-        Debug.Log($"CALLING DicesReadyToPlay");
+        if (dicesReadyToPlay)
+            return true;
         foreach (DiceController die in gameManager.dicesInPlay)
         {
-            Debug.Log($"DIE ANIMATOR IS PLAYING: {die.AnimatorIsPlaying()}");
-
             if (die.AnimatorIsPlaying())
+            {
+                dicesReadyToPlay=false;
                 return false;
+            }
         }
+        dicesReadyToPlay = true;
         return true;
     } 
 
     public void FinishedThrow() 
     {
         throwFinished = true;
-    } 
-    public bool IsThrowFinished() => throwFinished;
+    }
+    public bool IsThrowFinished() {
+        return throwFinished;
+    }
 
     public void AnimateReadyToPlay() {
-        boxAnimator.ResetTrigger("ThrowFinished");
-        boxAnimator.SetTrigger("ReadyToPlay");
+        boxAnimator.ResetTrigger("MoveToScreen");
+        boxAnimator.SetTrigger("MoveToPlayArea");
         foreach (DiceController die in gameManager.dicesInPlay)
         {
             die.MoveToPlayArea();
@@ -162,11 +137,27 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     }
     public void AnimateFinishedThrow()
     {
-        boxAnimator.ResetTrigger("ReadyToPlay");
-        boxAnimator.SetTrigger("ThrowFinished");
+        EnableDicesAnimations();
+        boxAnimator.ResetTrigger("MoveToPlayArea");
+        boxAnimator.SetTrigger("MoveToScreen");
         foreach (DiceController die in gameManager.dicesInPlay)
         {
             die.MoveToScreen();
+        }
+    }
+    public void DisableDicesAnimations()
+    {
+        foreach (DiceController die in gameManager.dicesInPlay)
+        {
+            die.DisableAnimator();
+        }
+    }
+
+    public void EnableDicesAnimations()
+    {
+        foreach (DiceController die in gameManager.dicesInPlay)
+        {
+            die.EnableAnimator();
         }
     }
 }

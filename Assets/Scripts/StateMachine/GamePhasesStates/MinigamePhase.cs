@@ -11,10 +11,16 @@ internal class MinigamePhase : IState
 
     public void OnEnter()
     {
+        if (GameSystem.instance.minigamePhaseDone)
+            GameSystem.instance.minigamePhaseDone = false;
+        Debug.Log("ENTERING MINIGAME");
         GameManager.instance.ShowMessage("Ahora deberia estar un juego");
     }
 
     public void OnExit()
     {
+        if (GameSystem.instance.minigamePhaseDone)
+            GameSystem.instance.minigamePhaseDone = false;
+        Debug.Log("EXITING MINIGAME");
     }
 }
