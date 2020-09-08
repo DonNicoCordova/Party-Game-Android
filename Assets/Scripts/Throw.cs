@@ -21,7 +21,7 @@ public class Throw
         int output = 0;
         foreach (SideStats stat in throwValues)
         {
-            output += (int)stat.GetValue();
+            output += 7-(int)stat.GetValue();
         }
         return output;
     }

@@ -174,8 +174,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelLoader: {fileID: 114018199}
-  playerSelectMenu: {fileID: 0}
-  mainMenu: {fileID: 0}
+  playerSelectMenu: {fileID: 594471227}
+  mainMenu: {fileID: 2355391697515101675}
 --- !u!4 &642261276
 Transform:
   m_ObjectHideFlags: 0
@@ -820,6 +820,11 @@ PrefabInstance:
       objectReference: {fileID: 594471227}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 761ce718a9432be4dbbabbf0393edd26, type: 3}
+--- !u!1 &2355391697515101675 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2355391696056212467, guid: 761ce718a9432be4dbbabbf0393edd26, type: 3}
+  m_PrefabInstance: {fileID: 2355391697515101674}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5827895137218987368
 PrefabInstance:
   m_ObjectHideFlags: 0

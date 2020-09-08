@@ -27,15 +27,15 @@ public class GameSystem : MonoBehaviour
         _gameManager = GameManager.instance;
         _stateMachine = new StateMachine();
 
-        var initialize = new Initialize();
-        var orderingPhase = new OrderDecidingPhase();
-        var orderingResultPhase = new OrderResultsPhase();
-        var throwPhase = new ThrowPhase();
-        var throwResultsPhase = new ThrowResultsPhase();
-        var movePiecePhase = new MovePiecePhase();
-        var moveResultsPhase = new MoveResultsPhase();
-        var minigamePhase = new MinigamePhase();
-        var finalResultsPhase = new FinalResultsPhase();
+        var initialize = new Initialize(5f);
+        var orderingPhase = new OrderDecidingPhase(5f);
+        var orderingResultPhase = new OrderResultsPhase(5f);
+        var throwPhase = new ThrowPhase(5f);
+        var throwResultsPhase = new ThrowResultsPhase(5f);
+        var movePiecePhase = new MovePiecePhase(5f);
+        var moveResultsPhase = new MoveResultsPhase(5f);
+        var minigamePhase = new MinigamePhase(5f);
+        var finalResultsPhase = new FinalResultsPhase(5f);
 
         At(initialize, orderingPhase, orderNotDefined());
         At(initialize, throwPhase, orderDefined());

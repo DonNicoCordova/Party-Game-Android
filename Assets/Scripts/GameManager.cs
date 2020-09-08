@@ -3,8 +3,6 @@ using TMPro;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Diagnostics;
 using System.Linq;
 
 public class GameManager : MonoBehaviour
@@ -19,6 +17,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Graphical interfaces")]
     public TextMeshProUGUI shakesText;
+    public TextMeshProUGUI throwText;
     public GameObject phaseIndicator;
     public GameObject damagePopPrefab;
     public Color32 normalTextColor;
@@ -139,6 +138,10 @@ public class GameManager : MonoBehaviour
     public bool PlayersSetAndOrdered() => notActionTakenPlayers.Count == numberOfPlayers && playersOrdered;
     public bool NextRoundReady() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers;
     public void ShowMessage(string message) => StartCoroutine(processShowMessage(message));
+    public void SetThrowText()
+    {
+        throwText.text = throwController.actualThrow.GetValue().ToString();
+    }
     public void AddThrow(Throw newThrow) => roundThrows.Add(newThrow);
     private IEnumerator processShowMessage(string message)
     {

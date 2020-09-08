@@ -13,12 +13,13 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     public float minShakeInterval = 1.0f;
     public float shakeForceMultiplier = 50f;
     public int maxShakes = 4;
+    public Throw actualThrow;
+    
     private float sqrShakeDetectionThreshold;
     private float timeSinceLastShake;
     private Boolean dicesReadyToPlay = false;
     private Boolean throwFinished = false;
 
-    private Throw actualThrow;
     private GameManager gameManager;
     private Vector2 prevPoint;
     private Vector2 newPoint;
@@ -34,7 +35,6 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
             prevPoint = data.position;
         }
     }
-
     public void OnDrag(PointerEventData data)
     {
         if (!throwFinished && DicesReadyToPlay())
@@ -44,7 +44,6 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
             _processSwipe(data.delta);
         }
     }
-
     public void OnPointerUp(PointerEventData data)
     {
         if (!throwFinished && DicesReadyToPlay())
@@ -55,11 +54,9 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
             }
         }
     }
-
     private void _processSwipe(Vector3 movementDirection)
     {
     }
-
     void Start()
     {
         sqrShakeDetectionThreshold = Mathf.Pow(shakeDetectionThreshold, 2);
@@ -67,7 +64,6 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
         gameManager = GameManager.instance;
         boxAnimator = gameObject.GetComponent<Animator>();
     }
-
     public void CheckInput()
     {
         if (!throwFinished && DicesReadyToPlay())
@@ -87,7 +83,6 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
             }
         }
     }
-
     public void ShakeRigidBodies()
     {
         if (!throwFinished && DicesReadyToPlay())
@@ -100,10 +95,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
             }
         }
     }
-
-    
     public float GetShakesLeft() => shakesLeft;
-
     public bool DicesReadyToPlay() {
         if (dicesReadyToPlay)
             return true;
@@ -111,23 +103,22 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
         {
             if (die.AnimatorIsPlaying())
             {
-                dicesReadyToPlay=false;
+                dicesReadyToPlay = false;
                 return false;
             }
         }
         dicesReadyToPlay = true;
         return true;
-    } 
-
-    public void FinishedThrow() 
+    }
+    public void FinishedThrow()
     {
         throwFinished = true;
     }
     public bool IsThrowFinished() {
         return throwFinished;
     }
-
     public void AnimateReadyToPlay() {
+        EnableDicesAnimations();
         boxAnimator.ResetTrigger("MoveToScreen");
         boxAnimator.SetTrigger("MoveToPlayArea");
         foreach (DiceController die in gameManager.dicesInPlay)
@@ -152,12 +143,17 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
             die.DisableAnimator();
         }
     }
-
     public void EnableDicesAnimations()
     {
         foreach (DiceController die in gameManager.dicesInPlay)
         {
             die.EnableAnimator();
         }
+    }
+    public void Initialize()
+    {
+        throwFinished = false;
+        dicesReadyToPlay = false;
+        actualThrow = null;
     }
 }

@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class DiceCheckZoneController : MonoBehaviour
 {
-    public TextMeshProUGUI resultText;
     // Start is called before the first frame update
     private List<Collider> sideColliders = new List<Collider>();
     private GameManager gameManager;
@@ -34,18 +33,18 @@ public class DiceCheckZoneController : MonoBehaviour
         {
             if (gameManager.DicesStopped() && sideColliders.Count == 2)
             {
-                float totalAmount = 0f;
                 Throw actualThrow = new Throw();
                 actualThrow.isMainPlayer = true;
                 foreach(Collider collider in sideColliders)
                 {
                     DiceController controller = collider.GetComponentInParent<DiceController>();
                     actualThrow.throwValues.Add(controller.GetSideStats(collider));
-                    totalAmount += 7-controller.GetSideValue(collider);
                 }
-                resultText.text = totalAmount.ToString();
                 gameManager.throwController.FinishedThrow();
                 gameManager.AddThrow(actualThrow);
+                gameManager.throwController.actualThrow = actualThrow;
+                gameManager.SetThrowText();
+                sideColliders.Clear();
             }
         }
 

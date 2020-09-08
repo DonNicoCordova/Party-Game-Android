@@ -86,11 +86,13 @@ public class DiceController : MonoBehaviour
 
     public void DisableAnimator()
     {
+        Debug.Log("DISABLING ANIMATOR");
         transform.position = transform.position;
         animator.enabled = false;
     }
     public void EnableAnimator()
     {
+        Debug.Log("ENABLING ANIMATOR");
         animator.enabled = true;
     }
 }
