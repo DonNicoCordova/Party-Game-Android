@@ -1,25 +1,38 @@
-﻿using UnityEngine;
-using UnityEngine.AI;
+﻿
+using UnityEngine;
 
 internal class ThrowResultsPhase : IState
 {
-    public ThrowResultsPhase()
+    private float defaultStayTime = 5f;
+    private float stayTime;
+    public ThrowResultsPhase(float minimumTime)
     {
+        defaultStayTime = minimumTime;
+        stayTime = defaultStayTime;
     }
-
     public void Tick()
     {
-        if (!GameManager.instance.DiceOnDisplay())
-            GameManager.instance.ShowDicesOnCamera();
+        if (stayTime <= 0f)
+        {
+            GameSystem.instance.throwResultsPhaseDone = true;
+        }
+        stayTime -= Time.deltaTime;
+        stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
     }
-
+    public void FixedTick() { }
     public void OnEnter()
     {
-        Debug.Log("ENTERED THROWRESULTSPHASE");
+        if (GameSystem.instance.throwResultsPhaseDone)
+            GameSystem.instance.throwResultsPhaseDone = false;
+        Debug.Log("ENTERED THROWRESULT");
+        GameManager.instance.ShowMessage("¡Que mala cuea! ajkajskkadj");
     }
 
     public void OnExit()
     {
-        Debug.Log("FINISHED THROWRESULTSPHASE");
+        stayTime = defaultStayTime;
+        if (GameSystem.instance.throwResultsPhaseDone)
+            GameSystem.instance.throwResultsPhaseDone = false;
+        Debug.Log("EXITED THROWRESULT");
     }
 }

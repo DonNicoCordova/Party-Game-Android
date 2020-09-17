@@ -22,6 +22,6 @@ public class MainMenu : MonoBehaviour
     {
 
         mainMenu.SetActive(false);
-        playerSelectMenu.SetActive(true  );
+        playerSelectMenu.SetActive(true);
     }
 }

@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3422301949176695022
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3422301949176695020}
+  - component: {fileID: 3422301949176695023}
+  - component: {fileID: 3422301949176695021}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3422301949176695020
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3422301949176695022}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.7947025, y: 2.7378821, z: -0.54647243}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3422301949176695023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3422301949176695022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1fb5bcbb39d41742b94148b2dd2ac4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  virtualCamera: {fileID: 0}
+  dicesInPlay:
+  - {fileID: 0}
+  - {fileID: 0}
+  throwController: {fileID: 0}
+  shakesText: {fileID: 0}
+  throwText: {fileID: 0}
+  phaseIndicator: {fileID: 0}
+  normalTextColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  playersLadder: {fileID: 0}
+  joystick: {fileID: 0}
+  lerpTime: 1
+  diceOnCameraPosition1: {fileID: 0}
+  diceOnCameraPosition2: {fileID: 0}
+  playerConfigs:
+  - mainColor: {fileID: 2100000, guid: c00e8978f877f1d4d89d1aa2feda2701, type: 2}
+    orbColor: {fileID: 2100000, guid: 13c3081d0bb59c64c8dbc995145a910f, type: 2}
+    startingLocation: {fileID: 0}
+  - mainColor: {fileID: 2100000, guid: ef03df725030a2a4da8dbb6d38a049fc, type: 2}
+    orbColor: {fileID: 2100000, guid: f7bcea9c0cb948946a4b467dba7c4744, type: 2}
+    startingLocation: {fileID: 0}
+  - mainColor: {fileID: 2100000, guid: 6b18c646d4928c04892c282b05ea8297, type: 2}
+    orbColor: {fileID: 2100000, guid: e3ebc7cb3513ee44193ff36ed23c5224, type: 2}
+    startingLocation: {fileID: 0}
+  - mainColor: {fileID: 2100000, guid: c7b581effd5ee4448baee7484a9056c5, type: 2}
+    orbColor: {fileID: 2100000, guid: 279ee20c6c336f843a34cb895dae7585, type: 2}
+    startingLocation: {fileID: 0}
+  - mainColor: {fileID: 2100000, guid: a2d3d7b3da929f84b9128d8d27936553, type: 2}
+    orbColor: {fileID: 2100000, guid: ebb44aa304236744dac0543763f2c6c0, type: 2}
+    startingLocation: {fileID: 0}
+  - mainColor: {fileID: 2100000, guid: ececde930a8c8cb4f8d85720a352443c, type: 2}
+    orbColor: {fileID: 2100000, guid: ff189917329d4c341a3288facfc02839, type: 2}
+    startingLocation: {fileID: 0}
+  - mainColor: {fileID: 2100000, guid: a2042a2bdcdc1574d8ed6d2977b16a42, type: 2}
+    orbColor: {fileID: 2100000, guid: d71698490c0de8a42af72b5b04edb0e0, type: 2}
+    startingLocation: {fileID: 0}
+  - mainColor: {fileID: 2100000, guid: 60325875bfed6b34fa7a401cfcc251dc, type: 2}
+    orbColor: {fileID: 2100000, guid: ed891434484004c489b6a165c0fd6540, type: 2}
+    startingLocation: {fileID: 0}
+  playerPrefab: {fileID: 5869548947883918841, guid: 8c35fcc3f67697d41b041a73d1af847a, type: 3}
+  players: []
+--- !u!114 &3422301949176695021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3422301949176695022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bb414808569c9143bdd43ccdaeae776, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initializePhaseDone: 0
+  orderingPhaseDone: 0
+  orderingResultsPhaseDone: 0
+  throwPhaseDone: 0
+  throwResultsPhaseDone: 0
+  movePiecePhaseDone: 0
+  moveResultsPhaseDone: 0
+  minigamePhaseDone: 0
+  finalResultsPhaseDone: 0

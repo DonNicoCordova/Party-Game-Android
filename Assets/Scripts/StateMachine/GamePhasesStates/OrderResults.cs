@@ -1,26 +1,43 @@
-﻿using UnityEngine;
-using UnityEngine.AI;
+﻿
+using UnityEngine;
 
-internal class OrderReultsPhase : IState
+internal class OrderResultsPhase : IState
 {
-
-    public OrderReultsPhase()
+    private float defaultStayTime = 5f;
+    private float stayTime;
+    public OrderResultsPhase(float minimumTime)
     {
+        defaultStayTime = minimumTime;
+        stayTime = defaultStayTime;
     }
 
     public void Tick()
     {
-        if (!GameManager.instance.DiceOnDisplay())
-            GameManager.instance.ShowDicesOnCamera();
+        if (stayTime <= 0f)
+        {
+            GameSystem.instance.orderingResultsPhaseDone = true;
+        }
+        stayTime -= Time.deltaTime;
+        stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
     }
 
+    public void FixedTick() { }
     public void OnEnter()
     {
-        Debug.Log("ENTERED THROWRESULTSPHASE");
+        if (GameSystem.instance.orderingResultsPhaseDone)
+            GameSystem.instance.orderingResultsPhaseDone = false;
+        Debug.Log("ENTERED ORDER RESULT PHASE");
+        GameManager.instance.ShowMessage("Así quedaron y que wea");
+        GameManager.instance.OrderPlayers();
     }
 
     public void OnExit()
     {
-        Debug.Log("FINISHED THROWRESULTSPHASE");
+        stayTime = defaultStayTime;
+        if (GameSystem.instance.orderingResultsPhaseDone)
+            GameSystem.instance.orderingResultsPhaseDone = false;
+        UnityEngine.Debug.Log("EXITED ORDER RESULT PHASE");
+        GameManager.instance.StartNextRound();
+        //ORDENAR LISTA
     }
 }
