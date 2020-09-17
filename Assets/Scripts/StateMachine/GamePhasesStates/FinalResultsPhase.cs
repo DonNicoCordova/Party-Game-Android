@@ -20,6 +20,7 @@ internal class FinalResultsPhase : IState
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
     }
+    public void FixedTick() { }
     public void OnEnter()
     {
         if (GameSystem.instance.finalResultsPhaseDone)

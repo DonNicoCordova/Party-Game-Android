@@ -5,13 +5,16 @@ using UnityEngine;
 public class Throw
 {
     [SerializeField]
-    public int playerId;
+    public PlayerStats player;
     [SerializeField]
     public string playerNickname;
     [SerializeField]
     public List<SideStats> throwValues = new List<SideStats>();
-    public bool isMainPlayer = false;
 
+    public Throw(PlayerStats throwPlayer)
+    {
+        player = throwPlayer;
+    }
     public int GetValue()
     {
         if (throwValues.Count == 0) 

@@ -21,12 +21,14 @@ internal class MoveResultsPhase : IState
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
     }
 
+    public void FixedTick() { }
     public void OnEnter()
     {
         if (GameSystem.instance.moveResultsPhaseDone)
             GameSystem.instance.moveResultsPhaseDone = false;
         Debug.Log("ENTERED MOVERESULTSPHASE");
         GameManager.instance.ShowMessage("Este mensaje da risa... creo");
+        GameManager.instance.StartNextRound();
     }
 
     public void OnExit()
@@ -35,6 +37,5 @@ internal class MoveResultsPhase : IState
         if (GameSystem.instance.moveResultsPhaseDone)
             GameSystem.instance.moveResultsPhaseDone = false;
         Debug.Log("EXITED MOVERESULTSPHASE");
-        GameManager.instance.StartNextRound();
     }
 }

@@ -21,11 +21,12 @@ internal class OrderResultsPhase : IState
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
     }
 
+    public void FixedTick() { }
     public void OnEnter()
     {
         if (GameSystem.instance.orderingResultsPhaseDone)
             GameSystem.instance.orderingResultsPhaseDone = false;
-        UnityEngine.Debug.Log("ENTERED ORDER RESULT PHASE");
+        Debug.Log("ENTERED ORDER RESULT PHASE");
         GameManager.instance.ShowMessage("Así quedaron y que wea");
         GameManager.instance.OrderPlayers();
     }

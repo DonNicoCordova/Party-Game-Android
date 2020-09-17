@@ -22,6 +22,10 @@ internal class OrderDecidingPhase : IState
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
     }
 
+    public void FixedTick()
+    {
+        GameManager.instance.throwController?.CheckIfDicesStopped();
+    }
     public void OnEnter()
     {
         if (GameSystem.instance.orderingPhaseDone)

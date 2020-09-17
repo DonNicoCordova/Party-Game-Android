@@ -21,6 +21,7 @@ internal class Initialize : IState
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
     }
 
+    public void FixedTick() { }
     public void OnEnter()
     {
         GameManager.instance.throwText.text = "0";

@@ -21,7 +21,10 @@ internal class ThrowPhase : IState
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
     }
-
+    public void FixedTick()
+    {
+        GameManager.instance.throwController?.CheckIfDicesStopped();
+    }
     public void OnEnter()
     {
         if (GameSystem.instance.throwPhaseDone)

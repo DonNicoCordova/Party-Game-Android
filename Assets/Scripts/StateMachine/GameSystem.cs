@@ -27,22 +27,22 @@ public class GameSystem : MonoBehaviour
         _gameManager = GameManager.instance;
         _stateMachine = new StateMachine();
 
-        var initialize = new Initialize(5f);
-        var orderingPhase = new OrderDecidingPhase(5f);
-        var orderingResultPhase = new OrderResultsPhase(5f);
-        var throwPhase = new ThrowPhase(5f);
-        var throwResultsPhase = new ThrowResultsPhase(5f);
-        var movePiecePhase = new MovePiecePhase(5f);
-        var moveResultsPhase = new MoveResultsPhase(5f);
-        var minigamePhase = new MinigamePhase(5f);
-        var finalResultsPhase = new FinalResultsPhase(5f);
+        var initialize = new Initialize(3f);
+        var orderingPhase = new OrderDecidingPhase(3f);
+        var orderingResultPhase = new OrderResultsPhase(3f);
+        var throwPhase = new ThrowPhase(3f);
+        var throwResultsPhase = new ThrowResultsPhase(3f);
+        var movePiecePhase = new MovePiecePhase(3f, 30f);
+        var moveResultsPhase = new MoveResultsPhase(3f);
+        var minigamePhase = new MinigamePhase(3f);
+        var finalResultsPhase = new FinalResultsPhase(3f);
 
         At(initialize, orderingPhase, orderNotDefined());
         At(initialize, throwPhase, orderDefined());
         At(orderingPhase, orderingResultPhase, orderingThrowFinished());
         At(orderingResultPhase, initialize, orderingDone());
         At(throwPhase, throwResultsPhase, throwFinished());
-        At(throwResultsPhase, movePiecePhase, yourTurn());
+        At(throwResultsPhase, movePiecePhase, resultsDone());
         At(movePiecePhase, moveResultsPhase, nothingElseToDo());
         At(moveResultsPhase, initialize, nextRoundReady());
         _stateMachine.SetState(initialize);
@@ -51,14 +51,14 @@ public class GameSystem : MonoBehaviour
 
         Func<bool> orderingThrowFinished() => () => GameManager.instance.throwController.IsThrowFinished() && orderingPhaseDone;
         Func<bool> throwFinished() => () => GameManager.instance.throwController.IsThrowFinished() && throwPhaseDone;
-        Func<bool> yourTurn() => () => GameManager.instance.YourTurn() && throwResultsPhaseDone;
+        Func<bool> resultsDone() => () => throwResultsPhaseDone;
         Func<bool> orderNotDefined() => () => !GameManager.instance.PlayersSetAndOrdered() && initializePhaseDone;
         Func<bool> orderDefined() => () => GameManager.instance.PlayersSetAndOrdered() && initializePhaseDone;
         Func<bool> orderingDone() => () => GameManager.instance.PlayersSetAndOrdered() && orderingResultsPhaseDone;
-        Func<bool> nothingElseToDo() => () => GameManager.instance.NothingElseToDo() && movePiecePhaseDone;
+        Func<bool> nothingElseToDo() => () => GameManager.instance.RoundDone() && movePiecePhaseDone;
         Func<bool> nextRoundReady() => () => GameManager.instance.NextRoundReady() && moveResultsPhaseDone;
     }
 
     private void Update() => _stateMachine.Tick();
-
+    private void FixedUpdate() => _stateMachine.FixedTick();
 }

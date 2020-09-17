@@ -19,24 +19,27 @@ using Object = System.Object;
 
 public class StateMachine
 {
-   private IState _currentState;
+    private IState _currentState;
    
-   private Dictionary<Type, List<Transition>> _transitions = new Dictionary<Type,List<Transition>>();
-   private List<Transition> _currentTransitions = new List<Transition>();
-   private List<Transition> _anyTransitions = new List<Transition>();
+    private Dictionary<Type, List<Transition>> _transitions = new Dictionary<Type,List<Transition>>();
+    private List<Transition> _currentTransitions = new List<Transition>();
+    private List<Transition> _anyTransitions = new List<Transition>();
    
-   private static List<Transition> EmptyTransitions = new List<Transition>(0);
+    private static List<Transition> EmptyTransitions = new List<Transition>(0);
 
-   public void Tick()
-   {
-      var transition = GetTransition();
-      if (transition != null)
-         SetState(transition.To);
+    public void Tick()
+    {
+        var transition = GetTransition();
+        if (transition != null)
+            SetState(transition.To);
       
-      _currentState?.Tick();
-   }
-
-   public void SetState(IState state)
+        _currentState?.Tick();
+    }
+    public void FixedTick()
+    {
+        _currentState?.FixedTick();
+    }
+    public void SetState(IState state)
    {
       if (state == _currentState)
          return;

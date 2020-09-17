@@ -31,10 +31,10 @@ public class DiceCheckZoneController : MonoBehaviour
     {
         if (!gameManager.throwController.IsThrowFinished())
         {
-            if (gameManager.DicesStopped() && sideColliders.Count == 2)
+            if (gameManager.throwController.DicesStopped() && sideColliders.Count == 2)
             {
-                Throw actualThrow = new Throw();
-                actualThrow.isMainPlayer = true;
+                Debug.Log("DICES STOPPED AND 2 COLLIDERS FOUND");
+                Throw actualThrow = new Throw(gameManager.GetMainPlayer());
                 foreach(Collider collider in sideColliders)
                 {
                     DiceController controller = collider.GetComponentInParent<DiceController>();
@@ -43,6 +43,7 @@ public class DiceCheckZoneController : MonoBehaviour
                 gameManager.throwController.FinishedThrow();
                 gameManager.AddThrow(actualThrow);
                 gameManager.throwController.actualThrow = actualThrow;
+                gameManager.SetMainPlayerMoves(gameManager.throwController.actualThrow.GetValue());
                 gameManager.SetThrowText();
                 sideColliders.Clear();
             }

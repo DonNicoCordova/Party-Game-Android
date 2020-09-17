@@ -16,7 +16,19 @@ TextureImporter:
     second: Face_3
   - first:
       213: -5287584587367298933
-    second: Player
+    second: PlayerBody
+  - first:
+      213: -2513683408918025286
+    second: PlayerRightHand
+  - first:
+      213: 1234483194365296693
+    second: PlayerLeftHand
+  - first:
+      213: 7652919541469252674
+    second: PlayerLeftFoot
+  - first:
+      213: -4838119592762330296
+    second: PlayerRightFoot
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -119,12 +131,12 @@ TextureImporter:
       name: Face_0
       rect:
         serializedVersion: 2
-        x: 43
-        y: 515
+        x: 41
+        y: 555
         width: 60
         height: 57
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -140,12 +152,12 @@ TextureImporter:
       name: Face_1
       rect:
         serializedVersion: 2
-        x: 151
-        y: 511
+        x: 148
+        y: 550
         width: 105
         height: 74
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -161,12 +173,12 @@ TextureImporter:
       name: Face_2
       rect:
         serializedVersion: 2
-        x: 299
-        y: 499
+        x: 298
+        y: 538
         width: 117
         height: 97
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -183,11 +195,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 474
-        y: 503
+        y: 542
         width: 94
         height: 113
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -200,22 +212,141 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player
+      name: PlayerBody
       rect:
         serializedVersion: 2
-        x: 119
-        y: 4
-        width: 424
-        height: 482
+        x: 235
+        y: 111
+        width: 203
+        height: 414
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones:
+      - name: bone_7
+        position: {x: 107.35092, y: 18.242645, z: 0}
+        rotation: {x: 0, y: 0, z: 0.7121934, w: 0.70198333}
+        length: 177.85027
+        parentId: -1
+      - name: bone_8
+        position: {x: 177.85025, y: -0.000023626377, z: 0}
+        rotation: {x: 0, y: 0, z: -0.0005179005, w: 0.9999999}
+        length: 95.665375
+        parentId: 0
+      - name: bone_9
+        position: {x: 95.66539, y: 0.0017377617, z: 0}
+        rotation: {x: 0, y: 0, z: 0.016320968, w: 0.99986684}
+        length: 97.686195
+        parentId: 1
+      - name: bone_10
+        position: {x: -4.7465034, y: -66.70952, z: 0}
+        rotation: {x: 0, y: -0, z: -0.8127321, w: 0.58263767}
+        length: 97.85688
+        parentId: 1
+      - name: bone_11
+        position: {x: 0.86048895, y: 64.19342, z: 0}
+        rotation: {x: 0, y: -0, z: 0.7951849, w: 0.60636705}
+        length: 120.283966
+        parentId: 1
+      - name: bone_12
+        position: {x: 10.319464, y: -41.240772, z: 0}
+        rotation: {x: 0, y: -0, z: -0.9870181, w: 0.16060926}
+        length: 79.591446
+        parentId: 0
+      - name: bone_13
+        position: {x: 12.808373, y: 42.190907, z: 0}
+        rotation: {x: 0, y: -0, z: 0.9992327, w: 0.039166044}
+        length: 80.41316
+        parentId: 0
+      spriteID: b88442625d9be96b0800000000000000
+      internalID: -5287584587367298933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRightHand
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 227
+        width: 93
+        height: 92
+      alignment: 9
+      pivot: {x: -0.7218549, y: 0.5837379}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b88442625d9be96b0800000000000000
-      internalID: -5287584587367298933
+      spriteID: abbe5a5f14a9d1dd0800000000000000
+      internalID: -2513683408918025286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerLeftHand
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 231
+        width: 94
+        height: 94
+      alignment: 9
+      pivot: {x: 1.6951976, y: 0.6297643}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5304559bce3c12110800000000000000
+      internalID: 1234483194365296693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerLeftFoot
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 16
+        width: 101
+        height: 77
+      alignment: 9
+      pivot: {x: 0.4797345, y: 1.1982789}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24c8beba6c1a43a60800000000000000
+      internalID: 7652919541469252674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRightFoot
+      rect:
+        serializedVersion: 2
+        x: 371
+        y: 23
+        width: 94
+        height: 74
+      alignment: 9
+      pivot: {x: 0.421425, y: 1.159527}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8433b842ddb8bdcb0800000000000000
+      internalID: -4838119592762330296
       vertices: []
       indices: 
       edges: []

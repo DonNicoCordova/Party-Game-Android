@@ -20,6 +20,7 @@ internal class MinigamePhase : IState
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
     }
 
+    public void FixedTick() { }
     public void OnEnter()
     {
         if (GameSystem.instance.minigamePhaseDone)
