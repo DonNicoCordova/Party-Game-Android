@@ -29,7 +29,7 @@ public class DiceCheckZoneController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!gameManager.throwController.IsThrowFinished())
+        if (gameManager != null && !gameManager.throwController.IsThrowFinished())
         {
             if (gameManager.throwController.DicesStopped() && sideColliders.Count == 2)
             {

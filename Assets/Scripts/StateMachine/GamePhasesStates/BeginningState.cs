@@ -1,4 +1,5 @@
 ﻿
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -24,6 +25,7 @@ internal class Initialize : IState
     public void FixedTick() { }
     public void OnEnter()
     {
+        Debug.Log($"ENTERING STATE {GameManager.instance}");
         GameManager.instance.throwText.text = "0";
         if (GameSystem.instance.initializePhaseDone)
             GameSystem.instance.initializePhaseDone = false;
@@ -31,12 +33,14 @@ internal class Initialize : IState
         {
             GameManager.instance.ShowMessage("¡Bienvenido a tu fiestita!");
             GameManager.instance.CreatePlayers();
-        } else
+        }
+        else
         {
             GameManager.instance.ShowMessage($"¡Ronda {GameManager.instance.GetRound()}!");
         }
     }
 
+    
     public void OnExit()
     {
         stayTime = defaultStayTime;

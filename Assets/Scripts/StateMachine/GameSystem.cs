@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class GameSystem : MonoBehaviour
@@ -45,8 +46,8 @@ public class GameSystem : MonoBehaviour
         At(throwResultsPhase, movePiecePhase, resultsDone());
         At(movePiecePhase, moveResultsPhase, nothingElseToDo());
         At(moveResultsPhase, initialize, nextRoundReady());
-        _stateMachine.SetState(initialize);
 
+        StartCoroutine(Setup(initialize));
         void At(IState from, IState to, Func<bool> condition) => _stateMachine.AddTransition(from, to, condition);
 
         Func<bool> orderingThrowFinished() => () => GameManager.instance.throwController.IsThrowFinished() && orderingPhaseDone;
@@ -61,4 +62,9 @@ public class GameSystem : MonoBehaviour
 
     private void Update() => _stateMachine.Tick();
     private void FixedUpdate() => _stateMachine.FixedTick();
+    private IEnumerator Setup(IState initialState)
+    {
+        yield return new WaitForSeconds(.5f);
+        _stateMachine.SetState(initialState);
+    }
 }
