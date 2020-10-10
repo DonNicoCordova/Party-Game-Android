@@ -28,7 +28,11 @@ internal class Initialize : IState
     {
 
         //reset state done
-
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
+            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+        }
         GameManager.instance.ResetStateOnPlayers();
         Debug.Log($"ENTERING STATE {GameManager.instance}");
         GameManager.instance.throwText.text = "0";

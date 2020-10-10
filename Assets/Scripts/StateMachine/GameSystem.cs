@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using Photon.Pun;
+using System.Collections.Generic;
 
 public class GameSystem : MonoBehaviour
 {
@@ -17,15 +18,7 @@ public class GameSystem : MonoBehaviour
     public Boolean finalResultsPhaseDone = false;
     private StateMachine _stateMachine;
     private GameManager _gameManager;
-    private IState initialize;
-    private IState orderingPhase;
-    private IState orderingResultPhase;
-    private IState throwPhase;
-    private IState throwResultsPhase;
-    private IState movePiecePhase;
-    private IState moveResultsPhase;
-    private IState minigamePhase;
-    private IState finalResultsPhase;
+    private List<IState> phases = new List<IState>();
 
     private void Awake()
     {
@@ -40,14 +33,23 @@ public class GameSystem : MonoBehaviour
         _stateMachine = new StateMachine();
 
         var initialize = new Initialize(3f);
+        phases.Add(initialize);
         var orderingPhase = new OrderDecidingPhase(3f);
+        phases.Add(orderingPhase);
         var orderingResultPhase = new OrderResultsPhase(3f);
+        phases.Add(orderingResultPhase);
         var throwPhase = new ThrowPhase(3f);
+        phases.Add(throwPhase);
         var throwResultsPhase = new ThrowResultsPhase(3f);
+        phases.Add(throwResultsPhase);
         var movePiecePhase = new MovePiecePhase(3f, 30f);
+        phases.Add(movePiecePhase);
         var moveResultsPhase = new MoveResultsPhase(3f);
+        phases.Add(moveResultsPhase);
         var minigamePhase = new MinigamePhase(3f);
+        phases.Add(minigamePhase);
         var finalResultsPhase = new FinalResultsPhase(3f);
+        phases.Add(finalResultsPhase);
 
         At(initialize, orderingPhase, orderNotDefined());
         At(initialize, throwPhase, orderDefined());
@@ -135,8 +137,15 @@ public class GameSystem : MonoBehaviour
         _stateMachine.SetState(initialState);
     }
 
-    public void SetState(IState state)
+    public void SetState(string state)
     {
-        _stateMachine.SetState(state);
+        foreach (IState phase in phases)
+        {
+            if (phase.GetType().Name == state)
+            {
+                _stateMachine.SetState(phase);
+                break;
+            }
+        }
     }
 }

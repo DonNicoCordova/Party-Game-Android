@@ -26,7 +26,11 @@ internal class MinigamePhase : IState
     public void OnEnter()
     {
         //reset state done
-
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
+            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+        }
         GameManager.instance.ResetStateOnPlayers();
         if (GameSystem.instance.minigamePhaseDone)
             GameSystem.instance.minigamePhaseDone = false;

@@ -26,6 +26,11 @@ internal class OrderResultsPhase : IState
     public void FixedTick() { }
     public void OnEnter()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
+            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+        }
         //reset state done
         GameManager.instance.ResetStateOnPlayers();
         

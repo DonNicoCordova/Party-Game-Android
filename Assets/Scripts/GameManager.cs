@@ -209,7 +209,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public PlayerController GetPlayer(int playerId) => players.First(x => x.playerStats.id == playerId);
     public bool AllPlayersJoined() => numberOfPlayers == PhotonNetwork.PlayerList.Length;
     [PunRPC]
-    public void SetNexttState(IState state)
+    public void SetCurrentState(string state)
     {
         GameSystem.instance.SetState(state);
     }

@@ -67,7 +67,11 @@ internal class MovePiecePhase : IState
     public void OnEnter()
     {
         //reset state done
-
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
+            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+        }
         GameManager.instance.ResetStateOnPlayers();
         PlayerController actualPlayer = GameManager.instance.GetActualPlayer();
         if (GameSystem.instance.movePiecePhaseDone)
