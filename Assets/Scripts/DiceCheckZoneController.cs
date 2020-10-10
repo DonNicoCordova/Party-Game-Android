@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using System.Collections.Generic;
 using UnityEngine;
-
+using Photon.Pun;
 public class DiceCheckZoneController : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -33,17 +31,26 @@ public class DiceCheckZoneController : MonoBehaviour
         {
             if (gameManager.throwController.DicesStopped() && sideColliders.Count == 2)
             {
-                Debug.Log("DICES STOPPED AND 2 COLLIDERS FOUND");
-                Throw actualThrow = new Throw(gameManager.GetMainPlayer());
+                Throw actualThrow = new Throw(gameManager.GetMainPlayer().playerStats.id);
+                SideStats[] sideStats = new SideStats[2];
+                var i = 0;
                 foreach(Collider collider in sideColliders)
                 {
                     DiceController controller = collider.GetComponentInParent<DiceController>();
-                    actualThrow.throwValues.Add(controller.GetSideStats(collider));
+                    sideStats[i] = controller.GetSideStats(collider);
+                    i++;
                 }
+                int output = 0;
+                foreach (SideStats stat in sideStats)
+                {
+                    output += 7 - (int)stat.GetValue();
+                }
+                actualThrow.throwValue = output;
                 gameManager.throwController.FinishedThrow();
-                gameManager.AddThrow(actualThrow);
+                string rpcParams = JsonUtility.ToJson(actualThrow);
+                gameManager.photonView.RPC("AddThrow", RpcTarget.All, rpcParams);
                 gameManager.throwController.actualThrow = actualThrow;
-                gameManager.SetMainPlayerMoves(gameManager.throwController.actualThrow.GetValue());
+                gameManager.SetMainPlayerMoves(output);
                 gameManager.SetThrowText();
                 sideColliders.Clear();
             }

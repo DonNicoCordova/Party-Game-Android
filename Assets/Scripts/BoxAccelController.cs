@@ -18,7 +18,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     private float sqrShakeDetectionThreshold;
     private float timeSinceLastShake;
     private Boolean throwFinished = false;
-
+    private Boolean throwDetected = false;
     private GameManager gameManager;
     private Vector2 prevPoint;
     private Vector2 newPoint;
@@ -47,6 +47,8 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     {
         if (!throwFinished && DicesReadyToPlay())
         {
+            Debug.Log("Throw Detected");
+            throwDetected = true;
             foreach (DiceController die in gameManager.dicesInPlay)
             {
                 die.Throw(diceRotationAcceleration, shakeForceMultiplier);
@@ -76,6 +78,8 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
             if (Input.GetMouseButtonUp(0))
             {
                 DisableDicesAnimations();
+                Debug.Log("Throw Detected");
+                throwDetected = true;
                 foreach (DiceController die in gameManager.dicesInPlay)
                 {
                     die.Throw(diceRotationAcceleration, shakeForceMultiplier);
@@ -85,23 +89,32 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     }
     public void CheckIfDicesStopped()
     {
-        bool tempValue = true;
+        Debug.Log("CHECKING IF DICES STOPPED");
+        bool tempValue = false;
         foreach (DiceController diceController in gameManager.dicesInPlay)
         {
+            Debug.Log($"DiceController: {diceController.name} velocity: {diceController.GetVelocity().sqrMagnitude}");
             if (diceController.GetVelocity().sqrMagnitude <= 0.0006)
             {
+                Debug.Log("Reducing dicesStillTime");
                 dicesStillTime -= Time.deltaTime;
                 dicesStillTime = Mathf.Clamp(dicesStillTime, 0f, Mathf.Infinity);
             }
             else
             {
+                Debug.Log("Resetting dicesStillTime");
                 dicesStillTime = 1f;
             }
-
-            if (diceController.GetVelocity() != Vector3.zero && dicesStillTime != 0)
+            Debug.Log($"DicesStillTime: {dicesStillTime}");
+            Debug.Log($"Check if getvelocity != zero {diceController.GetVelocity() != Vector3.zero}");
+            Debug.Log($"Check if dicesStillTime != 0: {dicesStillTime != 0}");
+            Debug.Log($"Check if throwDetected: {throwDetected}");
+            if ((diceController.GetVelocity() != Vector3.zero && dicesStillTime != 0) || !throwDetected)
             {
-                tempValue = false;
                 break;
+            } else
+            {
+                tempValue = true;
             }
         }
         allDiceStopped = tempValue;
@@ -175,5 +188,6 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     {
         throwFinished = false;
         actualThrow = null;
+        throwDetected = false;
     }
 }

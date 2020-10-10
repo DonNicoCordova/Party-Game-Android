@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using Photon.Pun;
 
 internal class MoveResultsPhase : IState
 {
@@ -16,6 +17,8 @@ internal class MoveResultsPhase : IState
         if (stayTime <= 0f)
         {
             GameSystem.instance.moveResultsPhaseDone = true;
+            GameManager.instance?.GetMainPlayer().SetStateDone();
+
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
@@ -24,6 +27,8 @@ internal class MoveResultsPhase : IState
     public void FixedTick() { }
     public void OnEnter()
     {
+        //reset state done
+        GameManager.instance.ResetStateOnPlayers();
         if (GameSystem.instance.moveResultsPhaseDone)
             GameSystem.instance.moveResultsPhaseDone = false;
         Debug.Log("ENTERED MOVERESULTSPHASE");

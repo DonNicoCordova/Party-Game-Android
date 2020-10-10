@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3422301949176695020}
   - component: {fileID: 3422301949176695023}
   - component: {fileID: 3422301949176695021}
+  - component: {fileID: 2750498985777764885}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -85,7 +86,7 @@ MonoBehaviour:
   - mainColor: {fileID: 2100000, guid: 60325875bfed6b34fa7a401cfcc251dc, type: 2}
     orbColor: {fileID: 2100000, guid: ed891434484004c489b6a165c0fd6540, type: 2}
     startingLocation: {fileID: 0}
-  playerPrefab: {fileID: 5869548947883918841, guid: 8c35fcc3f67697d41b041a73d1af847a, type: 3}
+  playerPrefab: 
   players: []
 --- !u!114 &3422301949176695021
 MonoBehaviour:
@@ -108,3 +109,25 @@ MonoBehaviour:
   moveResultsPhaseDone: 0
   minigamePhaseDone: 0
   finalResultsPhaseDone: 0
+--- !u!114 &2750498985777764885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3422301949176695022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  observableSearch: 2
+  Synchronization: 3
+  OwnershipTransfer: 0
+  ObservedComponents: []
+  viewIdField: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0

@@ -1,5 +1,5 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
+using Photon.Pun;
 
 internal class ThrowResultsPhase : IState
 {
@@ -15,6 +15,8 @@ internal class ThrowResultsPhase : IState
         if (stayTime <= 0f)
         {
             GameSystem.instance.throwResultsPhaseDone = true;
+            GameManager.instance?.GetMainPlayer().SetStateDone();
+
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
@@ -22,12 +24,13 @@ internal class ThrowResultsPhase : IState
     public void FixedTick() { }
     public void OnEnter()
     {
+        //reset state done
+        GameManager.instance.ResetStateOnPlayers();
         if (GameSystem.instance.throwResultsPhaseDone)
             GameSystem.instance.throwResultsPhaseDone = false;
         Debug.Log("ENTERED THROWRESULT");
         GameManager.instance.ShowMessage("¡Que mala cuea! ajkajskkadj");
     }
-
     public void OnExit()
     {
         stayTime = defaultStayTime;

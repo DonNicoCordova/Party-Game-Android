@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using Photon.Pun;
 
 public class GameSystem : MonoBehaviour
 {
@@ -16,6 +17,16 @@ public class GameSystem : MonoBehaviour
     public Boolean finalResultsPhaseDone = false;
     private StateMachine _stateMachine;
     private GameManager _gameManager;
+    private IState initialize;
+    private IState orderingPhase;
+    private IState orderingResultPhase;
+    private IState throwPhase;
+    private IState throwResultsPhase;
+    private IState movePiecePhase;
+    private IState moveResultsPhase;
+    private IState minigamePhase;
+    private IState finalResultsPhase;
+
     private void Awake()
     {
 
@@ -50,21 +61,82 @@ public class GameSystem : MonoBehaviour
         StartCoroutine(Setup(initialize));
         void At(IState from, IState to, Func<bool> condition) => _stateMachine.AddTransition(from, to, condition);
 
-        Func<bool> orderingThrowFinished() => () => GameManager.instance.throwController.IsThrowFinished() && orderingPhaseDone;
-        Func<bool> throwFinished() => () => GameManager.instance.throwController.IsThrowFinished() && throwPhaseDone;
-        Func<bool> resultsDone() => () => throwResultsPhaseDone;
-        Func<bool> orderNotDefined() => () => !GameManager.instance.PlayersSetAndOrdered() && initializePhaseDone;
-        Func<bool> orderDefined() => () => GameManager.instance.PlayersSetAndOrdered() && initializePhaseDone;
-        Func<bool> orderingDone() => () => GameManager.instance.PlayersSetAndOrdered() && orderingResultsPhaseDone;
-        Func<bool> nothingElseToDo() => () => GameManager.instance.RoundDone() && movePiecePhaseDone;
-        Func<bool> nextRoundReady() => () => GameManager.instance.NextRoundReady() && moveResultsPhaseDone;
+        Func<bool> orderingThrowFinished() => () => {
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.throwController.IsThrowFinished() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> throwFinished() => () => {
+
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.throwController.IsThrowFinished() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> resultsDone() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> orderNotDefined() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+                return !GameManager.instance.PlayersSetAndOrdered() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> orderDefined() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.PlayersSetAndOrdered() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> orderingDone() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.PlayersSetAndOrdered() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> nothingElseToDo() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.RoundDone() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> nextRoundReady() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                return GameManager.instance.NextRoundReady() && GameManager.instance.AllPlayersStateDone();
+            } else
+            {
+                return false;
+            }
+        }; 
     }
 
     private void Update() => _stateMachine.Tick();
     private void FixedUpdate() => _stateMachine.FixedTick();
     private IEnumerator Setup(IState initialState)
     {
-        yield return new WaitForSeconds(.5f);
+
+        yield return new WaitForSeconds(0.5f);
+        Debug.Log($"JOINED STATUS {GameManager.instance?.AllPlayersJoined()}");
+        while (!GameManager.instance.AllPlayersJoined())
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
         _stateMachine.SetState(initialState);
+    }
+
+    public void SetState(IState state)
+    {
+        _stateMachine.SetState(state);
     }
 }

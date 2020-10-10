@@ -1,6 +1,6 @@
 ﻿
 using UnityEngine;
-
+using Photon.Pun;
 internal class OrderResultsPhase : IState
 {
     private float defaultStayTime = 5f;
@@ -16,6 +16,8 @@ internal class OrderResultsPhase : IState
         if (stayTime <= 0f)
         {
             GameSystem.instance.orderingResultsPhaseDone = true;
+            GameManager.instance?.GetMainPlayer().SetStateDone();
+
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
@@ -24,11 +26,15 @@ internal class OrderResultsPhase : IState
     public void FixedTick() { }
     public void OnEnter()
     {
+        //reset state done
+        GameManager.instance.ResetStateOnPlayers();
+        
         if (GameSystem.instance.orderingResultsPhaseDone)
             GameSystem.instance.orderingResultsPhaseDone = false;
         Debug.Log("ENTERED ORDER RESULT PHASE");
         GameManager.instance.ShowMessage("Así quedaron y que wea");
         GameManager.instance.OrderPlayers();
+
     }
 
     public void OnExit()

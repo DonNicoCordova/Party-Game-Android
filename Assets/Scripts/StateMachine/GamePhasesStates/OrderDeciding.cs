@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using Photon.Pun;
 
 internal class OrderDecidingPhase : IState
 {
@@ -17,6 +18,7 @@ internal class OrderDecidingPhase : IState
         if (stayTime <= 0f)
         {
             GameSystem.instance.orderingPhaseDone = true;
+
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
@@ -25,9 +27,16 @@ internal class OrderDecidingPhase : IState
     public void FixedTick()
     {
         GameManager.instance.throwController?.CheckIfDicesStopped();
+        if (GameManager.instance.throwController.DicesStopped())
+        {
+            GameManager.instance?.GetMainPlayer().SetStateDone();
+        }
     }
     public void OnEnter()
     {
+        //reset state done
+
+        GameManager.instance.ResetStateOnPlayers();
         if (GameSystem.instance.orderingPhaseDone)
             GameSystem.instance.orderingPhaseDone = false;
         Debug.Log("ENTERING ORDERING");
