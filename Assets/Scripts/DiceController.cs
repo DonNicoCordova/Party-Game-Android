@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class DiceController : MonoBehaviour
@@ -16,9 +17,9 @@ public class DiceController : MonoBehaviour
     }
     public void ShakeDice(float diceRotationAcceleration, float shakeForceMultiplier)
     {
-        float dirx = UnityEngine.Random.Range(0, 360);
-        float diry = UnityEngine.Random.Range(0, 360);
-        float dirz = UnityEngine.Random.Range(0, 360);
+        float dirx = Random.Range(0, 360);
+        float diry = Random.Range(0, 360);
+        float dirz = Random.Range(0, 360);
         Vector3 torqueDirection = new Vector3(dirx, diry, dirz);
         Vector3 randomDirection = Random.onUnitSphere;
         Vector3 forceDirection = new Vector3(randomDirection.x, Mathf.Abs(randomDirection.y), randomDirection.z);
@@ -32,9 +33,9 @@ public class DiceController : MonoBehaviour
             diceRb.useGravity = true;
         if (diceCollider.isTrigger)
             diceCollider.isTrigger = false;
-        float dirx = UnityEngine.Random.Range(0, 360);
-        float diry = UnityEngine.Random.Range(0, 360);
-        float dirz = UnityEngine.Random.Range(0, 360);
+        float dirx = Random.Range(0, 360);
+        float diry = Random.Range(0, 360);
+        float dirz = Random.Range(0, 360);
         Vector3 torqueDirection = new Vector3(dirx, diry, dirz);
         diceRb.AddTorque(torqueDirection * diceRotationAcceleration, ForceMode.Acceleration);
         diceRb.AddForce(Vector3.up * shakeForceMultiplier, ForceMode.Impulse);

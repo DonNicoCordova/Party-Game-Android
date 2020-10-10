@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using Photon.Pun;
 
 internal class ThrowPhase : IState
 {
@@ -17,6 +18,7 @@ internal class ThrowPhase : IState
         if (stayTime <= 0f)
         {
             GameSystem.instance.throwPhaseDone = true;
+
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
@@ -24,9 +26,21 @@ internal class ThrowPhase : IState
     public void FixedTick()
     {
         GameManager.instance.throwController?.CheckIfDicesStopped();
+        if (GameManager.instance.throwController.DicesStopped())
+        {
+            GameManager.instance?.GetMainPlayer().SetStateDone();
+        }
     }
     public void OnEnter()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
+            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+        }
+        //reset state done
+
+        GameManager.instance.ResetStateOnPlayers();
         if (GameSystem.instance.throwPhaseDone)
             GameSystem.instance.throwPhaseDone = false;
         Debug.Log("ENTERED THROWPHASE");

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
+using Photon.Pun;
+using System.Collections.Generic;
 
 public class GameSystem : MonoBehaviour
 {
@@ -15,6 +18,8 @@ public class GameSystem : MonoBehaviour
     public Boolean finalResultsPhaseDone = false;
     private StateMachine _stateMachine;
     private GameManager _gameManager;
+    private List<IState> phases = new List<IState>();
+
     private void Awake()
     {
 
@@ -28,14 +33,23 @@ public class GameSystem : MonoBehaviour
         _stateMachine = new StateMachine();
 
         var initialize = new Initialize(3f);
+        phases.Add(initialize);
         var orderingPhase = new OrderDecidingPhase(3f);
+        phases.Add(orderingPhase);
         var orderingResultPhase = new OrderResultsPhase(3f);
+        phases.Add(orderingResultPhase);
         var throwPhase = new ThrowPhase(3f);
+        phases.Add(throwPhase);
         var throwResultsPhase = new ThrowResultsPhase(3f);
+        phases.Add(throwResultsPhase);
         var movePiecePhase = new MovePiecePhase(3f, 30f);
+        phases.Add(movePiecePhase);
         var moveResultsPhase = new MoveResultsPhase(3f);
+        phases.Add(moveResultsPhase);
         var minigamePhase = new MinigamePhase(3f);
+        phases.Add(minigamePhase);
         var finalResultsPhase = new FinalResultsPhase(3f);
+        phases.Add(finalResultsPhase);
 
         At(initialize, orderingPhase, orderNotDefined());
         At(initialize, throwPhase, orderDefined());
@@ -45,20 +59,93 @@ public class GameSystem : MonoBehaviour
         At(throwResultsPhase, movePiecePhase, resultsDone());
         At(movePiecePhase, moveResultsPhase, nothingElseToDo());
         At(moveResultsPhase, initialize, nextRoundReady());
-        _stateMachine.SetState(initialize);
 
+        StartCoroutine(Setup(initialize));
         void At(IState from, IState to, Func<bool> condition) => _stateMachine.AddTransition(from, to, condition);
 
-        Func<bool> orderingThrowFinished() => () => GameManager.instance.throwController.IsThrowFinished() && orderingPhaseDone;
-        Func<bool> throwFinished() => () => GameManager.instance.throwController.IsThrowFinished() && throwPhaseDone;
-        Func<bool> resultsDone() => () => throwResultsPhaseDone;
-        Func<bool> orderNotDefined() => () => !GameManager.instance.PlayersSetAndOrdered() && initializePhaseDone;
-        Func<bool> orderDefined() => () => GameManager.instance.PlayersSetAndOrdered() && initializePhaseDone;
-        Func<bool> orderingDone() => () => GameManager.instance.PlayersSetAndOrdered() && orderingResultsPhaseDone;
-        Func<bool> nothingElseToDo() => () => GameManager.instance.RoundDone() && movePiecePhaseDone;
-        Func<bool> nextRoundReady() => () => GameManager.instance.NextRoundReady() && moveResultsPhaseDone;
+        Func<bool> orderingThrowFinished() => () => {
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.throwController.IsThrowFinished() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> throwFinished() => () => {
+
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.throwController.IsThrowFinished() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> resultsDone() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> orderNotDefined() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+                return !GameManager.instance.PlayersSetAndOrdered() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> orderDefined() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.PlayersSetAndOrdered() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> orderingDone() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.PlayersSetAndOrdered() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> nothingElseToDo() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+                return GameManager.instance.RoundDone() && GameManager.instance.AllPlayersStateDone();
+            else
+                return false;
+        };
+        Func<bool> nextRoundReady() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                return GameManager.instance.NextRoundReady() && GameManager.instance.AllPlayersStateDone();
+            } else
+            {
+                return false;
+            }
+        }; 
     }
 
     private void Update() => _stateMachine.Tick();
     private void FixedUpdate() => _stateMachine.FixedTick();
+    private IEnumerator Setup(IState initialState)
+    {
+
+        yield return new WaitForSeconds(0.5f);
+        Debug.Log($"JOINED STATUS {GameManager.instance?.AllPlayersJoined()}");
+        while (!GameManager.instance.AllPlayersJoined())
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
+        _stateMachine.SetState(initialState);
+    }
+
+    public void SetState(string state)
+    {
+        foreach (IState phase in phases)
+        {
+            if (phase.GetType().Name == state)
+            {
+                _stateMachine.SetState(phase);
+                break;
+            }
+        }
+    }
 }

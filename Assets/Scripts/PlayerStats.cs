@@ -7,7 +7,7 @@ public class PlayerStats
     [SerializeField]
     public int id;
     [SerializeField]
-    private float capturedZones = 0f;
+    public float capturedZones = 0f;
     [SerializeField]
     public float ladderPosition = 1;
     [SerializeField]
@@ -21,15 +21,15 @@ public class PlayerStats
     [SerializeField]
     public string nickName;
     [SerializeField]
-    public bool isPlayer = false;
-    [SerializeField]
     public bool moved = false;
     [SerializeField]
     public bool usedSkill = false;
     [SerializeField]
     public bool passed = false;
     [SerializeField]
-    public GameObject playableCharacter;
+    public bool currentStateFinished = false;
+    [SerializeField]
+    private GameObject playableCharacter;
     private int maxMoves;
     public event EventHandler<CapturedZoneArgs> CapturedZone;
     public float GetCapturedZones() => capturedZones;
@@ -48,9 +48,15 @@ public class PlayerStats
     }
     public void CaptureZone(LocationController location) 
     {
-        location.SetOwner(this);
-        maxMoves -= 1;
-        AddCapturedZones(1);
+        if (maxMoves >= 1)
+        {
+            maxMoves -= 1;
+            location.SetOwner(this);
+            AddCapturedZones(1);
+            if (maxMoves == 0){
+                passed = true;
+            }
+        } 
     }
     public void SetMaxMoves(int moves)
     {
@@ -64,5 +70,13 @@ public class PlayerStats
             NewCapturedZones = newCapturedZones;
         }
         public float NewCapturedZones { get; private set; }
+    }
+    public void SetPlayerGameObject(GameObject playerGO)
+    {
+        playableCharacter = playerGO;
+    }
+    public GameObject GetPlayerGameObject()
+    {
+        return playableCharacter;
     }
 }

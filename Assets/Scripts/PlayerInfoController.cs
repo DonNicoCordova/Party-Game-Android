@@ -7,14 +7,14 @@ public class PlayerInfoController : MonoBehaviour
     public TextMeshProUGUI nicknameText;
     public TextMeshProUGUI zonesCapturedText;
     public Image playerColor;
-    private PlayerStats associatedPlayer;
-    public void InitializeFromPlayer(PlayerStats playerStats)
+    private PlayerController associatedPlayer;
+    public void InitializeFromPlayer(PlayerController player)
     {
-        nicknameText.text = playerStats.nickName;
-        zonesCapturedText.text = playerStats.GetCapturedZones().ToString();
-        playerColor.material = playerStats.mainColor;
-        playerStats.CapturedZone += (sender, args) => UpdateCapturedZones(args.NewCapturedZones);
-        associatedPlayer = playerStats;
+        nicknameText.text = player.playerStats.nickName;
+        zonesCapturedText.text = player.playerStats.GetCapturedZones().ToString();
+        playerColor.material = player.playerStats.mainColor;
+        player.playerStats.CapturedZone += (sender, args) => UpdateCapturedZones(args.NewCapturedZones);
+        associatedPlayer = player;
     }
 
     public void UpdateCapturedZones(float amount)
@@ -24,6 +24,6 @@ public class PlayerInfoController : MonoBehaviour
 
     private void OnDestroy()
     {
-        associatedPlayer.CapturedZone -= (sender, args) => UpdateCapturedZones(args.NewCapturedZones);
+        associatedPlayer.playerStats.CapturedZone -= (sender, args) => UpdateCapturedZones(args.NewCapturedZones);
     }
 }

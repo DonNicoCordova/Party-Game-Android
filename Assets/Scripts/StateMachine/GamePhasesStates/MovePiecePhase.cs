@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using Photon.Pun;
 
 internal class MovePiecePhase : IState
 {
@@ -18,40 +19,39 @@ internal class MovePiecePhase : IState
     }
     public void Tick()
     {
-        //REDUCING MINIUM TIME OF PHASE
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
         if (stayTime == 0f)
         {
             GameSystem.instance.movePiecePhaseDone = true;
         }
-        PlayerStats actualPlayer = GameManager.instance.GetActualPlayer();
+        PlayerController actualPlayer = GameManager.instance.GetActualPlayer();
         if (actualPlayer != null){
-            Debug.Log($"ActualPlayer {actualPlayer.id}");
 
             turnTime -= Time.deltaTime;
             turnTime = Mathf.Clamp(turnTime, 0f, Mathf.Infinity);
-            Debug.Log($"TURN TIME LEFT: {turnTime}");
             if (turnTime == 0f)
             {
                 turnDone = true;
             }
 
-            if (actualPlayer.isPlayer && !GameManager.instance.joystick.activeSelf)
+            if (GameManager.instance.ActualPlayerIsMainPlayer() && !GameManager.instance.joystick.activeSelf)
             {
-                Debug.Log("ACTUAL PLAYER IS THE PLAYER | ACTIVATING JOYSTICK");
                 GameManager.instance.ShowMessage("Oh! eres tú, no te habia visto.");
                 GameManager.instance.EnableJoystick();
                 MovesIndicatorController movesController = GameManager.instance.throwText.GetComponentInParent<MovesIndicatorController>();
                 movesController.MoveToPlayer();
             }
-            if (actualPlayer.PlayerDone() || turnDone)
+            if (actualPlayer.playerStats.PlayerDone() || turnDone)
             {
-                if (actualPlayer.isPlayer)
+                GameManager.instance?.GetMainPlayer().SetStateDone();
+                if (GameManager.instance.ActualPlayerIsMainPlayer())
                 {
                     GameManager.instance.DisableJoystick();
                     MovesIndicatorController movesController = GameManager.instance.throwText.GetComponentInParent<MovesIndicatorController>();
                     movesController.MoveToScreen();
+                    actualPlayer.rig.velocity = Vector3.zero;
+                    actualPlayer.rig.angularVelocity = Vector3.zero;
                 }
                 GameManager.instance.GetNextPlayer();
                 turnTime = defaultTurnTime;
@@ -66,12 +66,18 @@ internal class MovePiecePhase : IState
     }
     public void OnEnter()
     {
-        PlayerStats actualPlayer = GameManager.instance.GetActualPlayer();
+        //reset state done
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
+            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+        }
+        GameManager.instance.ResetStateOnPlayers();
+        PlayerController actualPlayer = GameManager.instance.GetActualPlayer();
         if (GameSystem.instance.movePiecePhaseDone)
             GameSystem.instance.movePiecePhaseDone = false;
         if (actualPlayer == null)
             GameManager.instance.GetNextPlayer();
-        Debug.Log("ENTERED MOVEPIECE");
         GameManager.instance.ShowMessage("¡Hora de moverse!");
     }
 
@@ -81,6 +87,5 @@ internal class MovePiecePhase : IState
         if (GameSystem.instance.movePiecePhaseDone)
             GameSystem.instance.movePiecePhaseDone = false;
         GameManager.instance.DisableJoystick();
-        Debug.Log("EXITED MOVEPIECE");
     }
 }

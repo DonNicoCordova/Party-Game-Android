@@ -18,7 +18,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     private float sqrShakeDetectionThreshold;
     private float timeSinceLastShake;
     private Boolean throwFinished = false;
-
+    private Boolean throwDetected = false;
     private GameManager gameManager;
     private Vector2 prevPoint;
     private Vector2 newPoint;
@@ -47,6 +47,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     {
         if (!throwFinished && DicesReadyToPlay())
         {
+            throwDetected = true;
             foreach (DiceController die in gameManager.dicesInPlay)
             {
                 die.Throw(diceRotationAcceleration, shakeForceMultiplier);
@@ -76,6 +77,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
             if (Input.GetMouseButtonUp(0))
             {
                 DisableDicesAnimations();
+                throwDetected = true;
                 foreach (DiceController die in gameManager.dicesInPlay)
                 {
                     die.Throw(diceRotationAcceleration, shakeForceMultiplier);
@@ -85,7 +87,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     }
     public void CheckIfDicesStopped()
     {
-        bool tempValue = true;
+        bool tempValue = false;
         foreach (DiceController diceController in gameManager.dicesInPlay)
         {
             if (diceController.GetVelocity().sqrMagnitude <= 0.0006)
@@ -97,11 +99,12 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
             {
                 dicesStillTime = 1f;
             }
-
-            if (diceController.GetVelocity() != Vector3.zero && dicesStillTime != 0)
+            if ((diceController.GetVelocity() != Vector3.zero && dicesStillTime != 0) || !throwDetected)
             {
-                tempValue = false;
                 break;
+            } else
+            {
+                tempValue = true;
             }
         }
         allDiceStopped = tempValue;
@@ -175,5 +178,6 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     {
         throwFinished = false;
         actualThrow = null;
+        throwDetected = false;
     }
 }

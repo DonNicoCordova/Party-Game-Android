@@ -25,5 +25,6 @@ public class PlayersSelectController : MonoBehaviour
     public void AddPlayer() => actualPlayers = Mathf.Clamp(actualPlayers+1, 1, 8);
     public void SubstractPlayer() => actualPlayers = Mathf.Clamp(actualPlayers-1,1,8);
 
+    public int GetPlayers() => actualPlayers;
     void OnDisable() => PlayerPrefs.SetInt("players", actualPlayers);
 }

@@ -4,9 +4,9 @@
 public class SideStats
 {
     [SerializeField]
-    private Collider sideCollider = null;
+    public Collider sideCollider = null;
     [SerializeField]
-    private float value = 0f;
+    public float value = 0f;
     public Collider GetSideCollider()
     {
         return sideCollider;

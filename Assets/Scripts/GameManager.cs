@@ -4,8 +4,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
-public class GameManager : MonoBehaviour
+using Photon.Pun;
+using Photon.Realtime;
+public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager instance;
     public Cinemachine.CinemachineVirtualCamera virtualCamera;
@@ -29,14 +30,15 @@ public class GameManager : MonoBehaviour
     public Transform diceOnCameraPosition2;
 
     [Header("Players Configuration")]
-    public PlayerColor[] playerConfigs;
-    public GameObject playerPrefab;
-    public List<PlayerStats> players;
-    private PlayerStats mainPlayer;
+    public PlayerConfig[] playerConfigs;
+    public string playerPrefab;
+    public List<PlayerController> players;
+    private PlayerController mainPlayer;
+    [SerializeField]
     private List<Throw> roundThrows = new List<Throw>();
-    private Queue<PlayerStats> notActionTakenPlayers = new Queue<PlayerStats>();
-    private Queue<PlayerStats> actionTakenPlayers = new Queue<PlayerStats>();
-    private PlayerStats actualPlayer = null;
+    private Queue<PlayerController> notActionTakenPlayers = new Queue<PlayerController>();
+    private Queue<PlayerController> actionTakenPlayers = new Queue<PlayerController>();
+    private PlayerController actualPlayer = null;
     private int round = 0; 
     private int numberOfPlayers;
     private TextMeshProUGUI phaseText;
@@ -44,7 +46,11 @@ public class GameManager : MonoBehaviour
     private Boolean diceOnDisplay = false;
     private Boolean playersOrdered = false;
     private Boolean roundFinished = false;
-    void OnEnable() => numberOfPlayers = PlayerPrefs.GetInt("players");
+
+    private void Start()
+    {
+        this.photonView.RPC("ImInGame", RpcTarget.AllBuffered);
+    }
     private void Awake()
     {
         if (instance != null)
@@ -58,66 +64,42 @@ public class GameManager : MonoBehaviour
         phaseAnimator.gameObject.SetActive(false);
 
     }
-    public void CreatePlayers()
+    public void SetMainPlayer(PlayerController newPlayer)
     {
-        if (notActionTakenPlayers.Count == 0)
-        {
-            while (players.Count < numberOfPlayers)
-            {
-                PlayerStats playerStats = new PlayerStats();
-                playerStats.id = players.Count;
-                playerStats.nickName = $"Jugador {players.Count + 1}";
-                playerStats.mainColor = playerConfigs[players.Count].mainColor;
-                playerStats.orbColor = playerConfigs[players.Count].orbColor;
-                Transform waypoint = playerConfigs[players.Count].startingLocation.waypoint;
-                GameObject newCharacter = Instantiate<GameObject>(playerPrefab, waypoint.position, waypoint.rotation);
-                playerStats.playableCharacter = newCharacter;
-                PlayerGraficsController gfxController = newCharacter.GetComponentInChildren<PlayerGraficsController>();
-                gfxController.ChangeMaterial(playerConfigs[players.Count].mainColor);
-                CharacterMoveController moveController = playerStats.playableCharacter.GetComponent<CharacterMoveController>();
-                if (players.Count == 0)
-                {
-                    playerStats.isPlayer = true;
-                    mainPlayer = playerStats;
-                    virtualCamera.Follow = newCharacter.transform;
-                    virtualCamera.LookAt = newCharacter.transform;
-                    moveController.joystick = joystick.GetComponent<FloatingJoystick>();
-                }
-                moveController.player = playerStats;
-                players.Add(playerStats);
-            }
-        }
+        mainPlayer = newPlayer;
+    }
+    public void SpawnPlayer()
+    {
+        Transform waypoint = playerConfigs[PhotonNetwork.LocalPlayer.ActorNumber-1].startingLocation.waypoint;
+        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefab, waypoint.position, waypoint.rotation);
+        PlayerController characterScript = playerObj.GetComponent<PlayerController>();
+
+        //Initialize player
+        characterScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
 
     }
     public void OrderPlayers()
     {
-        //Creating throws for testing
-        foreach (PlayerStats playerStats in players)
-        {
-            if (!playerStats.isPlayer)
-            {
-                Throw newThrow = new Throw(playerStats);
-                roundThrows.Add(newThrow);
-            }
-        }
-        List<Throw> orderedThrows = roundThrows.OrderByDescending(o => o.GetValue()).ToList();
+        List<Throw> orderedThrows = roundThrows.OrderByDescending(o => o.throwValue).ToList();
         foreach (Throw playerThrow in orderedThrows)
         {
-            notActionTakenPlayers.Enqueue(playerThrow.player);
+            PlayerController throwPlayer = GetPlayer(playerThrow.playerId);
+
+            notActionTakenPlayers.Enqueue(throwPlayer);
         }
         playersOrdered = true;
 
-        playersLadder.Initialize(notActionTakenPlayers.ToArray());
+        playersLadder.Initialize();
     }
     public void StartNextRound() 
     { 
         while (actionTakenPlayers.Count > 0)
         {
-            PlayerStats playerStats = actionTakenPlayers.Dequeue();
-            playerStats.moved = false;
-            playerStats.usedSkill = false;
-            playerStats.passed = false;
-            notActionTakenPlayers.Enqueue(playerStats);
+            PlayerController player = actionTakenPlayers.Dequeue();
+            player.playerStats.moved = false;
+            player.playerStats.usedSkill = false;
+            player.playerStats.passed = false;
+            notActionTakenPlayers.Enqueue(player);
         }
         round++;
         roundFinished = false;
@@ -135,36 +117,46 @@ public class GameManager : MonoBehaviour
             if (actualPlayer != null)
             {
                 Debug.Log("CHANGING ACTUAL PLAYER");
-                Debug.Log($"ENQUEUING {actualPlayer.nickName} INTO ACTION TAKEN PLAYERS [{actionTakenPlayers.Count}]");
+                Debug.Log($"ENQUEUING {actualPlayer.photonPlayer.NickName} INTO ACTION TAKEN PLAYERS [{actionTakenPlayers.Count}]");
                 actionTakenPlayers.Enqueue(actualPlayer);
                 actualPlayer = null;
             }
             if(notActionTakenPlayers.Count != 0)
             {
                 actualPlayer = notActionTakenPlayers.Dequeue();
-                virtualCamera.Follow = actualPlayer.playableCharacter.transform;
-                virtualCamera.LookAt = actualPlayer.playableCharacter.transform;
+                virtualCamera.Follow = actualPlayer.transform;
+                virtualCamera.LookAt = actualPlayer.transform;
             }
         }
     }
-    public PlayerStats GetActualPlayer() => actualPlayer;
-    public PlayerStats GetMainPlayer() => mainPlayer;
+    public PlayerController GetActualPlayer() => actualPlayer;
+    public PlayerController GetMainPlayer() => mainPlayer;
+    public bool ActualPlayerIsMainPlayer() => mainPlayer == actualPlayer;
     public bool DiceOnDisplay() => diceOnDisplay;
-    public bool YourTurn() => diceOnDisplay && actualPlayer.isPlayer;
+    public bool YourTurn() => diceOnDisplay && ActualPlayerIsMainPlayer();
     public void DisableJoystick() => joystick.SetActive(false);
     public void EnableJoystick() => joystick.SetActive(true);
     public float GetRound() => round;
     public bool PlayersSetAndOrdered() => notActionTakenPlayers.Count == numberOfPlayers && playersOrdered;
     public bool RoundDone() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers && roundFinished;
     public bool NextRoundReady() => notActionTakenPlayers.Count == numberOfPlayers && actionTakenPlayers.Count == 0;
-    public void ShowMessage(string message) => StartCoroutine(processShowMessage(message));
+    
+    public void ShowMessage(string message)
+    {
+        StartCoroutine(processShowMessage(message));
+    }
     public void SetThrowText()
     {
-        throwText.text = mainPlayer.MovesLeft().ToString();
+        throwText.text = mainPlayer.playerStats.MovesLeft().ToString();
     }
-    public void AddThrow(Throw newThrow) => roundThrows.Add(newThrow);
-    public void PlayerPass() => actualPlayer.passed = true;
-    public void SetMainPlayerMoves(int moves) => mainPlayer.SetMaxMoves(moves);
+    [PunRPC]
+    private void AddThrow(string newThrow)
+    {
+        Throw throwObj = JsonUtility.FromJson<Throw>(newThrow);
+        roundThrows.Add(throwObj);
+    }
+    public void PlayerPass() => actualPlayer.playerStats.passed = true;
+    public void SetMainPlayerMoves(int moves) => mainPlayer.playerStats.SetMaxMoves(moves);
     private IEnumerator processShowMessage(string message)
     {
         phaseText.text = message;
@@ -178,5 +170,47 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         phaseText.text = "";
         phaseAnimator.gameObject.SetActive(false);
+    }
+    [PunRPC]
+    private void ImInGame()
+    {
+        numberOfPlayers++;
+
+        if (AllPlayersJoined())
+        {
+            SpawnPlayer();
+        }
+    }
+    public void ResetStateOnPlayers()
+    {
+        foreach (PlayerController player in players)
+        {
+            player.playerStats.currentStateFinished = false;
+        }
+    }
+    public bool AllPlayersStateDone()
+    {
+        Debug.Log($"Number of players {numberOfPlayers}, players list {players.Count}");
+        if (AllPlayersJoined())
+        {
+            foreach (PlayerController player in players)
+            {
+                if (!player.playerStats.currentStateFinished)
+                {
+                    return false;
+                }
+            }
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+    public PlayerController GetPlayer(int playerId) => players.First(x => x.playerStats.id == playerId);
+    public bool AllPlayersJoined() => numberOfPlayers == PhotonNetwork.PlayerList.Length;
+    [PunRPC]
+    public void SetCurrentState(string state)
+    {
+        GameSystem.instance.SetState(state);
     }
 }

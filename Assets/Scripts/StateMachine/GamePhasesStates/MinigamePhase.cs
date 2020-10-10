@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Photon.Pun;
 
 internal class MinigamePhase : IState
 {
@@ -15,6 +16,7 @@ internal class MinigamePhase : IState
         if (stayTime <= 0f)
         {
             GameSystem.instance.minigamePhaseDone = true;
+            GameManager.instance?.GetMainPlayer().SetStateDone();
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
@@ -23,6 +25,13 @@ internal class MinigamePhase : IState
     public void FixedTick() { }
     public void OnEnter()
     {
+        //reset state done
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
+            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+        }
+        GameManager.instance.ResetStateOnPlayers();
         if (GameSystem.instance.minigamePhaseDone)
             GameSystem.instance.minigamePhaseDone = false;
         Debug.Log("ENTERING MINIGAME");
@@ -35,5 +44,6 @@ internal class MinigamePhase : IState
         if (GameSystem.instance.minigamePhaseDone)
             GameSystem.instance.minigamePhaseDone = false;
         Debug.Log("EXITING MINIGAME");
+        
     }
 }

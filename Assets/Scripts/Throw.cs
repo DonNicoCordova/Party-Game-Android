@@ -5,27 +5,14 @@ using UnityEngine;
 public class Throw
 {
     [SerializeField]
-    public PlayerStats player;
+    public int playerId;
     [SerializeField]
     public string playerNickname;
     [SerializeField]
-    public List<SideStats> throwValues = new List<SideStats>();
+    public int throwValue = 0;
 
-    public Throw(PlayerStats throwPlayer)
+    public Throw(int newPlayerId)
     {
-        player = throwPlayer;
-    }
-    public int GetValue()
-    {
-        if (throwValues.Count == 0) 
-        {
-            return Random.Range(2, 12);
-        };
-        int output = 0;
-        foreach (SideStats stat in throwValues)
-        {
-            output += 7-(int)stat.GetValue();
-        }
-        return output;
+        playerId = newPlayerId;
     }
 }
