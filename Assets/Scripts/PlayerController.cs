@@ -7,11 +7,12 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     private CharacterController _characterController;
     [Header("Info")]
-    public Joystick joystick = null;
+    public FloatingJoystick joystick = null;
     public PlayerStats playerStats = null;
     public Rigidbody rig;
     public Player photonPlayer;
     public bool IsGrounded;
+    public Animator animator;
     private void OnTriggerEnter(Collider other)
     {
 
@@ -44,12 +45,15 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (photonView.IsMine)
         {
-            if (joystick != null)
+            if (joystick.gameObject.activeSelf)
             {
                 float horizontal = joystick.Horizontal;
                 float vertical = joystick.Vertical;
+                animator.SetFloat("Horizontal", horizontal);
+                animator.SetFloat("Vertical", vertical);
                 Vector3 direction = new Vector3(horizontal, 0, vertical);
                 Vector3 movement = transform.TransformDirection(direction) * _moveSpeed;
+                animator.SetFloat("Speed", movement.sqrMagnitude);
                 IsGrounded = _characterController.SimpleMove(movement);
             }
         }
