@@ -41,19 +41,22 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
     void Awake() => _characterController = GetComponent<CharacterController>();
+    void Update()
+    {
+        animator.SetFloat("Horizontal", rig.velocity.x);
+        animator.SetFloat("Vertical", rig.velocity.z);
+        animator.SetFloat("Speed", rig.velocity.magnitude);
+    }
     void FixedUpdate()
     {
         if (photonView.IsMine)
         {
             if (joystick.gameObject.activeSelf)
             {
-                float horizontal = joystick.Horizontal;
                 float vertical = joystick.Vertical;
-                animator.SetFloat("Horizontal", horizontal);
-                animator.SetFloat("Vertical", vertical);
+                float horizontal = joystick.Horizontal;
                 Vector3 direction = new Vector3(horizontal, 0, vertical);
                 Vector3 movement = transform.TransformDirection(direction) * _moveSpeed;
-                animator.SetFloat("Speed", movement.sqrMagnitude);
                 IsGrounded = _characterController.SimpleMove(movement);
             }
         }
@@ -99,6 +102,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public void SetStateDone()
     {
         Debug.Log($"Setting state done to {playerStats.id}");
+        GameManager.instance.photonView.RPC("SendMessage")
         playerStats.currentStateFinished = true;
     }
 

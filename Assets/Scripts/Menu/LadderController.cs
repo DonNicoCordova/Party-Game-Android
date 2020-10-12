@@ -8,7 +8,7 @@ using Photon.Pun;
 public class LadderController : MonoBehaviour
 {
     public GameObject playerInfoPrefab;
-
+    public Animator animator;
     public PlayerInfoContainer[] playerInfoContainers;
     public void Initialize()
     {
@@ -32,6 +32,19 @@ public class LadderController : MonoBehaviour
         //    PlayerInfoController controller = newInfoPrefab.GetComponent<PlayerInfoController>();
         //    controller.InitializeFromPlayer(playerStats);
         //}
+    }
+    
+    public void ToggleLadder()
+    {
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("LadderIn"))
+        {
+            animator.ResetTrigger("LadderIn");
+            animator.SetTrigger("LadderOut");
+        } else
+        {
+            animator.ResetTrigger("LadderOut");
+            animator.SetTrigger("LadderIn");
+        }
     }
     
 }

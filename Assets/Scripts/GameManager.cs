@@ -197,6 +197,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 if (!player.playerStats.currentStateFinished)
                 {
+                    Debug.Log($"PLAYER {player.name}: {player.playerStats.currentStateFinished}");
                     return false;
                 }
             }
@@ -212,5 +213,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void SetCurrentState(string state)
     {
         GameSystem.instance.SetState(state);
+    }
+    [PunRPC]
+    public void DebugMessage(string message, string player)
+    {
+        Debug.Log($"Player: {player} Message: {message}");
     }
 }

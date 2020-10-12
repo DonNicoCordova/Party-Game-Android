@@ -10,6 +10,7 @@ internal class MovePiecePhase : IState
     private float stayTime;
     private float turnTime;
     private bool turnDone = false;
+    private MovesIndicatorController movesIndicator;
     public MovePiecePhase(float minimumTime, float minimumTurnTime)
     {
         defaultTurnTime = minimumTurnTime;
@@ -39,8 +40,7 @@ internal class MovePiecePhase : IState
             {
                 GameManager.instance.ShowMessage("Oh! eres tú, no te habia visto.");
                 GameManager.instance.EnableJoystick();
-                MovesIndicatorController movesController = GameManager.instance.throwText.GetComponentInParent<MovesIndicatorController>();
-                movesController.MoveToPlayer();
+                movesIndicator.MoveToPlayer();
             }
             if (actualPlayer.playerStats.PlayerDone() || turnDone)
             {
@@ -48,8 +48,7 @@ internal class MovePiecePhase : IState
                 if (GameManager.instance.ActualPlayerIsMainPlayer())
                 {
                     GameManager.instance.DisableJoystick();
-                    MovesIndicatorController movesController = GameManager.instance.throwText.GetComponentInParent<MovesIndicatorController>();
-                    movesController.MoveToScreen();
+                    movesIndicator.MoveToScreen();
                     actualPlayer.rig.velocity = Vector3.zero;
                     actualPlayer.rig.angularVelocity = Vector3.zero;
                 }
@@ -79,6 +78,7 @@ internal class MovePiecePhase : IState
         if (actualPlayer == null)
             GameManager.instance.GetNextPlayer();
         GameManager.instance.ShowMessage("¡Hora de moverse!");
+        movesIndicator = GameManager.instance.throwText.GetComponentInParent<MovesIndicatorController>();
     }
 
     public void OnExit()

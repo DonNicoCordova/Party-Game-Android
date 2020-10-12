@@ -99,6 +99,8 @@ public class GameSystem : MonoBehaviour
         };
         Func<bool> orderingDone() => () =>
         {
+            Debug.Log("CHECKING IF ORDERING DONE");
+            Debug.Log($"PLAYERSSETANDORDERED(): {GameManager.instance.PlayersSetAndOrdered()} ALLPLAYERSSTATEDONE: {GameManager.instance.AllPlayersStateDone()}");
             if (PhotonNetwork.IsMasterClient)
                 return GameManager.instance.PlayersSetAndOrdered() && GameManager.instance.AllPlayersStateDone();
             else

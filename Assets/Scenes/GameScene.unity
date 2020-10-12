@@ -3881,6 +3881,10 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8387725520316076336, guid: 48a285db7764ff348a8c1bb5450702c7, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8503081120540362309, guid: 48a285db7764ff348a8c1bb5450702c7, type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
@@ -15972,6 +15976,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1608160574}
     m_Modifications:
+    - target: {fileID: 8170153791668043265, guid: 0d230cc8be529a542a08cb878ab14b18, type: 3}
+      propertyPath: deadZone
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 8170153791668043268, guid: 0d230cc8be529a542a08cb878ab14b18, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

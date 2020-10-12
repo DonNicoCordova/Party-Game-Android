@@ -48,6 +48,7 @@ public class PlayerStats
     }
     public void CaptureZone(LocationController location) 
     {
+        Debug.Log($"CAPTURING ZONE {location.name}");
         if (maxMoves >= 1)
         {
             maxMoves -= 1;
