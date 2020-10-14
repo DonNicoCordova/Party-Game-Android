@@ -102,7 +102,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public void SetStateDone()
     {
         Debug.Log($"Setting state done to {playerStats.id}");
-        GameManager.instance.photonView.RPC("SendMessage")
+        GameManager.instance.photonView.RPC("SendMessage",RpcTarget.MasterClient, "Setting state done to {playerStats.id}");
         playerStats.currentStateFinished = true;
     }
 
