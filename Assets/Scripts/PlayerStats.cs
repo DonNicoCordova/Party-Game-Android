@@ -29,6 +29,12 @@ public class PlayerStats
     [SerializeField]
     public bool currentStateFinished = false;
     [SerializeField]
+    public float actualSpeed;
+    [SerializeField]
+    public float horizontalDirection;
+    [SerializeField]
+    public float verticalDirection;
+    [SerializeField]
     private GameObject playableCharacter;
     private int maxMoves;
     public event EventHandler<CapturedZoneArgs> CapturedZone;
