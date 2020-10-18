@@ -137,7 +137,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void DisableJoystick() => joystick.SetActive(false);
     public void EnableJoystick() => joystick.SetActive(true);
     public float GetRound() => round;
-    public bool PlayersSetAndOrdered() => notActionTakenPlayers.Count == numberOfPlayers && playersOrdered;
+    public bool PlayersSetAndOrdered()
+    {
+        return notActionTakenPlayers.Count == numberOfPlayers && playersOrdered;
+    }
     public bool RoundDone() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers && roundFinished;
     public bool NextRoundReady() => notActionTakenPlayers.Count == numberOfPlayers && actionTakenPlayers.Count == 0;
     
@@ -152,6 +155,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void AddThrow(string newThrow)
     {
+        Debug.Log($"ADDING THROW: {newThrow}");
         Throw throwObj = JsonUtility.FromJson<Throw>(newThrow);
         roundThrows.Add(throwObj);
     }
@@ -190,14 +194,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     public bool AllPlayersStateDone()
     {
-        Debug.Log($"Number of players {numberOfPlayers}, players list {players.Count}");
         if (AllPlayersJoined())
         {
             foreach (PlayerController player in players)
             {
                 if (!player.playerStats.currentStateFinished)
                 {
-                    Debug.Log($"PLAYER {player.name}: {player.playerStats.currentStateFinished}");
                     return false;
                 }
             }

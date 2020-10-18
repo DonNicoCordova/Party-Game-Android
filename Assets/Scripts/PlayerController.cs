@@ -43,9 +43,12 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     void Awake() => _characterController = GetComponent<CharacterController>();
     void Update()
     {
-        animator.SetFloat("Horizontal", rig.velocity.x);
-        animator.SetFloat("Vertical", rig.velocity.z);
-        animator.SetFloat("Speed", rig.velocity.magnitude);
+        playerStats.actualSpeed = rig.velocity.magnitude;
+        playerStats.horizontalDirection = rig.velocity.x;
+        playerStats.verticalDirection = rig.velocity.z;
+        animator.SetFloat("Horizontal", playerStats.horizontalDirection);
+        animator.SetFloat("Vertical", playerStats.verticalDirection);
+        animator.SetFloat("Speed", playerStats.actualSpeed);
     }
     void FixedUpdate()
     {
@@ -72,7 +75,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         newPlayerStats.orbColor = GameManager.instance.playerConfigs[newPhotonPlayer.ActorNumber-1].orbColor;
         newPlayerStats.SetPlayerGameObject(this.gameObject);
 
-        Debug.Log($"CREATING NEW PLAYER WITH NICKNAME: {newPlayerStats.nickName} MAINCOLOR: {newPlayerStats.mainColor.name} ACTORNUMBER: {newPhotonPlayer.ActorNumber}");
         // change player color
         PlayerGraficsController gfxController = gameObject.GetComponentInChildren<PlayerGraficsController>();
         gfxController.ChangeMaterial(newPlayerStats.mainColor);
@@ -101,9 +103,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
     public void SetStateDone()
     {
-        Debug.Log($"Setting state done to {playerStats.id}");
-        GameManager.instance.photonView.RPC("SendMessage",RpcTarget.MasterClient, "Setting state done to {playerStats.id}");
-        playerStats.currentStateFinished = true;
+        if (!playerStats.currentStateFinished)
+        {
+            Debug.Log($"Setting state done to {playerStats.nickName}");
+            playerStats.currentStateFinished = true;
+        }
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -124,6 +128,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             playerStats.usedSkill = receivedPlayerStats.usedSkill;
             playerStats.passed = receivedPlayerStats.passed;
             playerStats.currentStateFinished = receivedPlayerStats.currentStateFinished;
+            playerStats.actualSpeed = receivedPlayerStats.actualSpeed;
+            playerStats.horizontalDirection = receivedPlayerStats.horizontalDirection;
+            playerStats.verticalDirection = receivedPlayerStats.verticalDirection;
 
         }
 

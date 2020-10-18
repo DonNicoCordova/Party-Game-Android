@@ -32,6 +32,7 @@ public class DiceCheckZoneController : MonoBehaviour
             if (gameManager.throwController.DicesStopped() && sideColliders.Count == 2)
             {
                 Throw actualThrow = new Throw(gameManager.GetMainPlayer().playerStats.id);
+                actualThrow.playerNickname = gameManager.GetMainPlayer().photonPlayer.NickName;
                 SideStats[] sideStats = new SideStats[2];
                 var i = 0;
                 foreach(Collider collider in sideColliders)

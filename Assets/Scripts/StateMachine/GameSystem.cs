@@ -34,11 +34,11 @@ public class GameSystem : MonoBehaviour
 
         var initialize = new Initialize(3f);
         phases.Add(initialize);
-        var orderingPhase = new OrderDecidingPhase(3f);
+        var orderingPhase = new OrderDecidingPhase(15f);
         phases.Add(orderingPhase);
         var orderingResultPhase = new OrderResultsPhase(3f);
         phases.Add(orderingResultPhase);
-        var throwPhase = new ThrowPhase(3f);
+        var throwPhase = new ThrowPhase(15f);
         phases.Add(throwPhase);
         var throwResultsPhase = new ThrowResultsPhase(3f);
         phases.Add(throwResultsPhase);
