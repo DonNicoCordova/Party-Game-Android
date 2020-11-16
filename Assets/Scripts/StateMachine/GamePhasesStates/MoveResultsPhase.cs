@@ -16,12 +16,17 @@ internal class MoveResultsPhase : IState
     {
         if (stayTime <= 0f)
         {
-            GameSystem.instance.moveResultsPhaseDone = true;
-            GameManager.instance?.GetMainPlayer().SetStateDone();
+            GameSystem.instance.moveResultsPhaseTimerDone = true; 
+            PlayerController player = GameManager.instance?.GetMainPlayer();
+            if (player)
+            {
+                GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+            }
 
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void FixedTick() { }
@@ -29,23 +34,26 @@ internal class MoveResultsPhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
             GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
+        GameManager.instance.ResetPlayers();
         GameManager.instance.ResetStateOnPlayers();
-        if (GameSystem.instance.moveResultsPhaseDone)
-            GameSystem.instance.moveResultsPhaseDone = false;
+        if (GameSystem.instance.moveResultsPhaseTimerDone)
+            GameSystem.instance.moveResultsPhaseTimerDone = false;
         Debug.Log("ENTERED MOVERESULTSPHASE");
         GameManager.instance.ShowMessage("Este mensaje da risa... creo");
-        GameManager.instance.StartNextRound();
+        GameManager.instance.timerBar.SetMaxTime(defaultStayTime);
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void OnExit()
     {
+        GameManager.instance.DisableJoystick();
         stayTime = defaultStayTime;
-        if (GameSystem.instance.moveResultsPhaseDone)
-            GameSystem.instance.moveResultsPhaseDone = false;
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        if (GameSystem.instance.moveResultsPhaseTimerDone)
+            GameSystem.instance.moveResultsPhaseTimerDone = false;
         Debug.Log("EXITED MOVERESULTSPHASE");
     }
 }

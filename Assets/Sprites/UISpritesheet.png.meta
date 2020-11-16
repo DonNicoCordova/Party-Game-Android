@@ -11,6 +11,9 @@ TextureImporter:
   - first:
       213: -4049329702819686777
     second: PlayerIcon
+  - first:
+      213: 3333253805925593228
+    second: ActualPlayerIndicator
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -118,7 +121,7 @@ TextureImporter:
         width: 392
         height: 184
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -139,7 +142,7 @@ TextureImporter:
         width: 270
         height: 255
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -160,7 +163,7 @@ TextureImporter:
         width: 94
         height: 94
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -168,6 +171,27 @@ TextureImporter:
       bones: []
       spriteID: 7869efce614edc7c0800000000000000
       internalID: -4049329702819686777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ActualPlayerIndicator
+      rect:
+        serializedVersion: 2
+        x: 903
+        y: 224
+        width: 78
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c80f9681da8124e20800000000000000
+      internalID: 3333253805925593228
       vertices: []
       indices: 
       edges: []

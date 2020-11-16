@@ -7,15 +7,16 @@ using System.Collections.Generic;
 public class GameSystem : MonoBehaviour
 {
     public static GameSystem instance;
-    public Boolean initializePhaseDone = false;
-    public Boolean orderingPhaseDone = false;
-    public Boolean orderingResultsPhaseDone = false;
-    public Boolean throwPhaseDone = false;
-    public Boolean throwResultsPhaseDone = false;
-    public Boolean movePiecePhaseDone = false;
-    public Boolean moveResultsPhaseDone = false;
-    public Boolean minigamePhaseDone = false;
-    public Boolean finalResultsPhaseDone = false;
+    public Boolean initializePhaseTimerDone = false;
+    public Boolean orderingPhaseTimerDone = false;
+    public Boolean orderingResultsPhaseTimerDone = false;
+    public Boolean throwPhaseTimerDone = false;
+    public Boolean throwResultsPhaseTimerDone = false;
+    public Boolean movePiecePhaseTimerDone = false;
+    public Boolean moveResultsPhaseTimerDone = false;
+    public Boolean minigamePhaseTimerDone = false;
+    public Boolean finalResultsPhaseTimerDone = false;
+    public Boolean gameOverPhaseTimerDone = false;
     private StateMachine _stateMachine;
     private GameManager _gameManager;
     private List<IState> phases = new List<IState>();
@@ -42,7 +43,7 @@ public class GameSystem : MonoBehaviour
         phases.Add(throwPhase);
         var throwResultsPhase = new ThrowResultsPhase(3f);
         phases.Add(throwResultsPhase);
-        var movePiecePhase = new MovePiecePhase(3f, 30f);
+        var movePiecePhase = new MovePiecePhase(3f, 60f);
         phases.Add(movePiecePhase);
         var moveResultsPhase = new MoveResultsPhase(3f);
         phases.Add(moveResultsPhase);
@@ -50,6 +51,8 @@ public class GameSystem : MonoBehaviour
         phases.Add(minigamePhase);
         var finalResultsPhase = new FinalResultsPhase(3f);
         phases.Add(finalResultsPhase);
+        var gameOverPhase = new GameOverPhase(3f);
+        phases.Add(gameOverPhase);
 
         At(initialize, orderingPhase, orderNotDefined());
         At(initialize, throwPhase, orderDefined());
@@ -58,6 +61,7 @@ public class GameSystem : MonoBehaviour
         At(throwPhase, throwResultsPhase, throwFinished());
         At(throwResultsPhase, movePiecePhase, resultsDone());
         At(movePiecePhase, moveResultsPhase, nothingElseToDo());
+        At(moveResultsPhase, gameOverPhase, finalRoundFinished());
         At(moveResultsPhase, initialize, nextRoundReady());
 
         StartCoroutine(Setup(initialize));
@@ -65,14 +69,14 @@ public class GameSystem : MonoBehaviour
 
         Func<bool> orderingThrowFinished() => () => {
             if (PhotonNetwork.IsMasterClient)
-                return GameManager.instance.throwController.IsThrowFinished() && GameManager.instance.AllPlayersStateDone();
+                return GameManager.instance.AllPlayersThrown() && GameManager.instance.AllPlayersStateDone();
             else
                 return false;
         };
         Func<bool> throwFinished() => () => {
 
             if (PhotonNetwork.IsMasterClient)
-                return GameManager.instance.throwController.IsThrowFinished() && GameManager.instance.AllPlayersStateDone();
+                return GameManager.instance.AllPlayersThrown() && GameManager.instance.AllPlayersStateDone();
             else
                 return false;
         };
@@ -99,8 +103,6 @@ public class GameSystem : MonoBehaviour
         };
         Func<bool> orderingDone() => () =>
         {
-            Debug.Log("CHECKING IF ORDERING DONE");
-            Debug.Log($"PLAYERSSETANDORDERED(): {GameManager.instance.PlayersSetAndOrdered()} ALLPLAYERSSTATEDONE: {GameManager.instance.AllPlayersStateDone()}");
             if (PhotonNetwork.IsMasterClient)
                 return GameManager.instance.PlayersSetAndOrdered() && GameManager.instance.AllPlayersStateDone();
             else
@@ -122,7 +124,18 @@ public class GameSystem : MonoBehaviour
             {
                 return false;
             }
-        }; 
+        };
+        Func<bool> finalRoundFinished() => () =>
+        {
+            Debug.LogError($"NextRoundReady: {GameManager.instance.NextRoundReady()} AllPlayersStateDone: {GameManager.instance.AllPlayersStateDone()} Actual Round: {GameManager.instance.GetRound()} == Max Round: {GameManager.instance.maxRounds}");
+            if (PhotonNetwork.IsMasterClient)
+            {
+                return GameManager.instance.NextRoundReady() && GameManager.instance.AllPlayersStateDone() && GameManager.instance.GetRound() == GameManager.instance.maxRounds;
+            } else
+            {
+                return false;
+            }
+        };
     }
 
     private void Update() => _stateMachine.Tick();
@@ -131,7 +144,6 @@ public class GameSystem : MonoBehaviour
     {
 
         yield return new WaitForSeconds(0.5f);
-        Debug.Log($"JOINED STATUS {GameManager.instance?.AllPlayersJoined()}");
         while (!GameManager.instance.AllPlayersJoined())
         {
             yield return new WaitForSeconds(0.5f);

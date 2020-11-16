@@ -88,23 +88,26 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     public void CheckIfDicesStopped()
     {
         bool tempValue = false;
-        foreach (DiceController diceController in gameManager.dicesInPlay)
+        if (throwDetected)
         {
-            if (diceController.GetVelocity().sqrMagnitude <= 0.0006)
+            foreach (DiceController diceController in gameManager.dicesInPlay)
             {
-                dicesStillTime -= Time.deltaTime;
-                dicesStillTime = Mathf.Clamp(dicesStillTime, 0f, Mathf.Infinity);
-            }
-            else
-            {
-                dicesStillTime = 1f;
-            }
-            if ((diceController.GetVelocity() != Vector3.zero && dicesStillTime != 0) || !throwDetected)
-            {
-                break;
-            } else
-            {
-                tempValue = true;
+                if (diceController.GetVelocity().sqrMagnitude <= 0.0006)
+                {
+                    dicesStillTime -= Time.deltaTime;
+                    dicesStillTime = Mathf.Clamp(dicesStillTime, 0f, Mathf.Infinity);
+                }
+                else
+                {
+                    dicesStillTime = 1f;
+                }
+                if ((diceController.GetVelocity() != Vector3.zero && dicesStillTime != 0))
+                {
+                    break;
+                } else
+                {
+                    tempValue = true;
+                }
             }
         }
         allDiceStopped = tempValue;

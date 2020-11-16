@@ -1,28 +1,30 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
-public class LocationController : MonoBehaviour
+using Photon.Pun;
+public class LocationController : MonoBehaviourPunCallbacks
 {
     public Transform waypoint;
     public MeshRenderer locationDome;
     public Collider detectionCollider = null;
-    private PlayerStats owner = null;
-    private List<PlayerStats> playersOnTop = new List<PlayerStats>();
+    private PlayerController owner = null;
+    private List<PlayerController> playersOnTop = new List<PlayerController>();
     public void ChangeColor(Material newMaterial)
     {
         locationDome.material = newMaterial;
     }
-    public void SetOwner(PlayerStats newOwner)
+    [PunRPC]
+    public void SetOwner(int newOwnerId)
     {
         if (owner != null)
         {
-            owner.ReduceCapturedZones(1);
+            owner.playerStats.RemoveCapturedZones(this);
         }
+        PlayerController newOwner = GameManager.instance.GetPlayer(newOwnerId);
         owner = newOwner;
-        newOwner.AddCapturedZones(1);
-        ChangeColor(newOwner.orbColor);
+        newOwner.playerStats.AddCapturedZone(this);
+        ChangeColor(newOwner.playerStats.orbColor);
     }
-    public PlayerStats GetOwner()
+    public PlayerController GetOwner()
     {
         return owner;
     }
@@ -34,16 +36,16 @@ public class LocationController : MonoBehaviour
     {
         detectionCollider.enabled = true;
     }
-    public void AddPlayer(PlayerStats newPlayer)
+    public void AddPlayer(PlayerController newPlayer)
     {
         playersOnTop.Add(newPlayer);
     }
-    public void RemovePlayer(PlayerStats newPlayer)
+    public void RemovePlayer(PlayerController newPlayer)
     {
         if (playersOnTop.Contains(newPlayer))
             playersOnTop.Remove(newPlayer);
     }
-    public bool CheckIfPlayerOnTop(PlayerStats newPlayer)
+    public bool CheckIfPlayerOnTop(PlayerController newPlayer)
     {
         return playersOnTop.Contains(newPlayer);
     }

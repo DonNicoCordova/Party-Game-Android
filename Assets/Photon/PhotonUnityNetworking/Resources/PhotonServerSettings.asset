@@ -48,6 +48,11 @@ MonoBehaviour:
   - SetCurrentState
   - SetNexttState
   - DebugMessage
+  - SetOwner
+  - GetNextPlayer
+  - UpdatePlayersPositions
+  - SetPlayerPlace
+  - UpdateLadderInfo
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

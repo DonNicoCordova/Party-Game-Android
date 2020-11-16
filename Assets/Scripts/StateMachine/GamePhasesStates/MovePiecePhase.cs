@@ -24,13 +24,15 @@ internal class MovePiecePhase : IState
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
         if (stayTime == 0f)
         {
-            GameSystem.instance.movePiecePhaseDone = true;
+            GameSystem.instance.movePiecePhaseTimerDone = true;
         }
+        //Only mainClient can rotate over players and only informs the other clients
         PlayerController actualPlayer = GameManager.instance.GetActualPlayer();
-        if (actualPlayer != null){
-
+        if (actualPlayer != null)
+        {
             turnTime -= Time.deltaTime;
             turnTime = Mathf.Clamp(turnTime, 0f, Mathf.Infinity);
+            GameManager.instance.timerBar.SetTimeLeft(turnTime);
             if (turnTime == 0f)
             {
                 turnDone = true;
@@ -44,20 +46,27 @@ internal class MovePiecePhase : IState
             }
             if (actualPlayer.playerStats.PlayerDone() || turnDone)
             {
-                GameManager.instance?.GetMainPlayer().SetStateDone();
                 if (GameManager.instance.ActualPlayerIsMainPlayer())
                 {
-                    GameManager.instance.DisableJoystick();
+                    PlayerController player = GameManager.instance?.GetMainPlayer();
+                    if (player)
+                    {
+                        GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                    }
                     movesIndicator.MoveToScreen();
                     actualPlayer.rig.velocity = Vector3.zero;
                     actualPlayer.rig.angularVelocity = Vector3.zero;
                 }
-                GameManager.instance.GetNextPlayer();
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    GameManager.instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
+                }
                 turnTime = defaultTurnTime;
             }
-        } else
+        }
+        else if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.instance.GetNextPlayer();
+            GameManager.instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
         }
     }
 
@@ -68,24 +77,25 @@ internal class MovePiecePhase : IState
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
             GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         GameManager.instance.ResetStateOnPlayers();
         PlayerController actualPlayer = GameManager.instance.GetActualPlayer();
-        if (GameSystem.instance.movePiecePhaseDone)
-            GameSystem.instance.movePiecePhaseDone = false;
-        if (actualPlayer == null)
-            GameManager.instance.GetNextPlayer();
+        if (GameSystem.instance.movePiecePhaseTimerDone)
+            GameSystem.instance.movePiecePhaseTimerDone = false;
+        if (actualPlayer == null && PhotonNetwork.IsMasterClient)
+                GameManager.instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
         GameManager.instance.ShowMessage("¡Hora de moverse!");
         movesIndicator = GameManager.instance.throwText.GetComponentInParent<MovesIndicatorController>();
+        turnTime = defaultTurnTime;
+        GameManager.instance.timerBar.SetMaxTime(defaultTurnTime);
+        GameManager.instance.timerBar.SetTimeLeft(turnTime);
     }
 
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        if (GameSystem.instance.movePiecePhaseDone)
-            GameSystem.instance.movePiecePhaseDone = false;
-        GameManager.instance.DisableJoystick();
+        if (GameSystem.instance.movePiecePhaseTimerDone)
+            GameSystem.instance.movePiecePhaseTimerDone = false;
     }
 }

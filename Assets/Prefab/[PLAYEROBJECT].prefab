@@ -314,8 +314,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1003760395
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: -5287584587367298933, guid: 17ac53bf5144d78469632273b8a81860, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -428,7 +428,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 10
   joystick: {fileID: 0}
-  player:
+  playerStats:
     id: 0
     capturedZones: 0
     ladderPosition: 1
@@ -437,13 +437,17 @@ MonoBehaviour:
     money: 0
     mana: 20
     nickName: 
-    isPlayer: 0
     moved: 0
     usedSkill: 0
     passed: 0
+    currentStateFinished: 0
+    actualSpeed: 0
+    horizontalDirection: 0
+    verticalDirection: 0
     playableCharacter: {fileID: 0}
   rig: {fileID: 0}
   IsGrounded: 0
+  animator: {fileID: 0}
 --- !u!114 &454481483443336894
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463,6 +467,7 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   ObservedComponents:
+  - {fileID: -3790436623520627567}
   - {fileID: 4175150170464864173}
   - {fileID: 6824373375606420952}
   viewIdField: 0

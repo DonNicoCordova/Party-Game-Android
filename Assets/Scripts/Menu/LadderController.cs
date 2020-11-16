@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using Photon.Pun;
 
-public class LadderController : MonoBehaviour
+public class LadderController : MonoBehaviourPunCallbacks
 {
     public GameObject playerInfoPrefab;
     public Animator animator;
@@ -15,11 +15,12 @@ public class LadderController : MonoBehaviour
         for(int i = 0; i < playerInfoContainers.Length; ++i)
         {
             PlayerInfoContainer container = playerInfoContainers[i];
-            if (i < PhotonNetwork.PlayerList.Length)
+            if (i < GameManager.instance.notActionTakenPlayers.Count)
             {
                 container.obj.SetActive(true);
-                PlayerController controller = GameManager.instance.GetPlayer(PhotonNetwork.PlayerList[i].ActorNumber);
+                PlayerController controller = GameManager.instance.notActionTakenPlayers.Dequeue();
                 container.InitializeFromPlayer(controller);
+                GameManager.instance.notActionTakenPlayers.Enqueue(controller);
             } else
             {
                 container.obj.SetActive(false);
@@ -33,7 +34,18 @@ public class LadderController : MonoBehaviour
         //    controller.InitializeFromPlayer(playerStats);
         //}
     }
-    
+    [PunRPC]
+    public void UpdateLadderInfo()
+    {
+        foreach(PlayerInfoContainer container in playerInfoContainers)
+        {
+            if (container.obj.activeSelf)
+            {
+                container.UpdatePlayerPlace();
+                container.UpdateIndicator();
+            }
+        }
+    }
     public void ToggleLadder()
     {
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("LadderIn"))
@@ -55,12 +67,14 @@ public class PlayerInfoContainer
     public GameObject obj;
     public TextMeshProUGUI nicknameText;
     public TextMeshProUGUI zonesCapturedText;
+    public TextMeshProUGUI playerPlaceText;
+    public Image playingIndicator;
     public Image playerColor;
     private PlayerController associatedPlayer;
     public void InitializeFromPlayer(PlayerController player)
     {
         nicknameText.text = player.playerStats.nickName;
-        zonesCapturedText.text = player.playerStats.capturedZones.ToString();
+        zonesCapturedText.text = player.playerStats.capturedZones.Count.ToString();
         playerColor.material = player.playerStats.mainColor;
         player.playerStats.CapturedZone += (sender, args) => UpdateCapturedZones();
         associatedPlayer = player;
@@ -68,9 +82,23 @@ public class PlayerInfoContainer
 
     public void UpdateCapturedZones()
     {
-        zonesCapturedText.text = associatedPlayer.playerStats.capturedZones.ToString();
+        zonesCapturedText.text = associatedPlayer.playerStats.capturedZones.Count.ToString();
+        GameManager.instance.SetPlayersPlaces();
     }
-
+    public void UpdatePlayerPlace()
+    {
+        playerPlaceText.text = associatedPlayer.playerStats.ladderPosition.ToString();
+    }
+    public void UpdateIndicator()
+    {
+        if (GameManager.instance.GetActualPlayer() == associatedPlayer)
+        {
+            playingIndicator.gameObject.SetActive(true);
+        } else
+        {
+            playingIndicator.gameObject.SetActive(false);
+        }
+    }
     private void OnDestroy()
     {
         associatedPlayer.playerStats.CapturedZone -= (sender, args) => UpdateCapturedZones();
