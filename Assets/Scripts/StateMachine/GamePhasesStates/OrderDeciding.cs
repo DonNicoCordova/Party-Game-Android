@@ -17,11 +17,12 @@ internal class OrderDecidingPhase : IState
 
         if (stayTime <= 0f)
         {
-            GameSystem.instance.orderingPhaseDone = true;
+            GameSystem.instance.orderingPhaseTimerDone = true;
 
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void FixedTick()
@@ -29,30 +30,37 @@ internal class OrderDecidingPhase : IState
         GameManager.instance.throwController?.CheckIfDicesStopped();
         if (GameManager.instance.throwController.DicesStopped())
         {
-            GameManager.instance?.GetMainPlayer().SetStateDone();
+            PlayerController player = GameManager.instance?.GetMainPlayer();
+            if (player)
+            {
+                GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+            }
         }
     }
     public void OnEnter()
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
             GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
 
         GameManager.instance.ResetStateOnPlayers();
-        if (GameSystem.instance.orderingPhaseDone)
-            GameSystem.instance.orderingPhaseDone = false;
+        if (GameSystem.instance.orderingPhaseTimerDone)
+            GameSystem.instance.orderingPhaseTimerDone = false;
         Debug.Log("ENTERING ORDERING");
         GameManager.instance.ShowMessage("Decidamos el orden de juego");
+
+        GameManager.instance.timerBar.SetMaxTime(defaultStayTime);
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        if (GameSystem.instance.orderingPhaseDone)
-            GameSystem.instance.orderingPhaseDone = false;
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        if (GameSystem.instance.orderingPhaseTimerDone)
+            GameSystem.instance.orderingPhaseTimerDone = false;
         GameManager.instance.throwController?.AnimateFinishedThrow();
         Debug.Log("FINISHED ORDERING");
     }

@@ -15,11 +15,16 @@ internal class MinigamePhase : IState
     {
         if (stayTime <= 0f)
         {
-            GameSystem.instance.minigamePhaseDone = true;
-            GameManager.instance?.GetMainPlayer().SetStateDone();
+            GameSystem.instance.minigamePhaseTimerDone = true;
+            PlayerController player = GameManager.instance?.GetMainPlayer();
+            if (player)
+            {
+                GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+            }
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void FixedTick() { }
@@ -28,21 +33,24 @@ internal class MinigamePhase : IState
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
             GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         GameManager.instance.ResetStateOnPlayers();
-        if (GameSystem.instance.minigamePhaseDone)
-            GameSystem.instance.minigamePhaseDone = false;
+        if (GameSystem.instance.minigamePhaseTimerDone)
+            GameSystem.instance.minigamePhaseTimerDone = false;
         Debug.Log("ENTERING MINIGAME");
         GameManager.instance.ShowMessage("Ahora deberia estar un juego");
+
+        GameManager.instance.timerBar.SetMaxTime(defaultStayTime);
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        if (GameSystem.instance.minigamePhaseDone)
-            GameSystem.instance.minigamePhaseDone = false;
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        if (GameSystem.instance.minigamePhaseTimerDone)
+            GameSystem.instance.minigamePhaseTimerDone = false;
         Debug.Log("EXITING MINIGAME");
         
     }

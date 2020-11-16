@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Color32 normalTextColor;
     public LadderController playersLadder;
     public GameObject joystick;
+    public TimerBar timerBar;
+    public GameOverController gameOverUI;
 
     [Header("Dice Locations")]
     public float lerpTime = 5.0f;
@@ -33,13 +35,18 @@ public class GameManager : MonoBehaviourPunCallbacks
     public PlayerConfig[] playerConfigs;
     public string playerPrefab;
     public List<PlayerController> players;
+
+    [Header("Game Configuration")]
+    public int maxRounds;
+
+    public Queue<PlayerController> notActionTakenPlayers { get; private set; } = new Queue<PlayerController>();
+    public Queue<PlayerController> actionTakenPlayers { get; private set; } = new Queue<PlayerController>();
+
     private PlayerController mainPlayer;
     [SerializeField]
     private List<Throw> roundThrows = new List<Throw>();
-    private Queue<PlayerController> notActionTakenPlayers = new Queue<PlayerController>();
-    private Queue<PlayerController> actionTakenPlayers = new Queue<PlayerController>();
     private PlayerController actualPlayer = null;
-    private int round = 0; 
+    private int round = -1; 
     private int numberOfPlayers;
     private TextMeshProUGUI phaseText;
     private Animator phaseAnimator;
@@ -70,21 +77,21 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     public void SpawnPlayer()
     {
-        Transform waypoint = playerConfigs[PhotonNetwork.LocalPlayer.ActorNumber-1].startingLocation.waypoint;
+        LocationController playerSpawn = playerConfigs[PhotonNetwork.LocalPlayer.ActorNumber - 1].startingLocation;
+        Transform waypoint = playerSpawn.waypoint;
         GameObject playerObj = PhotonNetwork.Instantiate(playerPrefab, waypoint.position, waypoint.rotation);
         PlayerController characterScript = playerObj.GetComponent<PlayerController>();
-
-        //Initialize player
         characterScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
+        playerSpawn.photonView.RPC("SetOwner", RpcTarget.AllBuffered, characterScript.playerStats.id);
+        //Initialize player
 
     }
     public void OrderPlayers()
     {
-        List<Throw> orderedThrows = roundThrows.OrderByDescending(o => o.throwValue).ToList();
+        List<Throw> orderedThrows = roundThrows.OrderBy(o => o.throwValue).ToList();
         foreach (Throw playerThrow in orderedThrows)
         {
             PlayerController throwPlayer = GetPlayer(playerThrow.playerId);
-
             notActionTakenPlayers.Enqueue(throwPlayer);
         }
         playersOrdered = true;
@@ -93,22 +100,16 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     public void StartNextRound() 
     { 
-        while (actionTakenPlayers.Count > 0)
-        {
-            PlayerController player = actionTakenPlayers.Dequeue();
-            player.playerStats.moved = false;
-            player.playerStats.usedSkill = false;
-            player.playerStats.passed = false;
-            notActionTakenPlayers.Enqueue(player);
-        }
+        
+        roundThrows.Clear();
         round++;
         roundFinished = false;
     }
+    [PunRPC]
     public void GetNextPlayer()
     {
         if (notActionTakenPlayers.Count == 0 && actualPlayer == null)
         {
-            Debug.Log("CANT GET ANOTHER PLAYER. ROUND FINISHED");
             actualPlayer = null;
             roundFinished = true;
         }
@@ -116,14 +117,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             if (actualPlayer != null)
             {
-                Debug.Log("CHANGING ACTUAL PLAYER");
-                Debug.Log($"ENQUEUING {actualPlayer.photonPlayer.NickName} INTO ACTION TAKEN PLAYERS [{actionTakenPlayers.Count}]");
                 actionTakenPlayers.Enqueue(actualPlayer);
                 actualPlayer = null;
             }
             if(notActionTakenPlayers.Count != 0)
             {
                 actualPlayer = notActionTakenPlayers.Dequeue();
+                playersLadder.UpdateLadderInfo();
                 virtualCamera.Follow = actualPlayer.transform;
                 virtualCamera.LookAt = actualPlayer.transform;
             }
@@ -134,7 +134,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public bool ActualPlayerIsMainPlayer() => mainPlayer == actualPlayer;
     public bool DiceOnDisplay() => diceOnDisplay;
     public bool YourTurn() => diceOnDisplay && ActualPlayerIsMainPlayer();
-    public void DisableJoystick() => joystick.SetActive(false);
+    public void DisableJoystick()
+    {
+        joystick.SetActive(false);
+    }
     public void EnableJoystick() => joystick.SetActive(true);
     public float GetRound() => round;
     public bool PlayersSetAndOrdered()
@@ -143,7 +146,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     public bool RoundDone() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers && roundFinished;
     public bool NextRoundReady() => notActionTakenPlayers.Count == numberOfPlayers && actionTakenPlayers.Count == 0;
-    
     public void ShowMessage(string message)
     {
         StartCoroutine(processShowMessage(message));
@@ -155,12 +157,21 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void AddThrow(string newThrow)
     {
-        Debug.Log($"ADDING THROW: {newThrow}");
         Throw throwObj = JsonUtility.FromJson<Throw>(newThrow);
         roundThrows.Add(throwObj);
     }
-    public void PlayerPass() => actualPlayer.playerStats.passed = true;
-    public void SetMainPlayerMoves(int moves) => mainPlayer.playerStats.SetMaxMoves(moves);
+    public void PlayerPass()
+    {
+
+        if (this.photonView.IsMine)
+        {
+            actualPlayer.playerStats.passed = true;
+        }
+    }
+    public void SetMainPlayerMoves(int moves)
+    {
+        mainPlayer.playerStats.SetMovesLeft(moves);
+    }
     private IEnumerator processShowMessage(string message)
     {
         phaseText.text = message;
@@ -221,4 +232,46 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         Debug.Log($"Player: {player} Message: {message}");
     }
+    [PunRPC]
+    public void SetStateDone(int playerId)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PlayerController player = GetPlayer(playerId);
+            if (!player.playerStats.currentStateFinished)
+            {
+                player.playerStats.currentStateFinished = true;
+            }
+        }
+    }
+    public bool AllPlayersThrown()
+    {
+        return roundThrows.Count == players.Count;
+    }
+    public void ClearThrows()
+    {
+        roundThrows.Clear();
+    }
+    public void SetPlayersPlaces()
+    {
+        var orderedPlayers = players.OrderByDescending(player => player.playerStats.capturedZones.Count).ToList();
+        for (int i = 0; i < orderedPlayers.Count; i++)
+        {
+            orderedPlayers[i].photonView.RPC("SetPlayerPlace", RpcTarget.All, i+1);
+        }
+        playersLadder.photonView.RPC("UpdateLadderInfo", RpcTarget.All);
+    }
+    public void FinishGame()
+    {
+        gameOverUI.Initialize();
+    }
+    public void ResetPlayers()
+    {
+        while (actionTakenPlayers.Count > 0)
+        {
+            PlayerController player = actionTakenPlayers.Dequeue();
+            player.ResetForNewRound();
+            notActionTakenPlayers.Enqueue(player);
+        }
+    } 
 }

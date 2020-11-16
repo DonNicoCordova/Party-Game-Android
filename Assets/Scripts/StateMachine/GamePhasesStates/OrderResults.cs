@@ -15,12 +15,17 @@ internal class OrderResultsPhase : IState
     {
         if (stayTime <= 0f)
         {
-            GameSystem.instance.orderingResultsPhaseDone = true;
-            GameManager.instance?.GetMainPlayer().SetStateDone();
+            GameSystem.instance.orderingResultsPhaseTimerDone = true;
+            PlayerController player = GameManager.instance?.GetMainPlayer();
+            if (player)
+            {
+                GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+            }
 
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void FixedTick() { }
@@ -28,27 +33,29 @@ internal class OrderResultsPhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
             GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
         GameManager.instance.ResetStateOnPlayers();
         
-        if (GameSystem.instance.orderingResultsPhaseDone)
-            GameSystem.instance.orderingResultsPhaseDone = false;
+        if (GameSystem.instance.orderingResultsPhaseTimerDone)
+            GameSystem.instance.orderingResultsPhaseTimerDone = false;
         Debug.Log("ENTERED ORDER RESULT PHASE");
         GameManager.instance.ShowMessage("Así quedaron y que wea");
         GameManager.instance.OrderPlayers();
+
+        GameManager.instance.timerBar.SetMaxTime(defaultStayTime);
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
 
     }
 
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        if (GameSystem.instance.orderingResultsPhaseDone)
-            GameSystem.instance.orderingResultsPhaseDone = false;
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        if (GameSystem.instance.orderingResultsPhaseTimerDone)
+            GameSystem.instance.orderingResultsPhaseTimerDone = false;
         UnityEngine.Debug.Log("EXITED ORDER RESULT PHASE");
-        GameManager.instance.StartNextRound();
         //ORDENAR LISTA
     }
 }

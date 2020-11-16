@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System;
+using Photon.Pun;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class PlayerStats
@@ -7,7 +9,7 @@ public class PlayerStats
     [SerializeField]
     public int id;
     [SerializeField]
-    public float capturedZones = 0f;
+    public List<LocationController> capturedZones = new List<LocationController>();
     [SerializeField]
     public float ladderPosition = 1;
     [SerializeField]
@@ -29,54 +31,54 @@ public class PlayerStats
     [SerializeField]
     public bool currentStateFinished = false;
     [SerializeField]
-    public float actualSpeed;
-    [SerializeField]
-    public float horizontalDirection;
-    [SerializeField]
-    public float verticalDirection;
-    [SerializeField]
     private GameObject playableCharacter;
-    private int maxMoves;
+    private int movesLeft;
     public event EventHandler<CapturedZoneArgs> CapturedZone;
-    public float GetCapturedZones() => capturedZones;
+    public int GetCapturedZonesAmount() => capturedZones.Count;
     public bool PlayerDone() => moved && passed || passed;
-    public void AddCapturedZones(float amount)
+    public void AddCapturedZone(LocationController newCapturedZone)
     {
-        capturedZones += amount;
-        if (CapturedZone != null)
-            CapturedZone(this, new CapturedZoneArgs(capturedZones));
+        if (!capturedZones.Contains(newCapturedZone))
+        {
+            capturedZones.Add(newCapturedZone);
+            int newAmount = capturedZones.Count;
+            if (CapturedZone != null)
+                CapturedZone(this, new CapturedZoneArgs(newAmount));
+        }
     }
-    public void ReduceCapturedZones(float amount)
+    public void RemoveCapturedZones(LocationController capturedZoneToRemove)
     {
-        capturedZones -= amount;
+        if (capturedZones.Contains(capturedZoneToRemove))
+            capturedZones.Remove(capturedZoneToRemove);
         if (CapturedZone != null)
-            CapturedZone(this, new CapturedZoneArgs(capturedZones));
+        {
+            int newAmount = capturedZones.Count;
+            CapturedZone(this, new CapturedZoneArgs(newAmount));
+        }
     }
     public void CaptureZone(LocationController location) 
     {
-        Debug.Log($"CAPTURING ZONE {location.name}");
-        if (maxMoves >= 1)
+        if (movesLeft >= 1)
         {
-            maxMoves -= 1;
-            location.SetOwner(this);
-            AddCapturedZones(1);
-            if (maxMoves == 0){
+            movesLeft -= 1;
+            location.photonView.RPC("SetOwner",RpcTarget.All,id);
+            if (movesLeft == 0){
                 passed = true;
             }
         } 
     }
-    public void SetMaxMoves(int moves)
+    public void SetMovesLeft(int moves)
     {
-        maxMoves = moves;
+        movesLeft = moves;
     }
-    public int MovesLeft() => maxMoves;
+    public int MovesLeft() => movesLeft;
     public class CapturedZoneArgs : EventArgs
     {
-        public CapturedZoneArgs(float newCapturedZones)
+        public CapturedZoneArgs(int newCapturedZones)
         {
             NewCapturedZones = newCapturedZones;
         }
-        public float NewCapturedZones { get; private set; }
+        public int NewCapturedZones { get; private set; }
     }
     public void SetPlayerGameObject(GameObject playerGO)
     {

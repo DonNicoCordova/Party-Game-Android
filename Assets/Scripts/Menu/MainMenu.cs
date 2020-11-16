@@ -113,6 +113,10 @@ public class MainMenu : MonoBehaviourPunCallbacks
     {
         SetScreen(roomSelect);
     }
+    public void OnReturnToMainMenu()
+    {
+        SetScreen(mainMenu);
+    }
     public void OnLaunchGameButton()
     {
         NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "GameScene");

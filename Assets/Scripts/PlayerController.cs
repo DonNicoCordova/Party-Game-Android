@@ -4,7 +4,6 @@ using Photon.Realtime;
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private float _moveSpeed = 10f;
-
     private CharacterController _characterController;
     [Header("Info")]
     public FloatingJoystick joystick = null;
@@ -18,11 +17,10 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
         if (other.CompareTag("CapturePoint") && playerStats.MovesLeft() != 0)
         {
-            Debug.Log($"COLLISION DETECTED {other}");
             LocationController controller = other.GetComponentInParent<LocationController>();
-            if (!controller.CheckIfPlayerOnTop(playerStats))
+            if (!controller.CheckIfPlayerOnTop(this))
             {
-                controller.AddPlayer(playerStats);
+                controller.AddPlayer(this);
                 playerStats.CaptureZone(controller);
                 if (GameManager.instance.ActualPlayerIsMainPlayer())
                 {
@@ -31,36 +29,35 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
-
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("CapturePoint"))
         {
             LocationController controller = other.GetComponentInParent<LocationController>();
-            controller.RemovePlayer(playerStats);
+            controller.RemovePlayer(this);
         }
     }
     void Awake() => _characterController = GetComponent<CharacterController>();
-    void Update()
-    {
-        playerStats.actualSpeed = rig.velocity.magnitude;
-        playerStats.horizontalDirection = rig.velocity.x;
-        playerStats.verticalDirection = rig.velocity.z;
-        animator.SetFloat("Horizontal", playerStats.horizontalDirection);
-        animator.SetFloat("Vertical", playerStats.verticalDirection);
-        animator.SetFloat("Speed", playerStats.actualSpeed);
-    }
     void FixedUpdate()
     {
         if (photonView.IsMine)
         {
-            if (joystick.gameObject.activeSelf)
+            if (joystick.gameObject.activeSelf && GameManager.instance.ActualPlayerIsMainPlayer())
             {
                 float vertical = joystick.Vertical;
                 float horizontal = joystick.Horizontal;
                 Vector3 direction = new Vector3(horizontal, 0, vertical);
                 Vector3 movement = transform.TransformDirection(direction) * _moveSpeed;
                 IsGrounded = _characterController.SimpleMove(movement);
+                animator.SetFloat("Horizontal", horizontal);
+                animator.SetFloat("Vertical", vertical);
+                animator.SetFloat("Speed", rig.velocity.magnitude);
+            }
+            else
+            {
+                animator.SetFloat("Horizontal", 0);
+                animator.SetFloat("Vertical", 0);
+                animator.SetFloat("Speed", 0);
             }
         }
     }
@@ -100,16 +97,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             joystick = GameManager.instance.joystick.GetComponent<FloatingJoystick>();
         }
     }
-
-    public void SetStateDone()
+    [PunRPC]
+    public void SetPlayerPlace(int position)
     {
-        if (!playerStats.currentStateFinished)
-        {
-            Debug.Log($"Setting state done to {playerStats.nickName}");
-            playerStats.currentStateFinished = true;
-        }
+        playerStats.ladderPosition = position;
     }
-
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {   
         if (stream.IsWriting)
@@ -127,12 +119,15 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             playerStats.moved = receivedPlayerStats.moved;
             playerStats.usedSkill = receivedPlayerStats.usedSkill;
             playerStats.passed = receivedPlayerStats.passed;
-            playerStats.currentStateFinished = receivedPlayerStats.currentStateFinished;
-            playerStats.actualSpeed = receivedPlayerStats.actualSpeed;
-            playerStats.horizontalDirection = receivedPlayerStats.horizontalDirection;
-            playerStats.verticalDirection = receivedPlayerStats.verticalDirection;
-
         }
 
+    }
+
+    public void ResetForNewRound()
+    {
+        playerStats.moved = false;
+        playerStats.usedSkill = false;
+        playerStats.passed = false;
+        playerStats.currentStateFinished = false;
     }
 }

@@ -15,34 +15,43 @@ internal class FinalResultsPhase : IState
     {
         if (stayTime <= 0f)
         {
-            GameSystem.instance.finalResultsPhaseDone = true;
-            GameManager.instance?.GetMainPlayer().SetStateDone();
+            GameSystem.instance.finalResultsPhaseTimerDone = true;
+            PlayerController player = GameManager.instance?.GetMainPlayer();
+            if (player)
+            {
+                GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+            }
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
     }
     public void FixedTick() { }
     public void OnEnter()
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log($"SENDING STATE TO ALL OTHERS {this.GetType().Name}");
             GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
 
         GameManager.instance.ResetStateOnPlayers();
-        if (GameSystem.instance.finalResultsPhaseDone)
-            GameSystem.instance.finalResultsPhaseDone = false;
+        if (GameSystem.instance.finalResultsPhaseTimerDone)
+            GameSystem.instance.finalResultsPhaseTimerDone = false;
         Debug.Log("ENTERING FINAL RESULTS");
         GameManager.instance.ShowMessage("Final de la ronda! WOOOOOOO");
+
+        GameManager.instance.timerBar.SetMaxTime(defaultStayTime);
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
 
     }
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        if (GameSystem.instance.finalResultsPhaseDone)
-            GameSystem.instance.finalResultsPhaseDone = false;
+
+        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        if (GameSystem.instance.finalResultsPhaseTimerDone)
+            GameSystem.instance.finalResultsPhaseTimerDone = false;
         Debug.Log("EXITING FINAL RESULTS");
     }
 }
