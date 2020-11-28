@@ -9,6 +9,12 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 191ca40d8ed35dd41b8e2cb0a2ec62c5
   - enabled: 1
+    path: Assets/Scenes/GameBoardScene.unity
+    guid: 9958ef3eebd0b0447a598816ef1295fe
+  - enabled: 1
+    path: Assets/Scenes/PickFallingItemMiniGame.unity
+    guid: be94cdab61839ca4bbeb2587414c12f7
+  - enabled: 0
     path: Assets/Scenes/GameScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}

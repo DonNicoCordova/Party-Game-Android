@@ -30,6 +30,7 @@ public class PlayerStats
     public bool passed = false;
     [SerializeField]
     public bool currentStateFinished = false;
+    public LocationController lastCapturedZone; 
     [SerializeField]
     private GameObject playableCharacter;
     private int movesLeft;
@@ -60,6 +61,7 @@ public class PlayerStats
     {
         if (movesLeft >= 1)
         {
+            lastCapturedZone = location;
             movesLeft -= 1;
             location.photonView.RPC("SetOwner",RpcTarget.All,id);
             if (movesLeft == 0){

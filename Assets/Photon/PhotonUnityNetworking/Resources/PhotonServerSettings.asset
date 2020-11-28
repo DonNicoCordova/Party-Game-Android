@@ -53,6 +53,10 @@ MonoBehaviour:
   - UpdatePlayersPositions
   - SetPlayerPlace
   - UpdateLadderInfo
+  - ResetPosition
+  - FireLeftCannon
+  - FireRightCannon
+  - UpdatePlayerPoints
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

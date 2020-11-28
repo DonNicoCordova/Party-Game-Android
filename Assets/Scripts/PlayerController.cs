@@ -27,8 +27,14 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
                     GameManager.instance.SetThrowText();
                 }
             }
+        } 
+        else if (other.CompareTag("FallTrigger"))
+        {
+            Debug.Log("FALL DETECTED!");
+            ResetPosition();
         }
     }
+    
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("CapturePoint"))
@@ -101,6 +107,15 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public void SetPlayerPlace(int position)
     {
         playerStats.ladderPosition = position;
+    }
+    public void ResetPosition()
+    {
+        gameObject.SetActive(false);
+        transform.position = playerStats.lastCapturedZone.waypoint.position;
+        rig.velocity = Vector3.zero;
+        rig.angularVelocity = Vector3.zero;
+        playerStats.SetMovesLeft(playerStats.MovesLeft() + 1);
+        gameObject.SetActive(true);
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {   

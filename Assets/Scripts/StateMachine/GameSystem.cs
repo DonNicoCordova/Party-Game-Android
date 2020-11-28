@@ -47,7 +47,7 @@ public class GameSystem : MonoBehaviour
         phases.Add(movePiecePhase);
         var moveResultsPhase = new MoveResultsPhase(3f);
         phases.Add(moveResultsPhase);
-        var minigamePhase = new MinigamePhase(3f);
+        var minigamePhase = new MinigamePhase(90f);
         phases.Add(minigamePhase);
         var finalResultsPhase = new FinalResultsPhase(3f);
         phases.Add(finalResultsPhase);
@@ -61,8 +61,9 @@ public class GameSystem : MonoBehaviour
         At(throwPhase, throwResultsPhase, throwFinished());
         At(throwResultsPhase, movePiecePhase, resultsDone());
         At(movePiecePhase, moveResultsPhase, nothingElseToDo());
-        At(moveResultsPhase, gameOverPhase, finalRoundFinished());
-        At(moveResultsPhase, initialize, nextRoundReady());
+        At(moveResultsPhase, minigamePhase, gameboardPhaseDone());
+        At(minigamePhase, gameOverPhase, finalRoundFinished());
+        At(minigamePhase, initialize, nextRoundReady());
 
         StartCoroutine(Setup(initialize));
         void At(IState from, IState to, Func<bool> condition) => _stateMachine.AddTransition(from, to, condition);
@@ -115,7 +116,7 @@ public class GameSystem : MonoBehaviour
             else
                 return false;
         };
-        Func<bool> nextRoundReady() => () =>
+        Func<bool> gameboardPhaseDone() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
             {
@@ -125,9 +126,20 @@ public class GameSystem : MonoBehaviour
                 return false;
             }
         };
+        Func<bool> nextRoundReady() => () =>
+        {
+            //Change to make sure the minigame has ended, for now checks the same as gameboard phase done
+            if (PhotonNetwork.IsMasterClient)
+            {
+                return GameManager.instance.NextRoundReady() && GameManager.instance.AllPlayersStateDone();
+            }
+            else
+            {
+                return false;
+            }
+        };
         Func<bool> finalRoundFinished() => () =>
         {
-            Debug.LogError($"NextRoundReady: {GameManager.instance.NextRoundReady()} AllPlayersStateDone: {GameManager.instance.AllPlayersStateDone()} Actual Round: {GameManager.instance.GetRound()} == Max Round: {GameManager.instance.maxRounds}");
             if (PhotonNetwork.IsMasterClient)
             {
                 return GameManager.instance.NextRoundReady() && GameManager.instance.AllPlayersStateDone() && GameManager.instance.GetRound() == GameManager.instance.maxRounds;
@@ -149,6 +161,7 @@ public class GameSystem : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
         }
         _stateMachine.SetState(initialState);
+        DontDestroyOnLoad(gameObject);
     }
 
     public void SetState(string state)
@@ -160,6 +173,16 @@ public class GameSystem : MonoBehaviour
                 _stateMachine.SetState(phase);
                 break;
             }
+        }
+    }
+    public string GetCurrentStateName()
+    {
+        if (_stateMachine.GetCurrentState() != null)
+        {
+            return _stateMachine?.GetCurrentState().GetType().Name;
+        } else
+        {
+            return "None";
         }
     }
 }
