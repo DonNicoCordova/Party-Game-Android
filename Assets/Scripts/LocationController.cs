@@ -5,12 +5,14 @@ public class LocationController : MonoBehaviourPunCallbacks
 {
     public Transform waypoint;
     public MeshRenderer locationDome;
-    public Collider detectionCollider = null;
+    public SpriteRenderer minimapIcon;
     private PlayerController owner = null;
     private List<PlayerController> playersOnTop = new List<PlayerController>();
-    public void ChangeColor(Material newMaterial)
+    public void ChangeColor(PlayerController newOwner)
     {
-        locationDome.material = newMaterial;
+        
+        locationDome.material = newOwner.playerStats.orbColor;
+        minimapIcon.material = newOwner.playerStats.mainColor;
     }
     [PunRPC]
     public void SetOwner(int newOwnerId)
@@ -22,19 +24,11 @@ public class LocationController : MonoBehaviourPunCallbacks
         PlayerController newOwner = GameManager.instance.GetPlayer(newOwnerId);
         owner = newOwner;
         newOwner.playerStats.AddCapturedZone(this);
-        ChangeColor(newOwner.playerStats.orbColor);
+        ChangeColor(newOwner);
     }
     public PlayerController GetOwner()
     {
         return owner;
-    }
-    public void DisableCollider()
-    {
-        detectionCollider.enabled = false;
-    }
-    public void EnableCollider()
-    {
-        detectionCollider.enabled = true;
     }
     public void AddPlayer(PlayerController newPlayer)
     {

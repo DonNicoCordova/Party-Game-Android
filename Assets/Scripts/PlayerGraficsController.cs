@@ -9,6 +9,7 @@ public class PlayerGraficsController : MonoBehaviour
     public SpriteRenderer leftHand;
     public SpriteRenderer rightFoot;
     public SpriteRenderer leftFoot;
+    public SpriteRenderer minimapIcon;
 
     public void ChangeMaterial(Material newMaterial)
     {
@@ -17,5 +18,6 @@ public class PlayerGraficsController : MonoBehaviour
         leftHand.material = newMaterial;
         rightFoot.material = newMaterial;
         leftFoot.material = newMaterial;
+        minimapIcon.material = newMaterial;
     }
 }

@@ -20,7 +20,7 @@ TagManager:
   - 
   - BackGround
   - Hill
-  - 
+  - Minimap
   - 
   - 
   - 
@@ -54,4 +54,7 @@ TagManager:
     locked: 0
   - name: Items
     uniqueID: 1927404679
+    locked: 0
+  - name: Minimap
+    uniqueID: 532148421
     locked: 0
