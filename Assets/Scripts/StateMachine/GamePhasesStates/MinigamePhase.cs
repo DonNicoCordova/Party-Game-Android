@@ -24,7 +24,6 @@ internal class MinigamePhase : IState
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void FixedTick() { }
@@ -34,21 +33,19 @@ internal class MinigamePhase : IState
         if (PhotonNetwork.IsMasterClient)
         {
             GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "PickFallingItemMiniGame");
         }
         GameManager.instance.ResetStateOnPlayers();
         if (GameSystem.instance.minigamePhaseTimerDone)
             GameSystem.instance.minigamePhaseTimerDone = false;
         Debug.Log("ENTERING MINIGAME");
-        GameManager.instance.ShowMessage("Ahora deberia estar un juego");
+        //GameManager.instance.ShowMessage("Ahora deberia estar un juego");
 
-        GameManager.instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.instance.minigamePhaseTimerDone)
             GameSystem.instance.minigamePhaseTimerDone = false;
         Debug.Log("EXITING MINIGAME");

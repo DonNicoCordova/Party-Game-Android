@@ -56,7 +56,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        this.photonView.RPC("ImInGame", RpcTarget.AllBuffered);
+        Debug.Log($"GameSYSTEM Value: {GameSystem.instance}");
+        if (GameSystem.instance == null || GameSystem.instance.GetCurrentStateName() != "MinigamePhase")
+            this.photonView.RPC("ImInGame", RpcTarget.AllBuffered);
     }
     private void Awake()
     {
@@ -65,11 +67,11 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
         instance = this;
+        DontDestroyOnLoad(gameObject);
         //shakesText.text = throwController.maxShakes.ToString();
         phaseText = phaseIndicator.GetComponentInChildren<TextMeshProUGUI>();
         phaseAnimator = phaseIndicator.GetComponent<Animator>();
         phaseAnimator.gameObject.SetActive(false);
-
     }
     public void SetMainPlayer(PlayerController newPlayer)
     {
@@ -79,16 +81,16 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         LocationController playerSpawn = playerConfigs[PhotonNetwork.LocalPlayer.ActorNumber - 1].startingLocation;
         Transform waypoint = playerSpawn.waypoint;
-        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefab, waypoint.position, waypoint.rotation);
+        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefab, waypoint.position, Quaternion.identity);
         PlayerController characterScript = playerObj.GetComponent<PlayerController>();
         characterScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
+        characterScript.playerStats.lastCapturedZone = playerSpawn;
         playerSpawn.photonView.RPC("SetOwner", RpcTarget.AllBuffered, characterScript.playerStats.id);
         //Initialize player
-
     }
     public void OrderPlayers()
     {
-        List<Throw> orderedThrows = roundThrows.OrderBy(o => o.throwValue).ToList();
+        List<Throw> orderedThrows = roundThrows.OrderByDescending(o => o.throwValue).ToList();
         foreach (Throw playerThrow in orderedThrows)
         {
             PlayerController throwPlayer = GetPlayer(playerThrow.playerId);
@@ -100,7 +102,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     public void StartNextRound() 
     { 
-        
         roundThrows.Clear();
         round++;
         roundFinished = false;
@@ -273,5 +274,6 @@ public class GameManager : MonoBehaviourPunCallbacks
             player.ResetForNewRound();
             notActionTakenPlayers.Enqueue(player);
         }
-    } 
+    }
+ 
 }

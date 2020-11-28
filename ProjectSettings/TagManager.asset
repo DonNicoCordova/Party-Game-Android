@@ -6,6 +6,9 @@ TagManager:
   tags:
   - CapturePoint
   - PlayerDetection
+  - FallTrigger
+  - FallingItem
+  - GUI
   layers:
   - Default
   - TransparentFX
@@ -40,12 +43,15 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
   - name: BackGround
     uniqueID: 1381014465
     locked: 0
   - name: Players
     uniqueID: 3291206901
     locked: 0
-  - name: Default
-    uniqueID: 0
+  - name: Items
+    uniqueID: 1927404679
     locked: 0
