@@ -5,13 +5,7 @@ public class DiceCheckZoneController : MonoBehaviour
 {
     // Start is called before the first frame update
     private List<Collider> sideColliders = new List<Collider>();
-    private GameManager gameManager;
  
-    private void Start()
-    {
-        gameManager = GameManager.instance;
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         sideColliders.Add(other);
@@ -27,12 +21,12 @@ public class DiceCheckZoneController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (gameManager != null && !gameManager.throwController.IsThrowFinished())
+        if (GameManager.Instance != null && !GameManager.Instance.throwController.IsThrowFinished())
         {
-            if (gameManager.throwController.DicesStopped() && sideColliders.Count == 2)
+            if (GameManager.Instance.throwController.DicesStopped() && sideColliders.Count == 2)
             {
-                Throw actualThrow = new Throw(gameManager.GetMainPlayer().playerStats.id);
-                actualThrow.playerNickname = gameManager.GetMainPlayer().photonPlayer.NickName;
+                Throw actualThrow = new Throw(GameManager.Instance.GetMainPlayer().playerStats.id);
+                actualThrow.playerNickname = GameManager.Instance.GetMainPlayer().photonPlayer.NickName;
                 SideStats[] sideStats = new SideStats[2];
                 var i = 0;
                 foreach(Collider collider in sideColliders)
@@ -47,12 +41,12 @@ public class DiceCheckZoneController : MonoBehaviour
                     output += 7 - (int)stat.GetValue();
                 }
                 actualThrow.throwValue = output;
-                gameManager.throwController.FinishedThrow();
+                GameManager.Instance.throwController.FinishedThrow();
                 string rpcParams = JsonUtility.ToJson(actualThrow);
-                gameManager.photonView.RPC("AddThrow", RpcTarget.All, rpcParams);
-                gameManager.throwController.actualThrow = actualThrow;
-                gameManager.SetMainPlayerMoves(output);
-                gameManager.SetThrowText();
+                GameManager.Instance.photonView.RPC("AddThrow", RpcTarget.All, rpcParams);
+                GameManager.Instance.throwController.actualThrow = actualThrow;
+                GameManager.Instance.SetMainPlayerMoves(output);
+                GameManager.Instance.SetThrowText();
                 sideColliders.Clear();
             }
         }

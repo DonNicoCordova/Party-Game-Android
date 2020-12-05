@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 using Photon.Pun;
-internal class FinalResultsPhase : IState
+internal class MinigameResultsPhase : IState
 {
     private float defaultStayTime = 5f;
     private float stayTime;
-    public FinalResultsPhase(float minimumTime)
+    public MinigameResultsPhase(float minimumTime)
     {
         defaultStayTime = minimumTime;
         stayTime = defaultStayTime;
@@ -15,7 +15,6 @@ internal class FinalResultsPhase : IState
     {
         if (stayTime <= 0f)
         {
-            GameSystem.Instance.finalResultsPhaseTimerDone = true;
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
@@ -33,13 +32,20 @@ internal class FinalResultsPhase : IState
         {
             GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
-        //reset state done
-
+        GameManager.Instance.ShowMessage("FELICIDADES! te ganaste todas estas cosas.");
+        Debug.Log("RESETING STATE ON PLAYERS");
+        Debug.Log("Before");
+        foreach (PlayerController player in GameManager.Instance.players)
+        {
+            Debug.Log(player.playerStats.currentStateFinished);
+        }
         GameManager.Instance.ResetStateOnPlayers();
-        if (GameSystem.Instance.finalResultsPhaseTimerDone)
-            GameSystem.Instance.finalResultsPhaseTimerDone = false;
-        Debug.Log("ENTERING FINAL RESULTS");
-        GameManager.Instance.ShowMessage("Final de la ronda! WOOOOOOO");
+        Debug.Log("After");
+        foreach (PlayerController player in GameManager.Instance.players)
+        {
+            Debug.Log(player.playerStats.currentStateFinished);
+        }
+        Debug.Log("ENTERING MINIGAME RESULTS PHASE");
 
         GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
@@ -50,8 +56,6 @@ internal class FinalResultsPhase : IState
         stayTime = defaultStayTime;
 
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
-        if (GameSystem.Instance.finalResultsPhaseTimerDone)
-            GameSystem.Instance.finalResultsPhaseTimerDone = false;
-        Debug.Log("EXITING FINAL RESULTS");
+        Debug.Log("EXITING MINIGAME RESULTS");
     }
 }

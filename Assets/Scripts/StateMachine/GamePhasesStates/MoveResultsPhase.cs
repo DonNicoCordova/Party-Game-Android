@@ -16,17 +16,17 @@ internal class MoveResultsPhase : IState
     {
         if (stayTime <= 0f)
         {
-            GameSystem.instance.moveResultsPhaseTimerDone = true; 
-            PlayerController player = GameManager.instance?.GetMainPlayer();
+            GameSystem.Instance.moveResultsPhaseTimerDone = true; 
+            PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
 
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void FixedTick() { }
@@ -34,26 +34,26 @@ internal class MoveResultsPhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
-        GameManager.instance.ResetPlayers();
-        GameManager.instance.ResetStateOnPlayers();
-        if (GameSystem.instance.moveResultsPhaseTimerDone)
-            GameSystem.instance.moveResultsPhaseTimerDone = false;
+        GameManager.Instance.ResetPlayers();
+        GameManager.Instance.ResetStateOnPlayers();
+        if (GameSystem.Instance.moveResultsPhaseTimerDone)
+            GameSystem.Instance.moveResultsPhaseTimerDone = false;
         Debug.Log("ENTERED MOVERESULTSPHASE");
-        GameManager.instance.ShowMessage("Este mensaje da risa... creo");
-        GameManager.instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.ShowMessage("Este mensaje da risa... creo");
+        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void OnExit()
     {
-        GameManager.instance.DisableJoystick();
+        GameManager.Instance.DisableJoystick();
         stayTime = defaultStayTime;
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
-        if (GameSystem.instance.moveResultsPhaseTimerDone)
-            GameSystem.instance.moveResultsPhaseTimerDone = false;
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
+        if (GameSystem.Instance.moveResultsPhaseTimerDone)
+            GameSystem.Instance.moveResultsPhaseTimerDone = false;
         Debug.Log("EXITED MOVERESULTSPHASE");
     }
 }

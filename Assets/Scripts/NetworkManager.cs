@@ -7,16 +7,16 @@ using Photon.Realtime;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
-    public static NetworkManager instance;
+    public static NetworkManager Instance;
     void Awake()
     {
-        if(instance != null && instance != this)
+        if(Instance != null && Instance != this)
         {
             gameObject.SetActive(false);
         }
         else
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
     }
@@ -47,10 +47,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinRoom(roomName);
     }
-
     [PunRPC]
-    public void ChangeScene(string SceneName)
+    public void ChangeScene(string sceneName)
     {
-        PhotonNetwork.LoadLevel(SceneName);
+        StartCoroutine(LevelLoader.Instance.LoadLevel(sceneName));
     }
+
 }

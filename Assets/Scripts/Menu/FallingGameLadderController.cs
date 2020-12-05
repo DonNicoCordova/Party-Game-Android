@@ -15,13 +15,13 @@ public class FallingGameLadderController : MonoBehaviourPunCallbacks
         for(int i = 0; i < playerPointsContainers.Length; ++i)
         {
             PlayerPointsContainer container = playerPointsContainers[i];
-            Debug.Log($"COUNTS. AT: {GameManager.instance.actionTakenPlayers.Count} NAT: {GameManager.instance.notActionTakenPlayers.Count}");
-            if (i < GameManager.instance.notActionTakenPlayers.Count)
+            Debug.Log($"COUNTS. AT: {GameManager.Instance.actionTakenPlayers.Count} NAT: {GameManager.Instance.notActionTakenPlayers.Count}");
+            if (i < GameManager.Instance.notActionTakenPlayers.Count)
             {
                 container.obj.SetActive(true);
-                PlayerController controller = GameManager.instance.notActionTakenPlayers.Dequeue();
+                PlayerController controller = GameManager.Instance.notActionTakenPlayers.Dequeue();
                 container.InitializeFromPlayer(controller);
-                GameManager.instance.notActionTakenPlayers.Enqueue(controller);
+                GameManager.Instance.notActionTakenPlayers.Enqueue(controller);
             } else
             {
                 container.obj.SetActive(false);
@@ -70,16 +70,16 @@ public class PlayerPointsContainer
         nicknameText.text = player.playerStats.nickName;
         zonesCapturedText.text = player.playerStats.capturedZones.Count.ToString();
         playerColor.material = player.playerStats.mainColor;
-        playerPointsText.text = FallingGameManager.instance.GetPlayerPoints(player.playerStats.id).points.ToString();
+        playerPointsText.text = FallingGameManager.Instance.GetPlayerPoints(player.playerStats.id).points.ToString();
         associatedPlayer = player;
     }
     public void UpdatePlayerPoints()
     {
-        playerPointsText.text = FallingGameManager.instance.GetPlayerPoints(associatedPlayer.playerStats.id).points.ToString();
+        playerPointsText.text = FallingGameManager.Instance.GetPlayerPoints(associatedPlayer.playerStats.id).points.ToString();
     }
     public void UpdateIndicator()
     {
-        if (FallingGameManager.instance.GetMostPoints().playerId == associatedPlayer.playerStats.id)
+        if (FallingGameManager.Instance.GetMostPoints().playerId == associatedPlayer.playerStats.id)
         {
             winningIndicator.gameObject.SetActive(true);
         }

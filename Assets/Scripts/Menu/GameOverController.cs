@@ -18,7 +18,7 @@ public class GameOverController : MonoBehaviour
     {
         gameObject.SetActive(false);
         //List<PlayerController> winners = new List<PlayerController>();
-        List<PlayerController> winners = GameManager.instance.players.OrderBy(o => o.playerStats.ladderPosition).ToList();
+        List<PlayerController> winners = GameManager.Instance.players.OrderBy(o => o.playerStats.ladderPosition).ToList();
         firstNicknameText.text = $"1º {winners[0].playerStats.nickName}";
         secondNicknameText.text = $"2º {winners[1].playerStats.nickName}";
         thirdNicknameText.text = $"3º {winners[2].playerStats.nickName}";
@@ -35,10 +35,10 @@ public class GameOverController : MonoBehaviour
 
     public void OnBackToMenuClick()
     {
-        NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "MainMenu");
+        NetworkManager.Instance.photonView.RPC("ChangeScene", RpcTarget.All, "MainMenu");
     }
     public void OnReplayClick()
     {
-        NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "GameScene");
+        NetworkManager.Instance.photonView.RPC("ChangeScene", RpcTarget.All, "GameScene");
     }
 }

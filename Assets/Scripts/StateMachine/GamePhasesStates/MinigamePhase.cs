@@ -15,11 +15,11 @@ internal class MinigamePhase : IState
     {
         if (stayTime <= 0f)
         {
-            GameSystem.instance.minigamePhaseTimerDone = true;
-            PlayerController player = GameManager.instance?.GetMainPlayer();
+            GameSystem.Instance.minigamePhaseTimerDone = true;
+            PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
         }
         stayTime -= Time.deltaTime;
@@ -32,22 +32,29 @@ internal class MinigamePhase : IState
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
-            NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "PickFallingItemMiniGame");
+            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            NetworkManager.Instance.photonView.RPC("ChangeScene", RpcTarget.All, "PickFallingItemMiniGame");
         }
-        GameManager.instance.ResetStateOnPlayers();
-        if (GameSystem.instance.minigamePhaseTimerDone)
-            GameSystem.instance.minigamePhaseTimerDone = false;
+        GameManager.Instance.ResetStateOnPlayers();
+        if (GameSystem.Instance.minigamePhaseTimerDone)
+            GameSystem.Instance.minigamePhaseTimerDone = false;
         Debug.Log("ENTERING MINIGAME");
-        //GameManager.instance.ShowMessage("Ahora deberia estar un juego");
+        //GameManager.Instance.ShowMessage("Ahora deberia estar un juego");
 
     }
 
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        if (GameSystem.instance.minigamePhaseTimerDone)
-            GameSystem.instance.minigamePhaseTimerDone = false;
+        if (GameSystem.Instance.minigamePhaseTimerDone)
+            GameSystem.Instance.minigamePhaseTimerDone = false;
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log("CHANGING SCENE TO GAMEBOARD SCENE");
+            NetworkManager.Instance.photonView.RPC("ChangeScene", RpcTarget.All, "GameboardScene");
+        }
+
         Debug.Log("EXITING MINIGAME");
         
     }

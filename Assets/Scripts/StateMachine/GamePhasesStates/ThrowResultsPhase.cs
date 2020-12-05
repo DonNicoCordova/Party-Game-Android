@@ -14,41 +14,41 @@ internal class ThrowResultsPhase : IState
     {
         if (stayTime <= 0f)
         {
-            GameSystem.instance.throwResultsPhaseTimerDone = true;
-            PlayerController player = GameManager.instance?.GetMainPlayer();
+            GameSystem.Instance.throwResultsPhaseTimerDone = true;
+            PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
 
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
     public void FixedTick() { }
     public void OnEnter()
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
-        GameManager.instance.ResetStateOnPlayers();
-        if (GameSystem.instance.throwResultsPhaseTimerDone)
-            GameSystem.instance.throwResultsPhaseTimerDone = false;
+        GameManager.Instance.ResetStateOnPlayers();
+        if (GameSystem.Instance.throwResultsPhaseTimerDone)
+            GameSystem.Instance.throwResultsPhaseTimerDone = false;
         Debug.Log("ENTERED THROWRESULT");
-        GameManager.instance.ShowMessage("¡Que mala cuea! ajkajskkadj");
+        GameManager.Instance.ShowMessage("¡Que mala cuea! ajkajskkadj");
 
-        GameManager.instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
-        if (GameSystem.instance.throwResultsPhaseTimerDone)
-            GameSystem.instance.throwResultsPhaseTimerDone = false;
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
+        if (GameSystem.Instance.throwResultsPhaseTimerDone)
+            GameSystem.Instance.throwResultsPhaseTimerDone = false;
         Debug.Log("EXITED THROWRESULT");
     }
 }

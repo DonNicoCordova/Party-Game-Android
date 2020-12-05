@@ -62,7 +62,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
         sqrShakeDetectionThreshold = Mathf.Pow(shakeDetectionThreshold, 2);
         shakesLeft = maxShakes;
         allDiceStopped = false;
-        gameManager = GameManager.instance;
+        gameManager = GameManager.Instance;
         boxAnimator = gameObject.GetComponent<Animator>();
     }
     public void CheckInput()
@@ -119,7 +119,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
         if (!throwFinished && DicesReadyToPlay())
         {
             shakesLeft -= 1;
-            GameManager.instance.shakesText.text = shakesLeft.ToString();
+            GameManager.Instance.shakesText.text = shakesLeft.ToString();
             for (int i = 0; i < gameManager.dicesInPlay.Length; i++)
             {
                 gameManager.dicesInPlay[i].ShakeDice(diceRotationAcceleration, shakeForceMultiplier * 2);

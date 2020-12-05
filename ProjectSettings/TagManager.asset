@@ -49,11 +49,11 @@ TagManager:
   - name: BackGround
     uniqueID: 1381014465
     locked: 0
-  - name: Players
-    uniqueID: 3291206901
-    locked: 0
   - name: Items
     uniqueID: 1927404679
+    locked: 0
+  - name: Players
+    uniqueID: 3291206901
     locked: 0
   - name: Minimap
     uniqueID: 532148421

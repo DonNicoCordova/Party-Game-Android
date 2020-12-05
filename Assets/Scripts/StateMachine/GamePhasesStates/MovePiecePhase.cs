@@ -24,34 +24,34 @@ internal class MovePiecePhase : IState
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
         if (stayTime == 0f)
         {
-            GameSystem.instance.movePiecePhaseTimerDone = true;
+            GameSystem.Instance.movePiecePhaseTimerDone = true;
         }
         //Only mainClient can rotate over players and only informs the other clients
-        PlayerController actualPlayer = GameManager.instance.GetActualPlayer();
+        PlayerController actualPlayer = GameManager.Instance.GetActualPlayer();
         if (actualPlayer != null)
         {
             turnTime -= Time.deltaTime;
             turnTime = Mathf.Clamp(turnTime, 0f, Mathf.Infinity);
-            GameManager.instance.timerBar.SetTimeLeft(turnTime);
+            GameManager.Instance.timerBar.SetTimeLeft(turnTime);
             if (turnTime == 0f)
             {
                 turnDone = true;
             }
 
-            if (GameManager.instance.ActualPlayerIsMainPlayer() && !GameManager.instance.joystick.activeSelf)
+            if (GameManager.Instance.ActualPlayerIsMainPlayer() && !GameManager.Instance.joystick.activeSelf)
             {
-                GameManager.instance.ShowMessage("Oh! eres tú, no te habia visto.");
-                GameManager.instance.EnableJoystick();
+                GameManager.Instance.ShowMessage("Oh! eres tú, no te habia visto.");
+                GameManager.Instance.EnableJoystick();
                 movesIndicator.MoveToPlayer();
             }
             if (actualPlayer.playerStats.PlayerDone() || turnDone)
             {
-                if (GameManager.instance.ActualPlayerIsMainPlayer())
+                if (GameManager.Instance.ActualPlayerIsMainPlayer())
                 {
-                    PlayerController player = GameManager.instance?.GetMainPlayer();
+                    PlayerController player = GameManager.Instance?.GetMainPlayer();
                     if (player)
                     {
-                        GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                        GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
                     }
                     movesIndicator.MoveToScreen();
                     actualPlayer.rig.velocity = Vector3.zero;
@@ -59,14 +59,14 @@ internal class MovePiecePhase : IState
                 }
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    GameManager.instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
+                    GameManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
                 }
                 turnTime = defaultTurnTime;
             }
         }
         else if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
+            GameManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
         }
     }
 
@@ -77,25 +77,25 @@ internal class MovePiecePhase : IState
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
-        GameManager.instance.ResetStateOnPlayers();
-        PlayerController actualPlayer = GameManager.instance.GetActualPlayer();
-        if (GameSystem.instance.movePiecePhaseTimerDone)
-            GameSystem.instance.movePiecePhaseTimerDone = false;
+        GameManager.Instance.ResetStateOnPlayers();
+        PlayerController actualPlayer = GameManager.Instance.GetActualPlayer();
+        if (GameSystem.Instance.movePiecePhaseTimerDone)
+            GameSystem.Instance.movePiecePhaseTimerDone = false;
         if (actualPlayer == null && PhotonNetwork.IsMasterClient)
-                GameManager.instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
-        GameManager.instance.ShowMessage("¡Hora de moverse!");
-        movesIndicator = GameManager.instance.throwText.GetComponentInParent<MovesIndicatorController>();
+                GameManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
+        GameManager.Instance.ShowMessage("¡Hora de moverse!");
+        movesIndicator = GameManager.Instance.throwText.GetComponentInParent<MovesIndicatorController>();
         turnTime = defaultTurnTime;
-        GameManager.instance.timerBar.SetMaxTime(defaultTurnTime);
-        GameManager.instance.timerBar.SetTimeLeft(turnTime);
+        GameManager.Instance.timerBar.SetMaxTime(defaultTurnTime);
+        GameManager.Instance.timerBar.SetTimeLeft(turnTime);
     }
 
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        if (GameSystem.instance.movePiecePhaseTimerDone)
-            GameSystem.instance.movePiecePhaseTimerDone = false;
+        if (GameSystem.Instance.movePiecePhaseTimerDone)
+            GameSystem.Instance.movePiecePhaseTimerDone = false;
     }
 }

@@ -33,10 +33,6 @@ public class MainMenu : MonoBehaviourPunCallbacks
         joinRoomButton.interactable = false;
         startGameButton.interactable = false;
     }
-    public void PlayGame()
-    {
-        levelLoader.LoadNextLevel();
-    }
     public override void OnConnectedToMaster()
     {
         createRoomButton.interactable = true;
@@ -91,12 +87,12 @@ public class MainMenu : MonoBehaviourPunCallbacks
 
     public void OnCreateRoomButton(TMP_InputField roomNameInput)
     {
-        NetworkManager.instance.CreateRoom(roomNameInput.text, playerSelectController.GetPlayers());
+        NetworkManager.Instance.CreateRoom(roomNameInput.text, playerSelectController.GetPlayers());
     }
 
     public void OnJoinRoomButton(TMP_InputField roomNameInput)
     {
-        NetworkManager.instance.JoinRoom(roomNameInput.text);
+        NetworkManager.Instance.JoinRoom(roomNameInput.text);
     }
 
     public void OnPlayerNameUpdate(TMP_InputField playerNameInput)
@@ -119,6 +115,6 @@ public class MainMenu : MonoBehaviourPunCallbacks
     }
     public void OnLaunchGameButton()
     {
-        NetworkManager.instance.photonView.RPC("ChangeScene", RpcTarget.All, "GameBoardScene");
+        NetworkManager.Instance.photonView.RPC("ChangeScene", RpcTarget.All, "GameBoardScene");
     }
 }

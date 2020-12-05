@@ -15,12 +15,12 @@ public class LadderController : MonoBehaviourPunCallbacks
         for(int i = 0; i < playerInfoContainers.Length; ++i)
         {
             PlayerInfoContainer container = playerInfoContainers[i];
-            if (i < GameManager.instance.notActionTakenPlayers.Count)
+            if (i < GameManager.Instance.notActionTakenPlayers.Count)
             {
                 container.obj.SetActive(true);
-                PlayerController controller = GameManager.instance.notActionTakenPlayers.Dequeue();
+                PlayerController controller = GameManager.Instance.notActionTakenPlayers.Dequeue();
                 container.InitializeFromPlayer(controller);
-                GameManager.instance.notActionTakenPlayers.Enqueue(controller);
+                GameManager.Instance.notActionTakenPlayers.Enqueue(controller);
             } else
             {
                 container.obj.SetActive(false);
@@ -83,7 +83,7 @@ public class PlayerInfoContainer
     public void UpdateCapturedZones()
     {
         zonesCapturedText.text = associatedPlayer.playerStats.capturedZones.Count.ToString();
-        GameManager.instance.SetPlayersPlaces();
+        GameManager.Instance.SetPlayersPlaces();
     }
     public void UpdatePlayerPlace()
     {
@@ -91,7 +91,7 @@ public class PlayerInfoContainer
     }
     public void UpdateIndicator()
     {
-        if (GameManager.instance.GetActualPlayer() == associatedPlayer)
+        if (GameManager.Instance.GetActualPlayer() == associatedPlayer)
         {
             playingIndicator.gameObject.SetActive(true);
         } else

@@ -11,7 +11,7 @@ public class RoomSelectController : MonoBehaviour
     private void Start()
     {
         playerSelectController = gameObject.GetComponentInChildren<PlayersSelectController>();
-        netManager = NetworkManager.instance;
+        netManager = NetworkManager.Instance;
     }
     // Update is called once per frame
     private void Update()

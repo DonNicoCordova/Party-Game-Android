@@ -21,7 +21,7 @@ public class LocationController : MonoBehaviourPunCallbacks
         {
             owner.playerStats.RemoveCapturedZones(this);
         }
-        PlayerController newOwner = GameManager.instance.GetPlayer(newOwnerId);
+        PlayerController newOwner = GameManager.Instance.GetPlayer(newOwnerId);
         owner = newOwner;
         newOwner.playerStats.AddCapturedZone(this);
         ChangeColor(newOwner);

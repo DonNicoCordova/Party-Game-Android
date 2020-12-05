@@ -30,6 +30,8 @@ public class PlayerStats
     public bool passed = false;
     [SerializeField]
     public bool currentStateFinished = false;
+    [SerializeField]
+    public bool currentMinigameStateFinished = false;
     public LocationController lastCapturedZone; 
     [SerializeField]
     private GameObject playableCharacter;

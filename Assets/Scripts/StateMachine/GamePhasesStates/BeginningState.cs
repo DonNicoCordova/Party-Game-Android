@@ -16,17 +16,17 @@ internal class Initialize : IState
     {
         if (stayTime <= 0f)
         {
-            GameSystem.instance.initializePhaseTimerDone = true;
-            PlayerController player = GameManager.instance?.GetMainPlayer();
+            GameSystem.Instance.initializePhaseTimerDone = true;
+            PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
 
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void FixedTick() { }
@@ -36,28 +36,28 @@ internal class Initialize : IState
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
-        GameManager.instance.ResetStateOnPlayers();
-        Debug.Log($"ENTERING STATE {GameManager.instance}");
+        GameManager.Instance.ResetStateOnPlayers();
+        Debug.Log($"ENTERING BEGINNING STATE");
 
-        GameManager.instance.StartNextRound();
+        GameManager.Instance.StartNextRound();
 
-        GameManager.instance.throwText.text = "0";
+        GameManager.Instance.throwText.text = "0";
 
-        if (GameSystem.instance.initializePhaseTimerDone)
-            GameSystem.instance.initializePhaseTimerDone = false;
-        if (GameManager.instance.GetRound() == 0)
+        if (GameSystem.Instance.initializePhaseTimerDone)
+            GameSystem.Instance.initializePhaseTimerDone = false;
+        if (GameManager.Instance.GetRound() == 0)
         {
-            GameManager.instance.ShowMessage("¡Bienvenido a tu fiestita!");
-            //GameManager.instance.CreatePlayers();
+            GameManager.Instance.ShowMessage("¡Bienvenido a tu fiestita!");
+            //GameManager.Instance.CreatePlayers();
         }
         else
         {
-            GameManager.instance.ShowMessage($"¡Ronda {GameManager.instance.GetRound()}!");
+            GameManager.Instance.ShowMessage($"¡Ronda {GameManager.Instance.GetRound()}!");
         }
-        GameManager.instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
 
     
@@ -65,10 +65,10 @@ internal class Initialize : IState
     {
         Debug.Log("CALLING EXIT OF BEGINNING STATE");
         stayTime = defaultStayTime;
-        GameManager.instance.timerBar.SetTimeLeft(stayTime);
-        if (GameSystem.instance.initializePhaseTimerDone)
-            GameSystem.instance.initializePhaseTimerDone = false;
-        GameManager.instance.throwController?.AnimateReadyToPlay();
-        GameManager.instance.throwController?.Initialize();
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
+        if (GameSystem.Instance.initializePhaseTimerDone)
+            GameSystem.Instance.initializePhaseTimerDone = false;
+        GameManager.Instance.throwController?.AnimateReadyToPlay();
+        GameManager.Instance.throwController?.Initialize();
     }
 }

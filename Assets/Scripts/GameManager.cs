@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Photon.Realtime;
-public class GameManager : MonoBehaviourPunCallbacks
+public class GameManager : GenericPunSingletonClass<GameManager>
 {
-    public static GameManager instance;
     public Cinemachine.CinemachineVirtualCamera virtualCamera;
     [Header("Dice")]
     public DiceController[] dicesInPlay;
@@ -53,25 +52,30 @@ public class GameManager : MonoBehaviourPunCallbacks
     private Boolean diceOnDisplay = false;
     private Boolean playersOrdered = false;
     private Boolean roundFinished = false;
+    private Boolean allPlayersOnPosition = false;
+    private Queue<string> messagesQueue = new Queue<string>();
 
     private void Start()
     {
-        Debug.Log($"GameSYSTEM Value: {GameSystem.instance}");
-        if (GameSystem.instance == null || GameSystem.instance.GetCurrentStateName() != "MinigamePhase")
+        if (GameSystem.Instance == null || GameSystem.Instance.GetCurrentStateName() != "MinigamePhase")
             this.photonView.RPC("ImInGame", RpcTarget.AllBuffered);
     }
-    private void Awake()
+    override public void Awake()
     {
-        if (instance != null)
-        {
-            return;
-        }
-        instance = this;
-        DontDestroyOnLoad(gameObject);
         //shakesText.text = throwController.maxShakes.ToString();
+        base.Awake();
         phaseText = phaseIndicator.GetComponentInChildren<TextMeshProUGUI>();
         phaseAnimator = phaseIndicator.GetComponent<Animator>();
         phaseAnimator.gameObject.SetActive(false);
+        LevelLoader.Instance.FadeIn();
+    }
+    private void Update()
+    {
+        if (messagesQueue.Count > 0)
+        {
+            string message = messagesQueue.Dequeue();
+            StartCoroutine(processShowMessage(message));
+        }
     }
     public void SetMainPlayer(PlayerController newPlayer)
     {
@@ -175,23 +179,31 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     private IEnumerator processShowMessage(string message)
     {
-        phaseText.text = message;
-        if (!phaseAnimator.gameObject.activeSelf)
+        if (phaseAnimator)
         {
-            phaseAnimator.gameObject.SetActive(true);
+            if (!phaseAnimator.gameObject.activeSelf)
+            {
+                phaseText.text = message;
+                phaseAnimator.gameObject.SetActive(true);
+                phaseAnimator.Play("PhaseInAnimation");
+                yield return new WaitForSeconds(1.5f);
+                phaseAnimator.SetTrigger("SlideOut");
+                yield return new WaitForSeconds(1);
+                phaseText.text = "";
+                phaseAnimator.gameObject.SetActive(false);
+            } else
+            {
+                messagesQueue.Enqueue(message);
+            }
+        } else
+        {
+            messagesQueue.Enqueue(message);
         }
-        phaseAnimator.Play("PhaseInAnimation");
-        yield return new WaitForSeconds(1.5f);
-        phaseAnimator.SetTrigger("SlideOut");
-        yield return new WaitForSeconds(1);
-        phaseText.text = "";
-        phaseAnimator.gameObject.SetActive(false);
     }
     [PunRPC]
     private void ImInGame()
     {
         numberOfPlayers++;
-
         if (AllPlayersJoined())
         {
             SpawnPlayer();
@@ -223,10 +235,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     public PlayerController GetPlayer(int playerId) => players.First(x => x.playerStats.id == playerId);
     public bool AllPlayersJoined() => numberOfPlayers == PhotonNetwork.PlayerList.Length;
+    public bool AllPlayersCharacterSpawned() 
+    {
+        return GameObject.FindGameObjectsWithTag("Player").Length == numberOfPlayers;
+    }
     [PunRPC]
     public void SetCurrentState(string state)
     {
-        GameSystem.instance.SetState(state);
+        GameSystem.Instance.SetState(state);
     }
     [PunRPC]
     public void DebugMessage(string message, string player)

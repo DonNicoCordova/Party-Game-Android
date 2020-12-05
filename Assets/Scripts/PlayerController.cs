@@ -22,9 +22,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             {
                 controller.AddPlayer(this);
                 playerStats.CaptureZone(controller);
-                if (GameManager.instance.ActualPlayerIsMainPlayer())
+                if (GameManager.Instance.ActualPlayerIsMainPlayer())
                 {
-                    GameManager.instance.SetThrowText();
+                    GameManager.Instance.SetThrowText();
                 }
             }
         } 
@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (photonView.IsMine)
         {
-            if (joystick.gameObject.activeSelf && GameManager.instance.ActualPlayerIsMainPlayer())
+            if (joystick.gameObject.activeSelf && GameManager.Instance.ActualPlayerIsMainPlayer())
             {
                 float vertical = joystick.Vertical;
                 float horizontal = joystick.Horizontal;
@@ -74,8 +74,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         PlayerStats newPlayerStats = new PlayerStats();
         newPlayerStats.id = newPhotonPlayer.ActorNumber;
         newPlayerStats.nickName = newPhotonPlayer.NickName;
-        newPlayerStats.mainColor = GameManager.instance.playerConfigs[newPhotonPlayer.ActorNumber-1].mainColor;
-        newPlayerStats.orbColor = GameManager.instance.playerConfigs[newPhotonPlayer.ActorNumber-1].orbColor;
+        newPlayerStats.mainColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber-1].mainColor;
+        newPlayerStats.orbColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber-1].orbColor;
         newPlayerStats.SetPlayerGameObject(this.gameObject);
 
         // change player color
@@ -87,7 +87,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 
         // add player to player list
         playerStats = newPlayerStats;
-        GameManager.instance.players.Add(this);
+        GameManager.Instance.players.Add(this);
         
         // Only main player should be affected by physics
         if (!photonView.IsMine)
@@ -97,10 +97,10 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             // set player to main player and assign camera to follow plus enable joystick
-            GameManager.instance.SetMainPlayer(this);
-            GameManager.instance.virtualCamera.Follow = transform;
-            GameManager.instance.virtualCamera.LookAt = transform;
-            joystick = GameManager.instance.joystick.GetComponent<FloatingJoystick>();
+            GameManager.Instance.SetMainPlayer(this);
+            GameManager.Instance.virtualCamera.Follow = transform;
+            GameManager.Instance.virtualCamera.LookAt = transform;
+            joystick = GameManager.Instance.joystick.GetComponent<FloatingJoystick>();
         }
     }
     [PunRPC]
