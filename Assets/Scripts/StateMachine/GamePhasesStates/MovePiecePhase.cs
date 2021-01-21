@@ -37,7 +37,6 @@ internal class MovePiecePhase : IState
             {
                 turnDone = true;
             }
-
             if (GameManager.Instance.ActualPlayerIsMainPlayer() && !GameManager.Instance.joystick.activeSelf)
             {
                 GameManager.Instance.ShowMessage("Oh! eres tú, no te habia visto.");
@@ -51,7 +50,7 @@ internal class MovePiecePhase : IState
                     PlayerController player = GameManager.Instance?.GetMainPlayer();
                     if (player)
                     {
-                        GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                        GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
                     }
                     movesIndicator.MoveToScreen();
                     actualPlayer.rig.velocity = Vector3.zero;
@@ -59,14 +58,14 @@ internal class MovePiecePhase : IState
                 }
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    GameManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
+                    GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
                 }
                 turnTime = defaultTurnTime;
             }
         }
         else if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
+            GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
         }
     }
 
@@ -77,14 +76,14 @@ internal class MovePiecePhase : IState
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         GameManager.Instance.ResetStateOnPlayers();
         PlayerController actualPlayer = GameManager.Instance.GetActualPlayer();
         if (GameSystem.Instance.movePiecePhaseTimerDone)
             GameSystem.Instance.movePiecePhaseTimerDone = false;
         if (actualPlayer == null && PhotonNetwork.IsMasterClient)
-                GameManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
+            GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
         GameManager.Instance.ShowMessage("¡Hora de moverse!");
         movesIndicator = GameManager.Instance.throwText.GetComponentInParent<MovesIndicatorController>();
         turnTime = defaultTurnTime;

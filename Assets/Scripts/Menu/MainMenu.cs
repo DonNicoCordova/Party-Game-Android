@@ -3,23 +3,20 @@ using UnityEngine.UI;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
-
+using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviourPunCallbacks
 {
-    public LevelLoader levelLoader;
-
     [Header("Screens")]
-    public GameObject mainMenu;
     public GameObject roomSelect;
     public GameObject lobbyList;
-
-    [Header("Main Screen")]
-    public Button startGameButton;
+    public GameObject chooseWhatToDo;
+    public GameObject createRoom;
 
     [Header("Room Select")]
     public Button createRoomButton;
     public Button joinRoomButton;
     public PlayersSelectController playerSelectController;
+    public Toggle privateToggle;
 
     [Header("Lobby List")]
     public TextMeshProUGUI playerListText;
@@ -27,22 +24,40 @@ public class MainMenu : MonoBehaviourPunCallbacks
     public TextMeshProUGUI roomNameText;
     public Button launchGameButton;
 
+    private void Awake()
+    {
+        LevelLoader.Instance.FadeIn();
+        Destroy(GameObject.Find("GameManager"));
+        if (PhotonNetwork.IsConnected)
+        {
+            createRoomButton.interactable = true;
+            joinRoomButton.interactable = true;
+        }
+    }
     private void Start()
     {
+        if (!PhotonNetwork.InLobby)
+        {
+            PhotonNetwork.JoinLobby();
+        }
         createRoomButton.interactable = false;
         joinRoomButton.interactable = false;
-        startGameButton.interactable = false;
     }
     public override void OnConnectedToMaster()
     {
         createRoomButton.interactable = true;
         joinRoomButton.interactable = true;
-        startGameButton.interactable = true;
     }
 
     public override void OnJoinedRoom()
     {
+
         SetScreen(lobbyList);
+        if (PhotonNetwork.IsConnected)
+        {
+            createRoomButton.interactable = true;
+            joinRoomButton.interactable = true;
+        }
         photonView.RPC("UpdateLobbyUI", RpcTarget.All);
     }
 
@@ -59,7 +74,6 @@ public class MainMenu : MonoBehaviourPunCallbacks
     [PunRPC]
     public void UpdateLobbyUI()
     {
-        Debug.Log("UPDATING LOBBY UI");
         playerListText.text = "";
         playersCountText.text = $"{PhotonNetwork.CurrentRoom?.PlayerCount}/{PhotonNetwork.CurrentRoom.MaxPlayers}";
         roomNameText.text = PhotonNetwork.CurrentRoom?.Name;
@@ -78,16 +92,21 @@ public class MainMenu : MonoBehaviourPunCallbacks
     }
     void SetScreen(GameObject screen)
     {
-        mainMenu.SetActive(false);
-        roomSelect.SetActive(false);
-        lobbyList.SetActive(false);
+        if (roomSelect.activeSelf)
+            roomSelect.SetActive(false);
+        if (lobbyList.activeSelf)
+            lobbyList.SetActive(false);
+        if (chooseWhatToDo.activeSelf)
+            chooseWhatToDo.SetActive(false);
+        if (createRoom.activeSelf)
+            createRoom.SetActive(false);
 
         screen.SetActive(true);
     }
 
     public void OnCreateRoomButton(TMP_InputField roomNameInput)
     {
-        NetworkManager.Instance.CreateRoom(roomNameInput.text, playerSelectController.GetPlayers());
+        NetworkManager.Instance.CreateRoom(roomNameInput.text, playerSelectController.GetPlayers(), privateToggle.isOn);
     }
 
     public void OnJoinRoomButton(TMP_InputField roomNameInput)
@@ -95,23 +114,44 @@ public class MainMenu : MonoBehaviourPunCallbacks
         NetworkManager.Instance.JoinRoom(roomNameInput.text);
     }
 
+    public void OnLeaveRoomButton()
+    {
+        NetworkManager.Instance.LeaveRoom();
+        SetScreen(chooseWhatToDo);
+    }
+    public void OnJoinListedRoom(TMP_InputField roomNameInput)
+    {
+        NetworkManager.Instance.JoinRoom(roomNameInput.text);
+    }
     public void OnPlayerNameUpdate(TMP_InputField playerNameInput)
     {
         PhotonNetwork.NickName = playerNameInput.text;
     }
-    public void OnLeaveLobbyButton()
+    public void OnBackToChoose()
     {
-        PhotonNetwork.LeaveRoom();
-        SetScreen(roomSelect);
+        SetScreen(chooseWhatToDo);
     }
-
-    public void OnStartGameButton()
+    public void OnChoosePartyButton()
     {
         SetScreen(roomSelect);
+        if (PhotonNetwork.IsConnected)
+        {
+            createRoomButton.interactable = true;
+            joinRoomButton.interactable = true;
+        }
+    }
+    public void OnChooseCreateButton()
+    {
+        SetScreen(createRoom); 
+        if (PhotonNetwork.IsConnected)
+        {
+            createRoomButton.interactable = true;
+            joinRoomButton.interactable = true;
+        }
     }
     public void OnReturnToMainMenu()
     {
-        SetScreen(mainMenu);
+        StartCoroutine(LevelLoader.Instance.LoadLevel("Login"));
     }
     public void OnLaunchGameButton()
     {

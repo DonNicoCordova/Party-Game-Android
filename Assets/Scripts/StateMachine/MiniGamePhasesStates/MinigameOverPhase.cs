@@ -13,17 +13,20 @@ internal class MinigameOverPhase : IState
 
     public void Tick()
     {
-        if (stayTime <= 0f)
+        if (stayTime == 0f)
         {
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player.playerStats.id != 0)
             {
                 FallingGameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                FallingGameManager.Instance?.photonView.RPC("SetMinigameDone", RpcTarget.MasterClient, player.playerStats.id);
             }
+            stayTime = -1f;
+        } else if (stayTime > 0f)
+        {
+            stayTime -= Time.deltaTime;
+            stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
         }
-        stayTime -= Time.deltaTime;
-        stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
         FallingGameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
     public void FixedTick() { }
@@ -37,7 +40,6 @@ internal class MinigameOverPhase : IState
         FallingGameManager.Instance.ResetStateOnPlayers();
         FallingGameManager.Instance.InitializeGameOver();
         FallingGameManager.Instance.ShowGameResults();
-        Debug.Log("ENTERING MINI GAME OVER PHASE");
         FallingGameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
         FallingGameManager.Instance.timerBar.SetTimeLeft(stayTime);
 
@@ -47,6 +49,5 @@ internal class MinigameOverPhase : IState
         stayTime = defaultStayTime;
 
         FallingGameManager.Instance.timerBar.SetTimeLeft(stayTime);
-        Debug.Log("EXITING MINI GAME OVER PHASE");
     }
 }

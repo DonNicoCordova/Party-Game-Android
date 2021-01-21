@@ -27,12 +27,6 @@ public class LadderController : MonoBehaviourPunCallbacks
             }
         }
         gameObject.SetActive(true);
-        //foreach (PlayerController playerStats in players)
-        //{
-        //    GameObject newInfoPrefab = Instantiate<GameObject>(playerInfoPrefab, transform);
-        //    PlayerInfoController controller = newInfoPrefab.GetComponent<PlayerInfoController>();
-        //    controller.InitializeFromPlayer(playerStats);
-        //}
     }
     [PunRPC]
     public void UpdateLadderInfo()

@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 using Photon.Pun;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
 internal class MinigameResultsPhase : IState
 {
     private float defaultStayTime = 5f;
     private float stayTime;
+    private bool setupComplete = false;
     public MinigameResultsPhase(float minimumTime)
     {
         defaultStayTime = minimumTime;
@@ -13,49 +18,56 @@ internal class MinigameResultsPhase : IState
 
     public void Tick()
     {
-        if (stayTime <= 0f)
+        if (setupComplete)
         {
-            PlayerController player = GameManager.Instance?.GetMainPlayer();
-            if (player)
+            if (stayTime <= 0f)
             {
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                PlayerController player = GameManager.Instance?.GetMainPlayer();
+                if (player)
+                {
+                    GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                }
+            }
+            stayTime -= Time.deltaTime;
+            stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
+            GameManager.Instance.timerBar?.SetTimeLeft(stayTime);
+        } else
+        {
+            GameManager.Instance.ConnectReferences();
+            if (GameManager.Instance.allReferencesReady && GameManager.Instance.AllPlayersCharacterSpawned())
+            {
+                setupComplete = true;
+                LevelLoader.Instance.FadeIn();
+                GameManager.Instance.RefreshPhaseAnimator();
+                foreach (PlayerController player in GameManager.Instance.players.OrderBy(o => o.playerStats.throwOrder).ToList())
+                {
+                    GameManager.Instance.notActionTakenPlayers.Enqueue(player);
+                }
+                GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
+                GameManager.Instance.timerBar.SetTimeLeft(stayTime);
+                GameManager.Instance.ResumeGUI();
             }
         }
-        stayTime -= Time.deltaTime;
-        stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
     public void FixedTick() { }
     public void OnEnter()
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameManager.Instance.SetCurrentState(this.GetType().Name);
         }
         GameManager.Instance.ShowMessage("FELICIDADES! te ganaste todas estas cosas.");
-        Debug.Log("RESETING STATE ON PLAYERS");
-        Debug.Log("Before");
-        foreach (PlayerController player in GameManager.Instance.players)
-        {
-            Debug.Log(player.playerStats.currentStateFinished);
-        }
-        GameManager.Instance.ResetStateOnPlayers();
-        Debug.Log("After");
-        foreach (PlayerController player in GameManager.Instance.players)
-        {
-            Debug.Log(player.playerStats.currentStateFinished);
-        }
-        Debug.Log("ENTERING MINIGAME RESULTS PHASE");
 
-        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.ResetStateOnPlayers();
+        GameManager.Instance.notActionTakenPlayers.Clear();
+        GameManager.Instance.actionTakenPlayers.Clear();
+        GameManager.Instance.timerBar?.SetMaxTime(defaultStayTime);
+        GameManager.Instance.timerBar?.SetTimeLeft(stayTime);
 
     }
     public void OnExit()
     {
         stayTime = defaultStayTime;
-
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
-        Debug.Log("EXITING MINIGAME RESULTS");
     }
 }

@@ -59,6 +59,11 @@ MonoBehaviour:
   - UpdatePlayerPoints
   - QueueAttack
   - PlayerDonePlaying
+  - SetMinigameDone
+  - Resume
+  - AddPoints
+  - ReducePoints
+  - SetSpawnerDone
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

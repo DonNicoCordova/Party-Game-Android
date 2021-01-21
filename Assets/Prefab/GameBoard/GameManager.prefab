@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3422301949176695020}
   - component: {fileID: 3422301949176695023}
   - component: {fileID: 3422301949176695021}
-  - component: {fileID: 2750498985777764885}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -58,6 +57,8 @@ MonoBehaviour:
     rgba: 4294967295
   playersLadder: {fileID: 0}
   joystick: {fileID: 0}
+  timerBar: {fileID: 0}
+  gameOverUI: {fileID: 0}
   lerpTime: 1
   diceOnCameraPosition1: {fileID: 0}
   diceOnCameraPosition2: {fileID: 0}
@@ -88,6 +89,13 @@ MonoBehaviour:
     startingLocation: {fileID: 0}
   playerPrefab: 
   players: []
+  numberOfPlayers: 0
+  maxRounds: 0
+  diceOnDisplay: 0
+  playersOrdered: 0
+  roundFinished: 0
+  roundThrows: []
+  allPlayersOnPosition: 0
 --- !u!114 &3422301949176695021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,34 +108,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bb414808569c9143bdd43ccdaeae776, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initializePhaseDone: 0
-  orderingPhaseDone: 0
-  orderingResultsPhaseDone: 0
-  throwPhaseDone: 0
-  throwResultsPhaseDone: 0
-  movePiecePhaseDone: 0
-  moveResultsPhaseDone: 0
-  minigamePhaseDone: 0
-  finalResultsPhaseDone: 0
---- !u!114 &2750498985777764885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3422301949176695022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  observableSearch: 2
-  Synchronization: 3
-  OwnershipTransfer: 0
-  ObservedComponents: []
-  viewIdField: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  initializePhaseTimerDone: 0
+  orderingPhaseTimerDone: 0
+  orderingResultsPhaseTimerDone: 0
+  throwPhaseTimerDone: 0
+  throwResultsPhaseTimerDone: 0
+  movePiecePhaseTimerDone: 0
+  moveResultsPhaseTimerDone: 0
+  minigamePhaseTimerDone: 0
+  finalResultsPhaseTimerDone: 0
+  gameOverPhaseTimerDone: 0

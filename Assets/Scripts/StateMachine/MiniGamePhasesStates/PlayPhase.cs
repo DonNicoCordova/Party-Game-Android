@@ -31,11 +31,9 @@ internal class PlayPhase : IState
             FallingGameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
-        Debug.Log("ENTERING PLAYING PHASE");
         FallingGameManager.Instance.itemSpawner.Activate();
     }
     public void OnExit()
     {
-        Debug.Log("EXITING PLAY PHASE");
     }
 }

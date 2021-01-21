@@ -17,15 +17,22 @@ public class GameOverController : MonoBehaviour
     public void Initialize()
     {
         gameObject.SetActive(false);
-        //List<PlayerController> winners = new List<PlayerController>();
         List<PlayerController> winners = GameManager.Instance.players.OrderBy(o => o.playerStats.ladderPosition).ToList();
         firstNicknameText.text = $"1º {winners[0].playerStats.nickName}";
         secondNicknameText.text = $"2º {winners[1].playerStats.nickName}";
-        thirdNicknameText.text = $"3º {winners[2].playerStats.nickName}";
         firstZonesCapturedText.text = $"{winners[0].playerStats.capturedZones.Count} zonas";
         secondZonesCapturedText.text = $"{winners[1].playerStats.capturedZones.Count} zonas";
-        thirdZonesCapturedText.text = $"{winners[2].playerStats.capturedZones.Count} zonas";
-        gameObject.SetActive(true);
+        
+        if (winners.Count > 2)
+        {
+            thirdNicknameText.text = $"3º {winners[2].playerStats.nickName}";
+            thirdZonesCapturedText.text = $"{winners[2].playerStats.capturedZones.Count} zonas";
+        } else if (thirdZonesCapturedText.gameObject.activeSelf)
+        {
+            thirdNicknameText.gameObject.SetActive(false);
+            thirdZonesCapturedText.gameObject.SetActive(false);
+        }
+            gameObject.SetActive(true);
 
         if (PhotonNetwork.IsMasterClient)
             replayButton.interactable = true;
@@ -35,6 +42,7 @@ public class GameOverController : MonoBehaviour
 
     public void OnBackToMenuClick()
     {
+        NetworkManager.Instance.LeaveRoom();
         NetworkManager.Instance.photonView.RPC("ChangeScene", RpcTarget.All, "MainMenu");
     }
     public void OnReplayClick()

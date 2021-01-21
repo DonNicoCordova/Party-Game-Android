@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2797924765261652908}
   m_Layer: 5
   m_Name: PlayersLadder
-  m_TagString: Untagged
+  m_TagString: PlayersLadder
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

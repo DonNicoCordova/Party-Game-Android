@@ -65,3 +65,18 @@ The following packages were updated:
   com.unity.ide.visualstudio from version 2.0.2 to 2.0.3
   com.unity.ide.vscode from version 1.2.1 to 1.2.3
   com.unity.test-framework from version 1.1.16 to 1.1.18
+
+=== Sat Jan  9 00:33:45 2021
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.2d.animation from version 4.2.6 to 5.0.3
+  com.unity.ide.rider from version 1.2.1 to 2.0.7
+  com.unity.ide.visualstudio from version 2.0.3 to 2.0.5
+  com.unity.render-pipelines.universal from version 8.2.0 to 10.2.2
+  com.unity.shadergraph from version 8.2.0 to 10.2.2
+  com.unity.test-framework from version 1.1.18 to 1.1.19
+The following packages were removed:
+  com.unity.2d.ik@3.0.2-preview.1

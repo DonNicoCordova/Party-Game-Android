@@ -61,7 +61,7 @@ public class GenericPunSingletonClass<T> : MonoBehaviourPunCallbacks where T : C
         if (instance == null)
         {
             instance = this as T;
-            DontDestroyOnLoad(this.gameObject);
+            //DontDestroyOnLoad(this.gameObject);
         }
         else
         {

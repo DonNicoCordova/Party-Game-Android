@@ -8,21 +8,21 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
     public static NetworkManager Instance;
-    void Awake()
+    private void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance == null)
         {
-            gameObject.SetActive(false);
+            Instance = this;
         }
         else
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            Destroy(gameObject);
         }
     }
     private void Start()
     {
-        PhotonNetwork.ConnectUsingSettings();
+        if (!PhotonNetwork.IsConnected)
+            PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnConnectedToMaster()
@@ -37,16 +37,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("ROOM JOINED");
     }
-    public void CreateRoom(string roomName, int maxPlayers)
+    public void CreateRoom(string roomName, int maxPlayers, bool privateRoom)
     {
+        Debug.Log($"CREATING ROOM WITH {roomName} {maxPlayers} {privateRoom} => visible = {!privateRoom}");
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = (byte) maxPlayers;
+        roomOptions.IsVisible = !privateRoom;
         PhotonNetwork.CreateRoom(roomName, roomOptions);
     }
     public void JoinRoom(string roomName)
     {
         PhotonNetwork.JoinRoom(roomName);
     }
+    public void LeaveRoom() => PhotonNetwork.LeaveRoom();
     [PunRPC]
     public void ChangeScene(string sceneName)
     {

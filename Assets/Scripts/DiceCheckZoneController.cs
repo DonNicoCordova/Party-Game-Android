@@ -21,7 +21,7 @@ public class DiceCheckZoneController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameManager.Instance != null && !GameManager.Instance.throwController.IsThrowFinished())
+        if (GameManager.Instance != null && GameManager.Instance.throwController != null && !GameManager.Instance.throwController.IsThrowFinished())
         {
             if (GameManager.Instance.throwController.DicesStopped() && sideColliders.Count == 2)
             {
@@ -43,7 +43,7 @@ public class DiceCheckZoneController : MonoBehaviour
                 actualThrow.throwValue = output;
                 GameManager.Instance.throwController.FinishedThrow();
                 string rpcParams = JsonUtility.ToJson(actualThrow);
-                GameManager.Instance.photonView.RPC("AddThrow", RpcTarget.All, rpcParams);
+                GameboardRPCManager.Instance.photonView.RPC("AddThrow", RpcTarget.All, rpcParams);
                 GameManager.Instance.throwController.actualThrow = actualThrow;
                 GameManager.Instance.SetMainPlayerMoves(output);
                 GameManager.Instance.SetThrowText();

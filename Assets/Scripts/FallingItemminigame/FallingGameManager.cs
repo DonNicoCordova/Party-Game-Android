@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Photon.Pun;
@@ -8,7 +7,6 @@ public class FallingGameManager : MonoBehaviourPunCallbacks
     public static FallingGameManager Instance;
     public TMPro.TextMeshProUGUI pointsText;
     public ItemSpawner itemSpawner;
-    public List<PlayerPoints> playersPoints = new List<PlayerPoints>();
     public FallingGameLadderController ladderController;
     public int points = 0;
     public Queue<string> attackQueue = new Queue<string>();
@@ -16,9 +14,13 @@ public class FallingGameManager : MonoBehaviourPunCallbacks
     public GameObject gameResultsCanvas;
     public GameObject guiCanvas;
     public TimerBar timerBar;
+    public List<PlayerMinigameStats> playersMinigameStats;
+    public event System.EventHandler UpdatedPoints;
+
     // Start is called before the first frame update
     void Start()
     {
+        playersMinigameStats = new List<PlayerMinigameStats>();
         if (Instance != null)
         {
             return;
@@ -27,13 +29,14 @@ public class FallingGameManager : MonoBehaviourPunCallbacks
         UpdatePointsText();
         foreach(PlayerController player in GameManager.Instance.players)
         {
-            PlayerPoints newPlayerPoint = new PlayerPoints();
-            newPlayerPoint.playerId = player.playerStats.id;
-            newPlayerPoint.points = 0;
-            playersPoints.Add(newPlayerPoint);
+            PlayerMinigameStats newPlayerMinigameStat = new PlayerMinigameStats();
+            newPlayerMinigameStat.playerId = player.playerStats.id;
+            newPlayerMinigameStat.points = 0;
+            newPlayerMinigameStat.playerSpawnerDone = false;
+            playersMinigameStats.Add(newPlayerMinigameStat);
         }
-        ladderController.Initialize();
         LevelLoader.Instance.FadeIn();
+        StartCoroutine(InitializeGuiProcess());
     }
     private void Update()
     {
@@ -42,47 +45,51 @@ public class FallingGameManager : MonoBehaviourPunCallbacks
             string attackType = attackQueue.Dequeue();
             if (attackType == "right")
             {
-                FallingGameManager.Instance.photonView.RPC("FireRightCannon", RpcTarget.All, GetMostPoints().playerId);
+                photonView.RPC("FireRightCannon", RpcTarget.All, GetMostPoints().playerId);
             }
             else
             {
-                FallingGameManager.Instance.photonView.RPC("FireLeftCannon", RpcTarget.All, GetMostPoints().playerId);
+                photonView.RPC("FireLeftCannon", RpcTarget.All, GetMostPoints().playerId);
             }
         }
     }
-    public void AddPoints(int newPoints)
+    [PunRPC]
+    public void AddPoints(int playerId)
     {
-        PlayerController playerController = GameManager.Instance.GetMainPlayer();
-        points += newPoints;
-        PlayerPoints playerPoints = GetPlayerPoints(playerController.playerStats.id);
-        playerPoints.points = points;
-        UpdatePointsText();
-        ladderController.photonView.RPC("UpdateLadderInfo", RpcTarget.All);
-        this.photonView.RPC("UpdatePlayerPoints", RpcTarget.Others, playerController.playerStats.id, points);
+        PlayerMinigameStats playerMinigameStats = GetPlayerMinigameStats(playerId);
+        playerMinigameStats.points += 2;
+        if (GameManager.Instance.GetMainPlayer().playerStats.id == playerId)
+        {
+            points = playerMinigameStats.points;
+            UpdatePointsText();
+        }
+        if (UpdatedPoints != null)
+            UpdatedPoints(this, new System.EventArgs());
     }
-    public void ReducePoints(int newPoints)
+    [PunRPC]
+    public void ReducePoints(int playerId)
     {
-        PlayerController playerController = GameManager.Instance.GetMainPlayer();
-        points -= newPoints;
+        PlayerMinigameStats playerPoints = GetPlayerMinigameStats(playerId);
+        playerPoints.points -= 1;
+        if (GameManager.Instance.GetMainPlayer().playerStats.id == playerId)
+        {
+            points = playerPoints.points;
+            UpdatePointsText();
+        }
         UpdatePointsText();
-        PlayerPoints playerPoints = GetPlayerPoints(playerController.playerStats.id);
-        playerPoints.points = points;
-        UpdatePointsText();
-        ladderController.photonView.RPC("UpdateLadderInfo", RpcTarget.All);
-        this.photonView.RPC("UpdatePlayerPoints", RpcTarget.Others, playerController.playerStats.id, points);
+        if (UpdatedPoints != null)
+            UpdatedPoints(this, new System.EventArgs());
     }
     private void UpdatePointsText()
     {
         pointsText.text = points.ToString();
     }
-
     [PunRPC]
     public void QueueAttack(string attack)
     {
         if (PhotonNetwork.IsMasterClient)
             attackQueue.Enqueue(attack);
     }
-
     [PunRPC]
     public void FireLeftCannon(int playerId)
     {
@@ -99,15 +106,6 @@ public class FallingGameManager : MonoBehaviourPunCallbacks
         {
             if (!itemSpawner.FireRightCannon())
                 this.photonView.RPC("QueueAttack", RpcTarget.MasterClient, "right");
-        }
-    }
-    [PunRPC]
-    public void UpdatePlayerPoints(int playerId, int points)
-    {
-        PlayerPoints playerPoints = GetPlayerPoints(playerId);
-        if (playerPoints != null)
-        {
-            playerPoints.points = points;
         }
     }
     [PunRPC]
@@ -133,6 +131,24 @@ public class FallingGameManager : MonoBehaviourPunCallbacks
             return false;
         }
     }
+    public bool AllPlayersSpawnerDone()
+    {
+        if (GameManager.Instance.AllPlayersJoined())
+        {
+            foreach (PlayerMinigameStats playerMinigameStats in playersMinigameStats)
+            {
+                if (!playerMinigameStats.playerSpawnerDone)
+                { 
+                    return false;
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     [PunRPC]
     public void SetStateDone(int playerId)
     {
@@ -145,8 +161,19 @@ public class FallingGameManager : MonoBehaviourPunCallbacks
             }
         }
     }
-    public PlayerPoints GetPlayerPoints(int playerId) => playersPoints.First(x => x.playerId == playerId);
-    public PlayerPoints GetMostPoints() => playersPoints.OrderByDescending(x => x.points).First();
+    [PunRPC]
+    public void SetMinigameDone(int playerId)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PlayerController player = GameManager.Instance.GetPlayer(playerId);
+            if (!player.playerStats.currentMinigameOver)
+            {
+                player.playerStats.currentMinigameOver = true;
+            }
+        }
+    }
+    public PlayerMinigameStats GetPlayerMinigameStats(int playerId) => playersMinigameStats.First(x => x.playerId == playerId);
     public void ResetStateOnPlayers()
     {
         foreach (PlayerController player in GameManager.Instance.players)
@@ -178,10 +205,26 @@ public class FallingGameManager : MonoBehaviourPunCallbacks
         MinigameOverController gameOverController = gameResultsCanvas.GetComponent<MinigameOverController>();
         gameOverController.Initialize();
     }
+    [PunRPC]
+    public void SetSpawnerDone(int playerId)
+    {
+        PlayerMinigameStats playerPoints = GetPlayerMinigameStats(playerId);
+        playerPoints.playerSpawnerDone = true;
+    }
+    public PlayerMinigameStats GetMostPoints() => playersMinigameStats.OrderByDescending(x => x.points).First();
+    public System.Collections.IEnumerator InitializeGuiProcess()
+    {
+        while (!GameManager.Instance.AllPlayersJoined())
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
+        ladderController.Initialize();
+    }
 }
 
-public class PlayerPoints
+public class PlayerMinigameStats
 {
     public int playerId;
+    public bool playerSpawnerDone = false;
     public int points;
 }

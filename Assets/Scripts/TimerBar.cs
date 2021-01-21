@@ -18,7 +18,10 @@ public class TimerBar : MonoBehaviour
 
     public void SetTimeLeft(float timeLeft)
     {
-        slider.value = timeLeft;
-        fill.color = gradient.Evaluate(slider.normalizedValue);
+        if (fill != null && slider != null)
+        {
+            slider.value = timeLeft;
+            fill.color = gradient.Evaluate(slider.normalizedValue);
+        }
     }
 }

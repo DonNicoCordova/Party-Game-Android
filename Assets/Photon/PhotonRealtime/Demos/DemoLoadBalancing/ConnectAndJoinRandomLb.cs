@@ -58,13 +58,11 @@ namespace Photon.Realtime.Demo
 
         public void OnConnectedToMaster()
         {
-            Debug.Log("OnConnectedToMaster");
             this.lbc.OpJoinRandomRoom();    // joins any open room (no filter)
         }
 
         public void OnDisconnected(DisconnectCause cause)
         {
-            Debug.Log("OnDisconnected(" + cause + ")");
         }
 
         public void OnCustomAuthenticationResponse(Dictionary<string, object> data)
@@ -77,7 +75,6 @@ namespace Photon.Realtime.Demo
 
         public void OnRegionListReceived(RegionHandler regionHandler)
         {
-            Debug.Log("OnRegionListReceived");
             regionHandler.PingMinimumOfRegions(this.OnRegionPingCompleted, null);
         }
 
@@ -111,7 +108,6 @@ namespace Photon.Realtime.Demo
 
         public void OnJoinedRoom()
         {
-            Debug.Log("OnJoinedRoom");
         }
 
         public void OnJoinRoomFailed(short returnCode, string message)
@@ -120,7 +116,6 @@ namespace Photon.Realtime.Demo
 
         public void OnJoinRandomFailed(short returnCode, string message)
         {
-            Debug.Log("OnJoinRandomFailed");
             this.lbc.OpCreateRoom(new EnterRoomParams());
         }
 
@@ -133,8 +128,6 @@ namespace Photon.Realtime.Demo
         /// <param name="regionHandler">The regionHandler wraps up best region and other region relevant info.</param>
         private void OnRegionPingCompleted(RegionHandler regionHandler)
         {
-            Debug.Log("OnRegionPingCompleted " + regionHandler.BestRegion);
-            Debug.Log("RegionPingSummary: " + regionHandler.SummaryToCache);
             this.lbc.ConnectToRegionMaster(regionHandler.BestRegion.Code);
         }
     }

@@ -15,31 +15,19 @@ public class FallingGameLadderController : MonoBehaviourPunCallbacks
         for(int i = 0; i < playerPointsContainers.Length; ++i)
         {
             PlayerPointsContainer container = playerPointsContainers[i];
-            Debug.Log($"COUNTS. AT: {GameManager.Instance.actionTakenPlayers.Count} NAT: {GameManager.Instance.notActionTakenPlayers.Count}");
-            if (i < GameManager.Instance.notActionTakenPlayers.Count)
+            if (i < GameManager.Instance.actionTakenPlayers.Count)
             {
                 container.obj.SetActive(true);
-                PlayerController controller = GameManager.Instance.notActionTakenPlayers.Dequeue();
+                PlayerController controller = GameManager.Instance.actionTakenPlayers.Dequeue();
                 container.InitializeFromPlayer(controller);
-                GameManager.Instance.notActionTakenPlayers.Enqueue(controller);
+                GameManager.Instance.actionTakenPlayers.Enqueue(controller);
             } else
             {
                 container.obj.SetActive(false);
             }
         }
+        //UpdateLadderInfo();
         gameObject.SetActive(true);
-    }
-    [PunRPC]
-    public void UpdateLadderInfo()
-    {
-        foreach(PlayerPointsContainer container in playerPointsContainers)
-        {
-            if (container.obj.activeSelf)
-            {
-                container.UpdatePlayerPoints();
-                container.UpdateIndicator();
-            }
-        }
     }
     public void ToggleLadder()
     {
@@ -53,7 +41,19 @@ public class FallingGameLadderController : MonoBehaviourPunCallbacks
             animator.SetTrigger("LadderIn");
         }
     }
-    
+
+    //[PunRPC]
+    //public void UpdateLadderInfo()
+    //{
+    //    foreach (PlayerPointsContainer container in playerPointsContainers)
+    //    {
+    //        if (container.obj.activeSelf)
+    //        {
+    //            container.UpdatePlayerPoints();
+    //            container.UpdateIndicator();
+    //        }
+    //    }
+    //}
 }
 [System.Serializable]
 public class PlayerPointsContainer
@@ -70,12 +70,14 @@ public class PlayerPointsContainer
         nicknameText.text = player.playerStats.nickName;
         zonesCapturedText.text = player.playerStats.capturedZones.Count.ToString();
         playerColor.material = player.playerStats.mainColor;
-        playerPointsText.text = FallingGameManager.Instance.GetPlayerPoints(player.playerStats.id).points.ToString();
+        playerPointsText.text = FallingGameManager.Instance.GetPlayerMinigameStats(player.playerStats.id).points.ToString();
+        FallingGameManager.Instance.UpdatedPoints += (sender, args) => UpdatePlayerPoints();
         associatedPlayer = player;
     }
     public void UpdatePlayerPoints()
     {
-        playerPointsText.text = FallingGameManager.Instance.GetPlayerPoints(associatedPlayer.playerStats.id).points.ToString();
+        playerPointsText.text = FallingGameManager.Instance.GetPlayerMinigameStats(associatedPlayer.playerStats.id).points.ToString();
+        UpdateIndicator();
     }
     public void UpdateIndicator()
     {
@@ -87,5 +89,9 @@ public class PlayerPointsContainer
         {
             winningIndicator.gameObject.SetActive(false);
         }
+    }
+    private void OnDestroy()
+    {
+        FallingGameManager.Instance.UpdatedPoints -= (sender, args) => UpdateIndicator();
     }
 }

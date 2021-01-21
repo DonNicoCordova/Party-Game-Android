@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using System.Collections;
+
 public class LocationController : MonoBehaviourPunCallbacks
 {
     public Transform waypoint;
@@ -8,6 +10,16 @@ public class LocationController : MonoBehaviourPunCallbacks
     public SpriteRenderer minimapIcon;
     private PlayerController owner = null;
     private List<PlayerController> playersOnTop = new List<PlayerController>();
+    private Queue<int> setOwnerQueue = new Queue<int>();
+
+    public void Update()
+    {
+        if (setOwnerQueue.Count > 0)
+        {
+            int newOwnerId = setOwnerQueue.Peek();
+            StartCoroutine(setOwnerProcess(newOwnerId));
+        }
+    }
     public void ChangeColor(PlayerController newOwner)
     {
         
@@ -17,14 +29,23 @@ public class LocationController : MonoBehaviourPunCallbacks
     [PunRPC]
     public void SetOwner(int newOwnerId)
     {
-        if (owner != null)
+        setOwnerQueue.Enqueue(newOwnerId);
+    }
+    private IEnumerator setOwnerProcess(int newOwnerId)
+    {
+        if ( GameManager.Instance.players.Count > 0 && GameManager.Instance.GetPlayer(newOwnerId) != null)
         {
-            owner.playerStats.RemoveCapturedZones(this);
+            if (owner != null)
+            {
+                owner.playerStats.RemoveCapturedZones(this);
+            }
+            PlayerController newOwner = GameManager.Instance.GetPlayer(newOwnerId);
+            owner = newOwner;
+            newOwner.playerStats.AddCapturedZone(this);
+            ChangeColor(newOwner);
+            setOwnerQueue.Dequeue();
         }
-        PlayerController newOwner = GameManager.Instance.GetPlayer(newOwnerId);
-        owner = newOwner;
-        newOwner.playerStats.AddCapturedZone(this);
-        ChangeColor(newOwner);
+        yield return new WaitForSeconds(1f);
     }
     public PlayerController GetOwner()
     {

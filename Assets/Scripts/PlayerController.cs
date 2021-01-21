@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Collections.Generic;
+using System.Linq;
+
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private float _moveSpeed = 10f;
@@ -12,6 +15,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public Player photonPlayer;
     public bool IsGrounded;
     public Animator animator;
+    private Queue<Command> _commands = new Queue<Command>();
+    private Command _currentCommand;
     private void OnTriggerEnter(Collider other)
     {
 
@@ -30,11 +35,26 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         } 
         else if (other.CompareTag("FallTrigger"))
         {
-            Debug.Log("FALL DETECTED!");
             ResetPosition();
         }
     }
-    
+    public void ProcessCommands()
+    {
+        if (_currentCommand != null && _currentCommand.IsFinished == false)
+            return;
+
+        if (_commands.Any() == false)
+            return;
+
+        _currentCommand = _commands.Dequeue();
+        _currentCommand.Execute();
+
+        if (_currentCommand.Failed)
+        {
+            _currentCommand.Reset();
+            _commands.Enqueue(_currentCommand);
+        }
+    }
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("CapturePoint"))
@@ -43,8 +63,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             controller.RemovePlayer(this);
         }
     }
-    void Awake() => _characterController = GetComponent<CharacterController>();
-    void FixedUpdate()
+    private void Awake() => _characterController = GetComponent<CharacterController>();
+    private void FixedUpdate()
     {
         if (photonView.IsMine)
         {
@@ -67,6 +87,10 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
+    private void Update()
+    {
+        ProcessCommands();
+    }
     [PunRPC]
     public void Initialize(Player newPhotonPlayer)
     {
@@ -77,7 +101,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         newPlayerStats.mainColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber-1].mainColor;
         newPlayerStats.orbColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber-1].orbColor;
         newPlayerStats.SetPlayerGameObject(this.gameObject);
-
         // change player color
         PlayerGraficsController gfxController = gameObject.GetComponentInChildren<PlayerGraficsController>();
         gfxController.ChangeMaterial(newPlayerStats.mainColor);
@@ -104,6 +127,14 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
     [PunRPC]
+    public void Resume(Player newPhotonPlayer) 
+    {
+        GameManager.Instance.players.Add(this);
+        GameManager.Instance.LoadPlayers();
+        ResumeCommand resumeCommand = new ResumeCommand(newPhotonPlayer, this);
+        _commands.Enqueue(resumeCommand);
+    }
+    [PunRPC]
     public void SetPlayerPlace(int position)
     {
         playerStats.ladderPosition = position;
@@ -111,7 +142,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public void ResetPosition()
     {
         gameObject.SetActive(false);
-        transform.position = playerStats.lastCapturedZone.waypoint.position;
+        transform.position = playerStats.lastSpawnPosition.position;
         rig.velocity = Vector3.zero;
         rig.angularVelocity = Vector3.zero;
         playerStats.SetMovesLeft(playerStats.MovesLeft() + 1);
@@ -127,7 +158,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             string playerStatsObj = (string) stream.ReceiveNext();
             PlayerStats receivedPlayerStats = JsonUtility.FromJson<PlayerStats>(playerStatsObj);
-            playerStats.capturedZones = receivedPlayerStats.capturedZones;
             playerStats.ladderPosition = receivedPlayerStats.ladderPosition;
             playerStats.money = receivedPlayerStats.money;
             playerStats.mana = receivedPlayerStats.mana;

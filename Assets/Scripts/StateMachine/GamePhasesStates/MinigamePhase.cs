@@ -19,7 +19,7 @@ internal class MinigamePhase : IState
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
         }
         stayTime -= Time.deltaTime;
@@ -32,13 +32,14 @@ internal class MinigamePhase : IState
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
-            NetworkManager.Instance.photonView.RPC("ChangeScene", RpcTarget.All, "PickFallingItemMiniGame");
+            GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            MiniGameScene minigameScene = GameManager.Instance.miniGamesQueue.Dequeue();
+            string minigameSceneName = minigameScene.scene;
+            NetworkManager.Instance.photonView.RPC("ChangeScene", RpcTarget.All, minigameSceneName);
         }
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.minigamePhaseTimerDone)
             GameSystem.Instance.minigamePhaseTimerDone = false;
-        Debug.Log("ENTERING MINIGAME");
         //GameManager.Instance.ShowMessage("Ahora deberia estar un juego");
 
     }
@@ -51,11 +52,8 @@ internal class MinigamePhase : IState
 
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("CHANGING SCENE TO GAMEBOARD SCENE");
             NetworkManager.Instance.photonView.RPC("ChangeScene", RpcTarget.All, "GameboardScene");
         }
 
-        Debug.Log("EXITING MINIGAME");
-        
     }
 }

@@ -25,24 +25,22 @@ public class BasketController : MonoBehaviour
             FallingItemController catchedItem = collision.GetComponent<FallingItemController>();
             if (CheckIfItemIsCorrect(catchedItem))
             {
-                FallingGameManager.Instance.AddPoints(2);
+                FallingGameManager.Instance.photonView.RPC("AddPoints",RpcTarget.AllBuffered,GameManager.Instance.GetMainPlayer().playerStats.id);
                 catchedItem.Die();
             } else if (catchedItem.fallingItem.isAttackItem)
             {
                 if (cannonToTrigger == Cannon.left)
                 {
-                    Debug.Log("CALLING RPC");
                     FallingGameManager.Instance.photonView.RPC("FireLeftCannon", RpcTarget.Others, FallingGameManager.Instance.GetMostPoints().playerId);
                 } else if (cannonToTrigger == Cannon.right)
                 {
-                    Debug.Log("CALLING RPC");
                     FallingGameManager.Instance.photonView.RPC("FireRightCannon", RpcTarget.Others, FallingGameManager.Instance.GetMostPoints().playerId);
                 }
                 catchedItem.Die();
             } 
             else
             {
-                FallingGameManager.Instance.ReducePoints(1);
+                FallingGameManager.Instance.photonView.RPC("ReducePoints", RpcTarget.AllBuffered, GameManager.Instance.GetMainPlayer().playerStats.id);
                 catchedItem.Die();
             }
         }

@@ -18,7 +18,7 @@ internal class ThrowResultsPhase : IState
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
 
         }
@@ -31,13 +31,12 @@ internal class ThrowResultsPhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.throwResultsPhaseTimerDone)
             GameSystem.Instance.throwResultsPhaseTimerDone = false;
-        Debug.Log("ENTERED THROWRESULT");
         GameManager.Instance.ShowMessage("¡Que mala cuea! ajkajskkadj");
 
         GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
@@ -49,6 +48,5 @@ internal class ThrowResultsPhase : IState
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.throwResultsPhaseTimerDone)
             GameSystem.Instance.throwResultsPhaseTimerDone = false;
-        Debug.Log("EXITED THROWRESULT");
     }
 }

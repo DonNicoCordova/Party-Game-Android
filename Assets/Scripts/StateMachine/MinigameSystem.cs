@@ -27,7 +27,7 @@ public class MinigameSystem : MonoBehaviour
         phases.Add(instructionsPhase);
         var playPhase = new PlayPhase();
         phases.Add(playPhase);
-        var gameOverPhase = new MinigameOverPhase(10f);
+        var gameOverPhase = new MinigameOverPhase(5f);
         phases.Add(gameOverPhase);
 
         At(instructionsPhase, playPhase, AllPlayersReady());
@@ -41,7 +41,7 @@ public class MinigameSystem : MonoBehaviour
             //Change to make sure the minigame has ended, for now checks the same as gameboard phase done
             if (PhotonNetwork.IsMasterClient)
             {
-                return FallingGameManager.Instance.AllPlayersStateDone();
+                return GameManager.Instance.AllPlayersMinigameStateDone();
             }
             else
             {
@@ -54,8 +54,8 @@ public class MinigameSystem : MonoBehaviour
             //Change to make sure the minigame has ended, for now checks the same as gameboard phase done
             if (PhotonNetwork.IsMasterClient)
             {
-                Debug.Log($"CHECKING IF DONE PLAYING DoneSpawning: {FallingGameManager.Instance.itemSpawner.DoneSpawning} -- AllPlayerStateDone(): {FallingGameManager.Instance.AllPlayersStateDone()}");
-                return FallingGameManager.Instance.itemSpawner.DoneSpawning && FallingGameManager.Instance.AllPlayersStateDone();
+
+                return FallingGameManager.Instance.AllPlayersSpawnerDone() && GameManager.Instance.AllPlayersMinigameStateDone();
             }
             else
             {

@@ -33,7 +33,7 @@ internal class OrderDecidingPhase : IState
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
         }
     }
@@ -41,14 +41,13 @@ internal class OrderDecidingPhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
 
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.orderingPhaseTimerDone)
             GameSystem.Instance.orderingPhaseTimerDone = false;
-        Debug.Log("ENTERING ORDERING");
         GameManager.Instance.ShowMessage("Decidamos el orden de juego");
 
         GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
@@ -62,6 +61,5 @@ internal class OrderDecidingPhase : IState
         if (GameSystem.Instance.orderingPhaseTimerDone)
             GameSystem.Instance.orderingPhaseTimerDone = false;
         GameManager.Instance.throwController?.AnimateFinishedThrow();
-        Debug.Log("FINISHED ORDERING");
     }
 }

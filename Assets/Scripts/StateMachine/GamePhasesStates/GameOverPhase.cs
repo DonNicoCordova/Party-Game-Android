@@ -19,7 +19,7 @@ internal class GameOverPhase : IState
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
         }
         stayTime -= Time.deltaTime;
@@ -31,13 +31,12 @@ internal class GameOverPhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
 
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.gameOverPhaseTimerDone)
             GameSystem.Instance.gameOverPhaseTimerDone = false;
-        Debug.Log("ENTERING GAME OVER PHASE");
 
         GameManager.Instance.FinishGame();
         GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
@@ -51,6 +50,5 @@ internal class GameOverPhase : IState
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.gameOverPhaseTimerDone)
             GameSystem.Instance.gameOverPhaseTimerDone = false;
-        Debug.Log("EXITING FINAL RESULTS");
     }
 }

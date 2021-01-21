@@ -11,7 +11,7 @@ public class LevelLoader : MonoBehaviour
     public float transitionTime = 1f;
     public Sprite[] transitionImages;
     public Image transitionImageController;
-
+    public bool visible;
     public void Start()
     {
         if (Instance != null)
@@ -20,6 +20,7 @@ public class LevelLoader : MonoBehaviour
         } else
         {
             Instance = this;
+            visible = false;
         }
         DontDestroyOnLoad(gameObject);
     }
@@ -28,12 +29,16 @@ public class LevelLoader : MonoBehaviour
     {
         int index = Random.Range(0, transitionImages.Length);
         transitionImageController.sprite = transitionImages[index];
-        transition.SetTrigger("Start");
+        transition.ResetTrigger("FadeIn");
+        transition.SetTrigger("FadeOut");
+        visible = true;
         yield return new WaitForSeconds(transitionTime);
         PhotonNetwork.LoadLevel(sceneName);
     }
     public void FadeIn()
     {
-        transition.SetTrigger("Start");
+        visible = false;
+        transition.ResetTrigger("FadeOut");
+        transition.SetTrigger("FadeIn");
     }
 }

@@ -8,10 +8,11 @@ public class PlayerStats
 {
     [SerializeField]
     public int id;
-    [SerializeField]
     public List<LocationController> capturedZones = new List<LocationController>();
     [SerializeField]
     public float ladderPosition = 1;
+    [SerializeField]
+    public float throwOrder = 1;
     [SerializeField]
     public Material mainColor;
     [SerializeField]
@@ -32,13 +33,19 @@ public class PlayerStats
     public bool currentStateFinished = false;
     [SerializeField]
     public bool currentMinigameStateFinished = false;
-    public LocationController lastCapturedZone; 
+    [SerializeField]
+    public bool currentMinigameOver = false;
+    [SerializeField]
+    public Transform lastSpawnPosition; 
     [SerializeField]
     private GameObject playableCharacter;
     private int movesLeft;
     public event EventHandler<CapturedZoneArgs> CapturedZone;
     public int GetCapturedZonesAmount() => capturedZones.Count;
-    public bool PlayerDone() => moved && passed || passed;
+    public bool PlayerDone()
+    {
+        return moved || passed;
+    }
     public void AddCapturedZone(LocationController newCapturedZone)
     {
         if (!capturedZones.Contains(newCapturedZone))
@@ -59,15 +66,15 @@ public class PlayerStats
             CapturedZone(this, new CapturedZoneArgs(newAmount));
         }
     }
-    public void CaptureZone(LocationController location) 
+    public void CaptureZone(LocationController location)
     {
         if (movesLeft >= 1)
         {
-            lastCapturedZone = location;
+            lastSpawnPosition = location.waypoint.transform;
             movesLeft -= 1;
             location.photonView.RPC("SetOwner",RpcTarget.All,id);
             if (movesLeft == 0){
-                passed = true;
+                moved = true;
             }
         } 
     }

@@ -18,11 +18,5 @@ public class RoomSelectController : MonoBehaviour
     {
     }
 
-    public void OnClickCreateRoom()
-    {
-        if (!PhotonNetwork.IsConnected)
-            return;
-        netManager.CreateRoom(roomName.text, playerSelectController.GetPlayers());
-    }
     private void OnDisable() => PlayerPrefs.SetString("RoomName", roomName.text);
 }

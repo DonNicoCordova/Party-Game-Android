@@ -20,7 +20,7 @@ internal class Initialize : IState
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
         }
         stayTime -= Time.deltaTime;
@@ -36,10 +36,10 @@ internal class Initialize : IState
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameManager.Instance.PopulateMinigamesForRound();
         }
         GameManager.Instance.ResetStateOnPlayers();
-        Debug.Log($"ENTERING BEGINNING STATE");
 
         GameManager.Instance.StartNextRound();
 
@@ -63,7 +63,6 @@ internal class Initialize : IState
     
     public void OnExit()
     {
-        Debug.Log("CALLING EXIT OF BEGINNING STATE");
         stayTime = defaultStayTime;
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.initializePhaseTimerDone)

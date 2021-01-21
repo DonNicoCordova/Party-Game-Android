@@ -30,12 +30,12 @@ internal class InstructionsPhase : IState
     public void FixedTick() { }
     public void OnEnter()
     {
-        Debug.Log("CALLING ENTER OF INSTRUCTIONS STATE");
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
             FallingGameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
+        FallingGameManager.Instance.ResetStateOnPlayers();
         FallingGameManager.Instance.ShowInstructions();
         FallingGameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
         FallingGameManager.Instance.timerBar.SetTimeLeft(stayTime);
@@ -45,7 +45,6 @@ internal class InstructionsPhase : IState
     public void OnExit()
     {
         FallingGameManager.Instance.HideInstructions();
-        Debug.Log("CALLING EXIT OF INSTRUCTIONS STATE");
         stayTime = defaultStayTime;
         FallingGameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }

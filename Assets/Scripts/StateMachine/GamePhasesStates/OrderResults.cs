@@ -19,7 +19,7 @@ internal class OrderResultsPhase : IState
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
 
         }
@@ -33,14 +33,13 @@ internal class OrderResultsPhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
         GameManager.Instance.ResetStateOnPlayers();
         
         if (GameSystem.Instance.orderingResultsPhaseTimerDone)
             GameSystem.Instance.orderingResultsPhaseTimerDone = false;
-        Debug.Log("ENTERED ORDER RESULT PHASE");
         GameManager.Instance.ShowMessage("Así quedaron y que wea");
         GameManager.Instance.OrderPlayers();
 
@@ -55,7 +54,6 @@ internal class OrderResultsPhase : IState
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.orderingResultsPhaseTimerDone)
             GameSystem.Instance.orderingResultsPhaseTimerDone = false;
-        UnityEngine.Debug.Log("EXITED ORDER RESULT PHASE");
         //ORDENAR LISTA
     }
 }

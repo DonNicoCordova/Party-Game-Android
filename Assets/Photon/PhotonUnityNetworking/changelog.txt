@@ -247,7 +247,8 @@ Internal: SetLevelInPropsIfSynced() is now called in NewSceneLoaded() under the 
 Fixed: SetLevelInPropsIfSynced() now checks if the new value is not in the props yet and if so, it will set the property right away.
 Fixed: When using LoadLevel(), this will set the new sceneId as property right away (unless it didn't change). This should avoid delays on other clients loading the same scene.
 Changed: The condition when a async load is canceled. If at all, it only cancels a PUN-initiated loading, if the new sceneId does not refer to the scene in the properties.
-Fixed: PunCockpit script. Using the left side of the lobby panel, it now uses the default lobby (no name, type = default) for CreateRoom and JoinRandom. If you JoinLobby in one client and CreateRoom in another, the created room will also show up in the list (bottom right).
+Fixed: PunCockpit script. Using the left side of the lobby panel, it now uses the default lobby (no name, type = default) for CreateRoom and JoinRandom. If you 
+in one client and CreateRoom in another, the created room will also show up in the list (bottom right).
 
 v2.8.1 (21. March 2019)
 Fixed: Problem with assembly definition and WebSockets usage.

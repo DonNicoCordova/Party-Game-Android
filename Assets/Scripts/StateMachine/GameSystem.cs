@@ -4,7 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using System.Collections.Generic;
 
-public class GameSystem : GenericPunSingletonClass<GameSystem>
+public class GameSystem : GenericSingletonClass<GameSystem>
 {
     public Boolean initializePhaseTimerDone = false;
     public Boolean orderingPhaseTimerDone = false;
@@ -40,7 +40,7 @@ public class GameSystem : GenericPunSingletonClass<GameSystem>
         phases.Add(moveResultsPhase);
         var minigamePhase = new MinigamePhase(90f);
         phases.Add(minigamePhase);
-        var minigameResultsPhase = new MinigameResultsPhase(15f);
+        var minigameResultsPhase = new MinigameResultsPhase(5f);
         phases.Add(minigameResultsPhase);
         var finalResultsPhase = new FinalResultsPhase(3f);
         phases.Add(finalResultsPhase);
@@ -114,7 +114,7 @@ public class GameSystem : GenericPunSingletonClass<GameSystem>
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                return GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone();
+                return GameManager.Instance.GameBoardDone() && GameManager.Instance.AllPlayersStateDone();
             } else
             {
                 return false;
@@ -124,8 +124,7 @@ public class GameSystem : GenericPunSingletonClass<GameSystem>
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                Debug.Log($"CHECKING IF NEXTROUND IS READY: {GameManager.Instance.NextRoundReady()} {GameManager.Instance.AllPlayersStateDone()} {GameManager.Instance.AllPlayersCharacterSpawned()}");
-                return GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && GameManager.Instance.AllPlayersCharacterSpawned();
+                return GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && GameManager.Instance.AllPlayersCharacterSpawned() && GameManager.Instance.miniGamesQueue.Count > 0;
             }
             else
             {
@@ -137,7 +136,7 @@ public class GameSystem : GenericPunSingletonClass<GameSystem>
             //Change to make sure the minigame has ended, for now checks the same as gameboard phase done
             if (PhotonNetwork.IsMasterClient)
             {
-                return GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && FallingGameManager.Instance.AllPlayersStateDone();
+                return GameManager.Instance.GameBoardDone() && GameManager.Instance.AllPlayersMinigameOver() && GameManager.Instance.AllPlayersMinigameStateDone();
             }
             else
             {
@@ -148,7 +147,7 @@ public class GameSystem : GenericPunSingletonClass<GameSystem>
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                return GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && GameManager.Instance.GetRound() == GameManager.Instance.maxRounds;
+                return GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && (GameManager.Instance.GetRound() == GameManager.Instance.maxRounds || GameManager.Instance.miniGamesQueue.Count == 0);
             } else
             {
                 return false;

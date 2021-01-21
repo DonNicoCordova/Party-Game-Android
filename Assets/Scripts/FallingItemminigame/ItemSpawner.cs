@@ -18,7 +18,7 @@ public class ItemSpawner : MonoBehaviour
     public float defaultLeftCannonAttackCooldown = 1f;
     public float fireForce = 1000f;
     public float amountOfAttackItems = 6;
-
+    public int multiplyItems = 30;
     private List<float> usedSpawnPositions;
     private float delayTime;
     private Queue<GameObject> itemsPool;
@@ -49,7 +49,7 @@ public class ItemSpawner : MonoBehaviour
                 }
             } else
             {
-                while (i < 30)
+                while (i < multiplyItems)
                 {
                     randomizedItemsToThrow.Add(item);
                     i++;
@@ -74,7 +74,6 @@ public class ItemSpawner : MonoBehaviour
             } else
             {
                 StartCoroutine(FinishSpawning());
-                Debug.Log("NO MORE ITEMS TO THROW");
             }
             if (leftCannonAttackCooldown > 0)
             {
@@ -102,6 +101,8 @@ public class ItemSpawner : MonoBehaviour
     private IEnumerator FinishSpawning()
     {
         yield return new WaitForSeconds(4f);
+        int mainPlayerId = GameManager.Instance.GetMainPlayer().playerStats.id;
+        FallingGameManager.Instance.photonView.RPC("SetSpawnerDone", Photon.Pun.RpcTarget.All, mainPlayerId);
         DoneSpawning = true;
     }
     private void DropAllAtOnce()
@@ -152,7 +153,6 @@ public class ItemSpawner : MonoBehaviour
     }
     public bool FireLeftCannon()
     {
-        Debug.Log($"CHECKING IF ATTACK COOLDOWN <= 0 {leftCannonAttackCooldown}");
         if (leftCannonAttackCooldown <= 0)
         {
             foreach (GameObject item in itemsToThrow)
@@ -177,7 +177,6 @@ public class ItemSpawner : MonoBehaviour
     }
     public bool FireRightCannon()
     {
-        Debug.Log($"CHECKING IF ATTACK COOLDOWN <= 0 {rightCannonAttackCooldown}");
         if (rightCannonAttackCooldown <= 0)
         {
             foreach (GameObject item in itemsToThrow)

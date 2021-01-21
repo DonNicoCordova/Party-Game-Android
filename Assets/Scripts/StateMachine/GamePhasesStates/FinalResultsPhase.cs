@@ -19,7 +19,7 @@ internal class FinalResultsPhase : IState
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
         }
         stayTime -= Time.deltaTime;
@@ -31,14 +31,13 @@ internal class FinalResultsPhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
 
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.finalResultsPhaseTimerDone)
             GameSystem.Instance.finalResultsPhaseTimerDone = false;
-        Debug.Log("ENTERING FINAL RESULTS");
         GameManager.Instance.ShowMessage("Final de la ronda! WOOOOOOO");
 
         GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
@@ -52,6 +51,5 @@ internal class FinalResultsPhase : IState
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.finalResultsPhaseTimerDone)
             GameSystem.Instance.finalResultsPhaseTimerDone = false;
-        Debug.Log("EXITING FINAL RESULTS");
     }
 }

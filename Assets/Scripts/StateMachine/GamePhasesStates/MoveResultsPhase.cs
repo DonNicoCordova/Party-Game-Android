@@ -20,7 +20,7 @@ internal class MoveResultsPhase : IState
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
 
         }
@@ -34,14 +34,12 @@ internal class MoveResultsPhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         //reset state done
-        GameManager.Instance.ResetPlayers();
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.moveResultsPhaseTimerDone)
             GameSystem.Instance.moveResultsPhaseTimerDone = false;
-        Debug.Log("ENTERED MOVERESULTSPHASE");
         GameManager.Instance.ShowMessage("Este mensaje da risa... creo");
         GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
@@ -50,10 +48,10 @@ internal class MoveResultsPhase : IState
     public void OnExit()
     {
         GameManager.Instance.DisableJoystick();
+        GameManager.Instance.SavePlayers();
         stayTime = defaultStayTime;
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.moveResultsPhaseTimerDone)
             GameSystem.Instance.moveResultsPhaseTimerDone = false;
-        Debug.Log("EXITED MOVERESULTSPHASE");
     }
 }

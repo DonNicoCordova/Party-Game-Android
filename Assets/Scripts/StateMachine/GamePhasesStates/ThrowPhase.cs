@@ -32,7 +32,7 @@ internal class ThrowPhase : IState
             PlayerController player = GameManager.Instance?.GetMainPlayer();
             if (player)
             {
-                GameManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }
         }
     }
@@ -40,7 +40,7 @@ internal class ThrowPhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            GameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
+            GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
             GameManager.Instance.ClearThrows();
         }
         //reset state done
@@ -48,7 +48,6 @@ internal class ThrowPhase : IState
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.throwPhaseTimerDone)
             GameSystem.Instance.throwPhaseTimerDone = false;
-        Debug.Log("ENTERED THROWPHASE");
         GameManager.Instance.ShowMessage("¡Lanza tus dados!");
 
         GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
@@ -63,6 +62,5 @@ internal class ThrowPhase : IState
             GameSystem.Instance.throwPhaseTimerDone = false;
         GameManager.Instance.throwController?.EnableDicesAnimations();
         GameManager.Instance.throwController?.AnimateFinishedThrow();
-        Debug.Log("FINISHED THROWPHASE");
     }
 }
