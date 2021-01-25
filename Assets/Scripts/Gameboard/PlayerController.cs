@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private void OnTriggerEnter(Collider other)
     {
 
-        if (other.CompareTag("CapturePoint") && playerStats.MovesLeft() != 0)
+        if (other.CompareTag("CapturePoint") && playerStats.EnergyLeft() != 0)
         {
             LocationController controller = other.GetComponentInParent<LocationController>();
             if (!controller.CheckIfPlayerOnTop(this))
@@ -145,7 +145,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         transform.position = playerStats.lastSpawnPosition.position;
         rig.velocity = Vector3.zero;
         rig.angularVelocity = Vector3.zero;
-        playerStats.SetMovesLeft(playerStats.MovesLeft() + 1);
+        playerStats.AddEnergy(1);
         gameObject.SetActive(true);
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -159,20 +159,19 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             string playerStatsObj = (string) stream.ReceiveNext();
             PlayerStats receivedPlayerStats = JsonUtility.FromJson<PlayerStats>(playerStatsObj);
             playerStats.ladderPosition = receivedPlayerStats.ladderPosition;
-            playerStats.money = receivedPlayerStats.money;
-            playerStats.mana = receivedPlayerStats.mana;
-            playerStats.moved = receivedPlayerStats.moved;
-            playerStats.usedSkill = receivedPlayerStats.usedSkill;
+            playerStats.SetEnergyLeft(receivedPlayerStats.EnergyLeft());
             playerStats.passed = receivedPlayerStats.passed;
         }
 
     }
-
     public void ResetForNewRound()
     {
-        playerStats.moved = false;
-        playerStats.usedSkill = false;
         playerStats.passed = false;
         playerStats.currentStateFinished = false;
+        playerStats.currentMinigameStateFinished = false;
     }
+    public void CutBridge(Bridge bridgeToCut) { }
+    public void BuildBridge(Bridge bridgeToBuild) { }
+    public void AddStickyToBridge(Bridge bridgeToGetSticky) { }
+    public void ThrowBomb(LocationController locationToPaint) { }
 }

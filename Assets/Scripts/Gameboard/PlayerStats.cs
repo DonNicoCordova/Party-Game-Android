@@ -18,15 +18,9 @@ public class PlayerStats
     [SerializeField]
     public Material orbColor;
     [SerializeField]
-    public int money = 0;
-    [SerializeField]
-    public int mana = 20;
+    public int maxEnergy = 20;
     [SerializeField]
     public string nickName;
-    [SerializeField]
-    public bool moved = false;
-    [SerializeField]
-    public bool usedSkill = false;
     [SerializeField]
     public bool passed = false;
     [SerializeField]
@@ -39,12 +33,12 @@ public class PlayerStats
     public Transform lastSpawnPosition; 
     [SerializeField]
     private GameObject playableCharacter;
-    private int movesLeft;
+    private int energy;
     public event EventHandler<CapturedZoneArgs> CapturedZone;
     public int GetCapturedZonesAmount() => capturedZones.Count;
     public bool PlayerDone()
     {
-        return moved || passed;
+        return energy == 0 || passed;
     }
     public void AddCapturedZone(LocationController newCapturedZone)
     {
@@ -68,21 +62,27 @@ public class PlayerStats
     }
     public void CaptureZone(LocationController location)
     {
-        if (movesLeft >= 1)
+        if (energy >= 1)
         {
             lastSpawnPosition = location.waypoint.transform;
-            movesLeft -= 1;
+            energy -= 1;
             location.photonView.RPC("SetOwner",RpcTarget.All,id);
-            if (movesLeft == 0){
-                moved = true;
-            }
         } 
     }
-    public void SetMovesLeft(int moves)
+    public void SetEnergyLeft(int newEnergy)
     {
-        movesLeft = moves;
+        energy = newEnergy;
     }
-    public int MovesLeft() => movesLeft;
+    public void AddEnergy(int newEnergy)
+    {
+        energy += newEnergy;
+    }
+
+    public void ReduceEnergy(int newEnergy)
+    {
+        energy -= newEnergy;
+    }
+    public int EnergyLeft() => energy;
     public class CapturedZoneArgs : EventArgs
     {
         public CapturedZoneArgs(int newCapturedZones)

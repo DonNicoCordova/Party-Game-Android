@@ -12,6 +12,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : GenericSingletonClass<GameManager>
 {
     public Cinemachine.CinemachineVirtualCamera virtualCamera;
+    public GameObject saw;
     [Header("Dice")]
     public DiceController[] dicesInPlay;
 
@@ -68,6 +69,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     private Queue<string> statesQueue = new Queue<string>();
     private Queue<Command> _commands = new Queue<Command>();
     private Command _currentCommand;
+
     private void Start()
     {
         ConnectReferences();
@@ -491,6 +493,16 @@ public class GameManager : GenericSingletonClass<GameManager>
             miniMap = GameObject.FindGameObjectWithTag("MiniMap");
         }
         else if (GameObject.FindGameObjectWithTag("MiniMap") == null)
+        {
+            allReferencesReady = false;
+            return;
+        }
+
+        if (saw == null && GameObject.FindGameObjectWithTag("Saw") != null)
+        {
+            saw = GameObject.FindGameObjectWithTag("Saw");
+        }
+        else if (GameObject.FindGameObjectWithTag("Saw") == null)
         {
             allReferencesReady = false;
             return;

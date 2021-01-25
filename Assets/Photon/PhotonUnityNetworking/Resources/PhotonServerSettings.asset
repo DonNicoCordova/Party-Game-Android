@@ -64,6 +64,11 @@ MonoBehaviour:
   - AddPoints
   - ReducePoints
   - SetSpawnerDone
+  - Cut
+  - Fall
+  - SpawnAt
+  - Spawn
+  - BecomeSticky
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

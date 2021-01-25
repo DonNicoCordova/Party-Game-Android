@@ -27,7 +27,6 @@ public class ResumeCommand : Command
         oldPlayerStats.orbColor = GameManager.Instance.playerConfigs[_newPhotonPlayer.ActorNumber - 1].orbColor;
         oldPlayerStats.capturedZones.Clear();
         oldPlayerStats.SetPlayerGameObject(_playerController.gameObject);
-        oldPlayerStats.moved = false;
         oldPlayerStats.passed = false;
         PlayerGraficsController gfxController = _playerController.gameObject.GetComponentInChildren<PlayerGraficsController>();
         gfxController.ChangeMaterial(oldPlayerStats.mainColor);
@@ -39,7 +38,7 @@ public class ResumeCommand : Command
         {
             GameObject locationGo = GameObject.Find(locationName);
             LocationController location = locationGo.GetComponent<LocationController>();
-            oldPlayerStats.SetMovesLeft(oldPlayerStats.MovesLeft() + 1);
+            oldPlayerStats.AddEnergy(1);
             oldPlayerStats.CaptureZone(location);
         }
         // set photon player
