@@ -43,8 +43,6 @@ internal class Initialize : IState
 
         GameManager.Instance.StartNextRound();
 
-        GameManager.Instance.throwText.text = "0";
-
         if (GameSystem.Instance.initializePhaseTimerDone)
             GameSystem.Instance.initializePhaseTimerDone = false;
         if (GameManager.Instance.GetRound() == 0)

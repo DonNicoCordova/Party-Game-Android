@@ -37,7 +37,20 @@ internal class ThrowResultsPhase : IState
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.throwResultsPhaseTimerDone)
             GameSystem.Instance.throwResultsPhaseTimerDone = false;
-        GameManager.Instance.ShowMessage("¡Que mala cuea! ajkajskkadj");
+        int mainPlayerThrow = GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft();
+        if (mainPlayerThrow >= 2 && mainPlayerThrow <= 5)
+        {
+            GameManager.Instance.ShowMessage("¡Que mala cuea!");
+        }
+        else if (mainPlayerThrow > 5 && mainPlayerThrow <= 8)
+        {
+            GameManager.Instance.ShowMessage("¡Bastante bien!");
+        }
+        else if (mainPlayerThrow > 8 && mainPlayerThrow <= 12)
+        {
+            GameManager.Instance.ShowMessage("¡WOW! Juegate un kino...");
+        }
+        
 
         GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);

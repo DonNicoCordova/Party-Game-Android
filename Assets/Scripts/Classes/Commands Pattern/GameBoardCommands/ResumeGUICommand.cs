@@ -23,10 +23,12 @@ public class ResumeGUICommand : Command
                 return;
             }
         }
+        SkillsUI.Instance.Initialize();
         GameManager.Instance.DisableJoystick();
         GameManager.Instance.playersLadder.gameObject.SetActive(true);
         GameManager.Instance.gameOverUI.gameObject.SetActive(false);
         GameManager.Instance.playersLadder.Initialize();
+        SkillsUI.Instance.HideSkills();
         _finished = true;
         return;
     }

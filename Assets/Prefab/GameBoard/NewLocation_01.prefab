@@ -288,7 +288,7 @@ GameObject:
   - component: {fileID: 3522942604526183280}
   m_Layer: 10
   m_Name: MinimapIcon
-  m_TagString: Untagged
+  m_TagString: CapturePointIcon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

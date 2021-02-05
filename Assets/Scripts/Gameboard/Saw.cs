@@ -6,13 +6,16 @@ using Photon.Realtime;
 public class Saw : MonoBehaviourPunCallbacks
 {
     public Animator animator;
-
-    private Queue<CommandMono> _commands = new Queue<CommandMono>();
-    private CommandMono _currentCommand;
-
+    private Queue<Command> _commands = new Queue<Command>();
+    private Queue<Command> _priorityCommands = new Queue<Command>();
+    private Command _currentCommand;
+    [SerializeField]
+    private float defaultRetryTime = 1f;
+    private float retryTime;
     private void Start()
     {
         animator = gameObject.GetComponentInChildren<Animator>();
+        retryTime = defaultRetryTime;
     }
     private void Update()
     {
@@ -21,31 +24,33 @@ public class Saw : MonoBehaviourPunCallbacks
     public void ProcessCommands()
     {
         if (_currentCommand != null && _currentCommand.IsFinished == false)
+        {
+            _currentCommand.Execute();
             return;
-
-        if (_commands.Any() == false)
-            return;
-        _currentCommand = _commands.Dequeue();
-        _currentCommand.Execute();
-        if (_currentCommand.Failed)
+        }
+        if (_currentCommand != null && _currentCommand.Failed)
         {
             _currentCommand.Reset();
-            _commands.Enqueue(_currentCommand);
+            _priorityCommands.Enqueue(_currentCommand);
             _currentCommand = null;
+            return;
         }
-    }
-    [PunRPC]
-    public void Cut() 
-    {
-        CutCommand cutCommand = new CutCommand();
-        _commands.Enqueue(cutCommand);
-    }
-
-    [PunRPC]
-    public void SpawnAt(float positionX, float positionY, float positionZ)
-    {
-        Vector3 newPosition = new Vector3(positionX, positionY, positionZ);
-        SpawnCommand spawnCommand = new SpawnCommand(newPosition);
-        _commands.Enqueue(spawnCommand);
+        if (_commands.Any() == false && _priorityCommands.Any() == false)
+            return;
+        if (_priorityCommands.Count > 0)
+        {
+            _currentCommand = _priorityCommands.Dequeue();
+            _currentCommand.Execute();
+        }
+        else if (_commands.Count > 0)
+        {
+            _currentCommand = _commands.Dequeue();
+            if (_currentCommand.Failed)
+            {   
+                _currentCommand.Reset();
+                _priorityCommands.Enqueue(_currentCommand);
+                _currentCommand = null;
+            }
+        }
     }
 }

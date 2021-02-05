@@ -40,7 +40,6 @@ internal class MinigamePhase : IState
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.minigamePhaseTimerDone)
             GameSystem.Instance.minigamePhaseTimerDone = false;
-        //GameManager.Instance.ShowMessage("Ahora deberia estar un juego");
 
     }
 

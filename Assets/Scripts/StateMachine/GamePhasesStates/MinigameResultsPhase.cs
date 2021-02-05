@@ -56,7 +56,13 @@ internal class MinigameResultsPhase : IState
         {
             GameManager.Instance.SetCurrentState(this.GetType().Name);
         }
-        GameManager.Instance.ShowMessage("FELICIDADES! te ganaste todas estas cosas.");
+        if (GameManager.Instance.GetMainPlayer().playerStats.wonLastGame)
+        {
+            GameManager.Instance.ShowMessage("¡FELICIDADES! te ganaste todas estas cosas.");
+        } else
+        {
+            GameManager.Instance.ShowMessage("¡Que penita! Mejor suerte para la proxima...");
+        }
 
         GameManager.Instance.ResetStateOnPlayers();
         GameManager.Instance.notActionTakenPlayers.Clear();

@@ -40,7 +40,7 @@ internal class MoveResultsPhase : IState
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.moveResultsPhaseTimerDone)
             GameSystem.Instance.moveResultsPhaseTimerDone = false;
-        GameManager.Instance.ShowMessage("Este mensaje da risa... creo");
+        GameManager.Instance.ShowMessage("¡Se viene un minijuego!");
         GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }

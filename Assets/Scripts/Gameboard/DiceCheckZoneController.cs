@@ -45,8 +45,7 @@ public class DiceCheckZoneController : MonoBehaviour
                 string rpcParams = JsonUtility.ToJson(actualThrow);
                 GameboardRPCManager.Instance.photonView.RPC("AddThrow", RpcTarget.All, rpcParams);
                 GameManager.Instance.throwController.actualThrow = actualThrow;
-                GameManager.Instance.SetMainPlayerMoves(output);
-                GameManager.Instance.SetThrowText();
+                GameManager.Instance.SetMainPlayerEnergy(output);
                 sideColliders.Clear();
             }
         }

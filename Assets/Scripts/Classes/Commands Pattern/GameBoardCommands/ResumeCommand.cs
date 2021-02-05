@@ -68,8 +68,10 @@ public class ResumeCommand : Command
             }
             _playerController.joystick = GameManager.Instance.joystick.GetComponent<FloatingJoystick>();
         }
-
+        _playerController.playerNameText.text = oldPlayerStats.nickName;
+        _playerController.energyText.text = "0";
         _playerController.ResetPosition();
+        oldPlayerStats.EnergyChanged += (sender, args) => _playerController.UpdateEnergy();
         _finished = true;
     }
     public override bool IsFinished => _finished;

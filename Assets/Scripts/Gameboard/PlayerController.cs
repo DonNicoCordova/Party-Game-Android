@@ -3,6 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -17,22 +18,21 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public Animator animator;
     private Queue<Command> _commands = new Queue<Command>();
     private Command _currentCommand;
+    [Header("UI")]
+    public TextMeshProUGUI playerNameText;
+    public TextMeshProUGUI energyText;
     private void OnTriggerEnter(Collider other)
     {
 
-        if (other.CompareTag("CapturePoint") && playerStats.EnergyLeft() != 0)
+        if (other.CompareTag("CapturePoint") && playerStats.EnergyLeft() > 0)
         {
             LocationController controller = other.GetComponentInParent<LocationController>();
             if (!controller.CheckIfPlayerOnTop(this))
             {
                 controller.AddPlayer(this);
                 playerStats.CaptureZone(controller);
-                if (GameManager.Instance.ActualPlayerIsMainPlayer())
-                {
-                    GameManager.Instance.SetThrowText();
-                }
             }
-        } 
+        }
         else if (other.CompareTag("FallTrigger"))
         {
             ResetPosition();
@@ -98,20 +98,21 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         PlayerStats newPlayerStats = new PlayerStats();
         newPlayerStats.id = newPhotonPlayer.ActorNumber;
         newPlayerStats.nickName = newPhotonPlayer.NickName;
-        newPlayerStats.mainColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber-1].mainColor;
-        newPlayerStats.orbColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber-1].orbColor;
+        newPlayerStats.mainColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber - 1].mainColor;
+        newPlayerStats.orbColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber - 1].orbColor;
         newPlayerStats.SetPlayerGameObject(this.gameObject);
         // change player color
         PlayerGraficsController gfxController = gameObject.GetComponentInChildren<PlayerGraficsController>();
         gfxController.ChangeMaterial(newPlayerStats.mainColor);
-        
+        energyText.text = "0";
+        playerNameText.text = newPhotonPlayer.NickName;
         // set photon player
         photonPlayer = newPhotonPlayer;
 
         // add player to player list
         playerStats = newPlayerStats;
         GameManager.Instance.players.Add(this);
-        
+
         // Only main player should be affected by physics
         if (!photonView.IsMine)
         {
@@ -125,9 +126,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             GameManager.Instance.virtualCamera.LookAt = transform;
             joystick = GameManager.Instance.joystick.GetComponent<FloatingJoystick>();
         }
+        playerStats.EnergyChanged += (sender, args) => UpdateEnergy();
+
     }
     [PunRPC]
-    public void Resume(Player newPhotonPlayer) 
+    public void Resume(Player newPhotonPlayer)
     {
         GameManager.Instance.players.Add(this);
         GameManager.Instance.LoadPlayers();
@@ -159,10 +162,20 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             string playerStatsObj = (string) stream.ReceiveNext();
             PlayerStats receivedPlayerStats = JsonUtility.FromJson<PlayerStats>(playerStatsObj);
             playerStats.ladderPosition = receivedPlayerStats.ladderPosition;
+            playerStats.wonLastGame = receivedPlayerStats.wonLastGame;
             playerStats.SetEnergyLeft(receivedPlayerStats.EnergyLeft());
+            energyText.text = receivedPlayerStats.EnergyLeft().ToString();
             playerStats.passed = receivedPlayerStats.passed;
         }
 
+    }
+    public void UpdateEnergy()
+    {
+        energyText.text = playerStats.EnergyLeft().ToString();
+    }
+    public void WonMiniGame()
+    {
+        playerStats.wonLastGame = true;
     }
     public void ResetForNewRound()
     {
@@ -170,8 +183,24 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         playerStats.currentStateFinished = false;
         playerStats.currentMinigameStateFinished = false;
     }
-    public void CutBridge(Bridge bridgeToCut) { }
-    public void BuildBridge(Bridge bridgeToBuild) { }
-    public void AddStickyToBridge(Bridge bridgeToGetSticky) { }
-    public void ThrowBomb(LocationController locationToPaint) { }
+    public void CutBridge(Bridge bridgeToCut) 
+    {
+        bridgeToCut.photonView.RPC("CutOut", RpcTarget.AllBuffered);
+    }
+    public void BuildBridge(Bridge bridgeToBuild) 
+    {
+        bridgeToBuild.photonView.RPC("Spawn", RpcTarget.AllBuffered);
+    }
+    public void AddStickyToBridge(Bridge bridgeToGetSticky)
+    {
+        bridgeToGetSticky.photonView.RPC("BecomeSticky", RpcTarget.AllBuffered);
+    }
+    public void ThrowBomb(LocationController locationToPaint) 
+    {
+
+    }
+    private void OnDestroy()
+    {
+        playerStats.EnergyChanged -= (sender, args) => UpdateEnergy();
+    }
 }

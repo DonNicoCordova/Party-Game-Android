@@ -40,8 +40,8 @@ internal class OrderResultsPhase : IState
         
         if (GameSystem.Instance.orderingResultsPhaseTimerDone)
             GameSystem.Instance.orderingResultsPhaseTimerDone = false;
-        GameManager.Instance.ShowMessage("Así quedaron y que wea");
         GameManager.Instance.OrderPlayers();
+        GameManager.Instance.ShowMessage("Ya estan todos ordenaditos");
 
         GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);

@@ -30,11 +30,15 @@ public class PlayerStats
     [SerializeField]
     public bool currentMinigameOver = false;
     [SerializeField]
+    public bool wonLastGame = false;
+    [SerializeField]
     public Transform lastSpawnPosition; 
     [SerializeField]
     private GameObject playableCharacter;
+    [SerializeField]
     private int energy;
     public event EventHandler<CapturedZoneArgs> CapturedZone;
+    public event EventHandler<EnergyChangedArgs> EnergyChanged;
     public int GetCapturedZonesAmount() => capturedZones.Count;
     public bool PlayerDone()
     {
@@ -65,22 +69,32 @@ public class PlayerStats
         if (energy >= 1)
         {
             lastSpawnPosition = location.waypoint.transform;
-            energy -= 1;
+            ReduceEnergy(1);
             location.photonView.RPC("SetOwner",RpcTarget.All,id);
         } 
     }
     public void SetEnergyLeft(int newEnergy)
     {
         energy = newEnergy;
+
+        if (EnergyChanged != null)
+            EnergyChanged(this, new EnergyChangedArgs(energy));
     }
     public void AddEnergy(int newEnergy)
     {
         energy += newEnergy;
+
+        if (EnergyChanged != null)
+            EnergyChanged(this, new EnergyChangedArgs(energy));
     }
 
     public void ReduceEnergy(int newEnergy)
     {
         energy -= newEnergy;
+        if (energy == 0)
+            GameboardRPCManager.Instance.photonView.RPC("UpdateEnergy", RpcTarget.MasterClient, id, energy);
+        if (EnergyChanged != null)
+            EnergyChanged(this, new EnergyChangedArgs(energy));
     }
     public int EnergyLeft() => energy;
     public class CapturedZoneArgs : EventArgs
@@ -90,6 +104,14 @@ public class PlayerStats
             NewCapturedZones = newCapturedZones;
         }
         public int NewCapturedZones { get; private set; }
+    }
+    public class EnergyChangedArgs : EventArgs
+    {
+        public EnergyChangedArgs(int newEnergy)
+        {
+            NewEnergy = newEnergy;
+        }
+        public int NewEnergy { get; private set; }
     }
     public void SetPlayerGameObject(GameObject playerGO)
     {

@@ -25,7 +25,8 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
                 GameManager.Instance.actionTakenPlayers.Enqueue(GameManager.Instance.GetActualPlayer());
                 GameManager.Instance.SetActualPlayer(null);
             }
-            if(GameManager.Instance.notActionTakenPlayers.Count != 0)
+
+            if (GameManager.Instance.notActionTakenPlayers.Count != 0)
             {
                 GameManager.Instance.SetActualPlayer(GameManager.Instance.notActionTakenPlayers.Dequeue());
                 GameManager.Instance.playersLadder.UpdateLadderInfo();
@@ -77,6 +78,17 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
         }
     }
 
+    [PunRPC]
+    public void UpdateEnergy(int playerId, int newEnergy)
+    {
+        if (GameManager.Instance.GetMainPlayer().playerStats.id != playerId)
+        {
+            Debug.Log($"UPDATING ENERGY TO PLAYER ID: {playerId} WITH: {newEnergy}");
+            PlayerController player = GameManager.Instance.GetPlayer(playerId);
+            player.playerStats.SetEnergyLeft(newEnergy);
+            player.UpdateEnergy();
+        }
+    }
     public IEnumerator processImInGame()
     {
         while (this.photonView == null)

@@ -39,9 +39,9 @@ internal class MovePiecePhase : IState
             }
             if (GameManager.Instance.ActualPlayerIsMainPlayer() && !GameManager.Instance.joystick.activeSelf)
             {
-                GameManager.Instance.ShowMessage("Oh! eres tú, no te habia visto.");
+                GameManager.Instance.ShowMessage("¡Te toca!");
                 GameManager.Instance.EnableJoystick();
-                movesIndicator.MoveToPlayer();
+                SkillsUI.Instance.EnableSkillsButton();
             }
             if (actualPlayer.playerStats.PlayerDone() || turnDone)
             {
@@ -52,7 +52,6 @@ internal class MovePiecePhase : IState
                     {
                         GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
                     }
-                    movesIndicator.MoveToScreen();
                     actualPlayer.rig.velocity = Vector3.zero;
                     actualPlayer.rig.angularVelocity = Vector3.zero;
                 }
@@ -85,7 +84,6 @@ internal class MovePiecePhase : IState
         if (actualPlayer == null && PhotonNetwork.IsMasterClient)
             GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
         GameManager.Instance.ShowMessage("¡Hora de moverse!");
-        movesIndicator = GameManager.Instance.throwText.GetComponentInParent<MovesIndicatorController>();
         turnTime = defaultTurnTime;
         GameManager.Instance.timerBar.SetMaxTime(defaultTurnTime);
         GameManager.Instance.timerBar.SetTimeLeft(turnTime);

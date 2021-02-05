@@ -5,14 +5,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
-using Photon.Realtime;
 using System.IO;
-using UnityEngine.SceneManagement;
 
 public class GameManager : GenericSingletonClass<GameManager>
 {
     public Cinemachine.CinemachineVirtualCamera virtualCamera;
-    public GameObject saw;
     [Header("Dice")]
     public DiceController[] dicesInPlay;
 
@@ -21,7 +18,6 @@ public class GameManager : GenericSingletonClass<GameManager>
 
     [Header("Graphical interfaces")]
     public TextMeshProUGUI shakesText;
-    public TextMeshProUGUI throwText;
     public GameObject phaseIndicator;
     public Color32 normalTextColor;
     public LadderController playersLadder;
@@ -29,6 +25,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     public TimerBar timerBar;
     public GameOverController gameOverUI;
     public GameObject miniMap;
+
 
     [Header("Dice Locations")]
     public float lerpTime = 5.0f;
@@ -56,20 +53,19 @@ public class GameManager : GenericSingletonClass<GameManager>
     public Boolean allPlayersOnPosition = false;
     public Queue<MiniGameScene> miniGamesQueue = new Queue<MiniGameScene>();
 
-    
+
     [SerializeField]
     private List<MiniGameScene> miniGamesPool = new List<MiniGameScene>();
     private SavedPlayersCollection savedPlayersCollection;
     private PlayerController mainPlayer;
     private PlayerController actualPlayer = null;
-    private int round = -1; 
+    private int round = -1;
     private TextMeshProUGUI phaseText;
     private Animator phaseAnimator;
     private Queue<string> messagesQueue = new Queue<string>();
     private Queue<string> statesQueue = new Queue<string>();
     private Queue<Command> _commands = new Queue<Command>();
     private Command _currentCommand;
-
     private void Start()
     {
         ConnectReferences();
@@ -161,8 +157,8 @@ public class GameManager : GenericSingletonClass<GameManager>
 
         playersLadder.Initialize();
     }
-    public void StartNextRound() 
-    { 
+    public void StartNextRound()
+    {
         roundThrows.Clear();
         round++;
         roundFinished = false;
@@ -201,10 +197,6 @@ public class GameManager : GenericSingletonClass<GameManager>
     {
         StartCoroutine(processChangeState(newState));
     }
-    public void SetThrowText()
-    {
-        throwText.text = mainPlayer.playerStats.MovesLeft().ToString();
-    }
     public void PlayerPass()
     {
 
@@ -213,9 +205,10 @@ public class GameManager : GenericSingletonClass<GameManager>
             actualPlayer.playerStats.passed = true;
         }
     }
-    public void SetMainPlayerMoves(int moves)
+    public void SetMainPlayerEnergy(int energy)
     {
-        mainPlayer.playerStats.SetMovesLeft(moves);
+        GameboardRPCManager.Instance.photonView.RPC("UpdateEnergy", RpcTarget.Others, mainPlayer.playerStats.id, energy);
+        mainPlayer.playerStats.SetEnergyLeft(energy);
     }
     private IEnumerator processShowMessage(string message)
     {
@@ -231,11 +224,13 @@ public class GameManager : GenericSingletonClass<GameManager>
                 yield return new WaitForSeconds(1);
                 phaseText.text = "";
                 phaseAnimator.gameObject.SetActive(false);
-            } else
+            }
+            else
             {
                 messagesQueue.Enqueue(message);
             }
-        } else
+        }
+        else
         {
             messagesQueue.Enqueue(message);
         }
@@ -273,7 +268,8 @@ public class GameManager : GenericSingletonClass<GameManager>
                 }
             }
             return true;
-        } else
+        }
+        else
         {
             return false;
         }
@@ -314,7 +310,8 @@ public class GameManager : GenericSingletonClass<GameManager>
             return false;
         }
     }
-    public PlayerController GetPlayer(int playerId) {
+    public PlayerController GetPlayer(int playerId)
+    {
         bool playerExists = players.Any(x => x.playerStats.id == playerId);
         if (playerExists)
         {
@@ -326,7 +323,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
     }
     public bool AllPlayersJoined() => numberOfPlayers == PhotonNetwork.PlayerList.Length;
-    public bool AllPlayersCharacterSpawned() 
+    public bool AllPlayersCharacterSpawned()
     {
         return GameObject.FindGameObjectsWithTag("Player").Length == numberOfPlayers;
     }
@@ -343,13 +340,13 @@ public class GameManager : GenericSingletonClass<GameManager>
         var orderedPlayers = players.OrderByDescending(player => player.playerStats.capturedZones.Count).ToList();
         for (int i = 0; i < orderedPlayers.Count; i++)
         {
-            orderedPlayers[i].photonView.RPC("SetPlayerPlace", RpcTarget.All, i+1);
+            orderedPlayers[i].photonView.RPC("SetPlayerPlace", RpcTarget.All, i + 1);
         }
         playersLadder.photonView.RPC("UpdateLadderInfo", RpcTarget.All);
     }
     public void FinishGame()
     {
-        ToggleMinimap();
+        HideMinimap();
         gameOverUI.Initialize();
     }
     public void ResetPlayers()
@@ -360,7 +357,8 @@ public class GameManager : GenericSingletonClass<GameManager>
             {
                 player.ResetForNewRound();
             }
-        } else if (actionTakenPlayers.Count > 0)
+        }
+        else if (actionTakenPlayers.Count > 0)
         {
             while (actionTakenPlayers.Count > 0)
             {
@@ -382,12 +380,12 @@ public class GameManager : GenericSingletonClass<GameManager>
             allReferencesReady = false;
             return;
         }
-        if ((dicesInPlay == null || (dicesInPlay.Length > 0 && dicesInPlay[0] == null )) && GameObject.FindGameObjectsWithTag("Dice") != null)
+        if ((dicesInPlay == null || (dicesInPlay.Length > 0 && dicesInPlay[0] == null)) && GameObject.FindGameObjectsWithTag("Dice") != null)
         {
             GameObject[] taggedDices = GameObject.FindGameObjectsWithTag("Dice");
             DiceController[] newDicesInPlay = new DiceController[taggedDices.Length];
             int index = 0;
-            foreach(GameObject dice in taggedDices)
+            foreach (GameObject dice in taggedDices)
             {
                 DiceController diceController = dice.GetComponent<DiceController>();
                 newDicesInPlay[index] = diceController;
@@ -405,15 +403,6 @@ public class GameManager : GenericSingletonClass<GameManager>
             throwController = GameObject.FindGameObjectWithTag("ThrowPlatform").GetComponent<BoxAccelController>();
         }
         else if (GameObject.FindGameObjectWithTag("ThrowPlatform") == null)
-        {
-            allReferencesReady = false;
-            return;
-        }
-        if (throwText == null && GameObject.FindGameObjectWithTag("ThrowText") != null)
-        {
-            throwText = GameObject.FindGameObjectWithTag("ThrowText").GetComponent<TextMeshProUGUI>();
-        }
-        else if (GameObject.FindGameObjectWithTag("ThrowText") == null)
         {
             allReferencesReady = false;
             return;
@@ -498,23 +487,15 @@ public class GameManager : GenericSingletonClass<GameManager>
             return;
         }
 
-        if (saw == null && GameObject.FindGameObjectWithTag("Saw") != null)
-        {
-            saw = GameObject.FindGameObjectWithTag("Saw");
-        }
-        else if (GameObject.FindGameObjectWithTag("Saw") == null)
-        {
-            allReferencesReady = false;
-            return;
-        }
         allReferencesReady = true;
-
     }
     public void InitializeGUI()
     {
         DisableJoystick();
         playersLadder.gameObject.SetActive(false);
         gameOverUI.gameObject.SetActive(false);
+        SkillsUI.Instance.Initialize();
+        SkillsUI.Instance.HideSkills();
     }
     public void ResumeGUI()
     {
@@ -540,15 +521,15 @@ public class GameManager : GenericSingletonClass<GameManager>
             }
             locationsNames = locationsNames.Remove(locationsNames.Length - 1, 1);
             playerCapturedLocations.capturedLocations = locationsNames;
-            savedPlayersString += JsonUtility.ToJson(player.playerStats)+",";
-            capturedLocationsString += JsonUtility.ToJson(playerCapturedLocations)+",";
+            savedPlayersString += JsonUtility.ToJson(player.playerStats) + ",";
+            capturedLocationsString += JsonUtility.ToJson(playerCapturedLocations) + ",";
         }
 
         savedPlayersString = savedPlayersString.Remove(savedPlayersString.Length - 1, 1);
         capturedLocationsString = capturedLocationsString.Remove(capturedLocationsString.Length - 1, 1);
         capturedLocationsString += "]";
         savedPlayersString += "]";
-        jsonString += savedPlayersString+",";
+        jsonString += savedPlayersString + ",";
         jsonString += capturedLocationsString;
         jsonString += "}";
         string path;
@@ -587,18 +568,21 @@ public class GameManager : GenericSingletonClass<GameManager>
             index++;
         }
     }
-    public void ToggleMinimap()
+    public void HideMinimap()
     {
         if (miniMap.activeSelf)
         {
             miniMap.SetActive(false);
-        } else
+        }
+    }
+    public void ShowMinimap()
+    {
+        if (!miniMap.activeSelf)
         {
             miniMap.SetActive(true);
         }
     }
 }
-
 //These classes are for saving data over one scene to another
 
 [Serializable]

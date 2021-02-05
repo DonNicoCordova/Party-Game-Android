@@ -74,7 +74,7 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
                 ShakeRigidBodies();
                 timeSinceLastShake = Time.unscaledTime;
             }
-            if (Input.GetMouseButtonUp(0))
+            if ( Input.GetKeyDown("p") || Input.touchCount > 0 && EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId) && !throwDetected)
             {
                 DisableDicesAnimations();
                 throwDetected = true;
