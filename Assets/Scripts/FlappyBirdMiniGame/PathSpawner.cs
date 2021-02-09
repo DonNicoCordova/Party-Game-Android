@@ -11,7 +11,7 @@ public class PathSpawner : MonoBehaviour
     private float pathDelayTime;
     private float obstacleDelayTime;
     private static PathSpawner instance;
-    private int numberOfPlayers = 0;
+
     public static PathSpawner Instance
     {
         get
