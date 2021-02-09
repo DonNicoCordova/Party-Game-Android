@@ -23,6 +23,7 @@ TagManager:
   - VirtualCamera
   - MiniMap
   - Saw
+  - Path
   layers:
   - Default
   - TransparentFX

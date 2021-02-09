@@ -1,24 +1,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Photon.Pun;
 public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGameManager>
 {
-    public int points = 0;
-    public TimerBar timerBar;
     public GameObject instructionsCanvas;
     public GameObject gameResultsCanvas;
     public GameObject guiCanvas;
+    public GameObject explosion;
+    public float gravityFactor = 5;
+    [Header("Player")]
+    public GameObject spaceShipPrefab;
+    public Transform spawnPoint;
 
+    private int numberOfPlayers = 0;
     // Start is called before the first frame update
     void Start()
     {
-        LevelLoader.Instance.FadeIn();
-        StartCoroutine(InitializeGuiProcess());
+        //LevelLoader.Instance.FadeIn();
+        //StartCoroutine(InitializeGuiProcess());
+        Screen.autorotateToPortrait = false;
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
+        Physics.gravity = new Vector3(0, -gravityFactor, 0);
+    }
+    private void Update()
+    {
     }
     public bool AllPlayersStateDone()
     {
-        if (GameManager.Instance.AllPlayersJoined())
+        if (AllPlayersJoined())
         {
             foreach (PlayerController player in GameManager.Instance.players)
             {
@@ -33,6 +44,27 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
         {
             return false;
         }
+    }
+    public bool AllPlayersJoined() => numberOfPlayers == PhotonNetwork.PlayerList.Length;
+    [PunRPC]
+    private void ImInGame()
+    {
+        numberOfPlayers++;
+        if (AllPlayersJoined())
+        {
+            SpawnPlayer();
+        }
+    }
+    public void SpawnPlayer()
+    {
+        //LocationController playerSpawn = playerConfigs[PhotonNetwork.LocalPlayer.ActorNumber - 1].startingLocation;
+        //Transform waypoint = playerSpawn.waypoint;
+        //GameObject playerObj = PhotonNetwork.Instantiate(playerPrefab, waypoint.position, Quaternion.identity);
+        //PlayerController characterScript = playerObj.GetComponent<PlayerController>();
+        //characterScript.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
+        //characterScript.playerStats.lastSpawnPosition = waypoint.transform;
+        //playerSpawn.photonView.RPC("SetOwner", RpcTarget.AllBuffered, characterScript.playerStats.id);
+        ////Initialize player
     }
     [PunRPC]
     public void SetCurrentState(string state)
@@ -79,20 +111,17 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
     {
         guiCanvas.SetActive(false);
         instructionsCanvas.SetActive(true);
-        timerBar.gameObject.SetActive(true);
     }
     public void HideInstructions()
     {
 
         guiCanvas.SetActive(true);
         instructionsCanvas.SetActive(false);
-        timerBar.gameObject.SetActive(false);
     }
     public void ShowGameResults()
     {
         guiCanvas.SetActive(false);
         gameResultsCanvas.SetActive(true);
-        timerBar.gameObject.SetActive(true);
     }
     public System.Collections.IEnumerator InitializeGuiProcess()
     {
@@ -100,5 +129,9 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
         {
             yield return new WaitForSeconds(0.5f);
         }
+    }
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

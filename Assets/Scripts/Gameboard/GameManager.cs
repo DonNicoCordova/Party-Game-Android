@@ -74,6 +74,9 @@ public class GameManager : GenericSingletonClass<GameManager>
         phaseAnimator.gameObject.SetActive(false);
         InitializeGUI();
         LevelLoader.Instance.FadeIn();
+        Screen.autorotateToPortrait = false;
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
+        Physics.gravity = new Vector3(0, -9.81f, 0);
     }
     private void Update()
     {
