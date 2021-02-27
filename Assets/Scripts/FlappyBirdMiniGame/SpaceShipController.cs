@@ -1,26 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class SpaceShipController : MonoBehaviour
+public class SpaceShipController : MonoBehaviourPunCallbacks
 {
     public float velocity = 1;
     public GameObject propulsorParticle;
 
+    [SerializeField]
+    private SpriteRenderer colorRenderer;
+    [SerializeField]
+    private MeshCollider shipCollider;
     private Rigidbody rb;
+    [SerializeField]
     private bool enabledToPlay = false;
     private Animator anim;
     private float vertical;
+    private Player photonPlayer;
+    private FlappyRoyaleStats playerStats;
+    private float timeAlive;
     private void Start()
     {
-        rb = gameObject.GetComponentInChildren<Rigidbody>();
+        rb = gameObject.GetComponent<Rigidbody>();
         rb.useGravity = false;
-        StartCoroutine(EnableFalling());
         anim = gameObject.GetComponent<Animator>();
+        shipCollider = gameObject.GetComponent<MeshCollider>();
     }
     private void OnCollisionEnter(Collision collision)
     {
-        Explode();
+        if (photonView.IsMine && enabledToPlay)
+            this.photonView.RPC("Explode",RpcTarget.All);
     }
     private void Update()
     {
@@ -37,12 +48,22 @@ public class SpaceShipController : MonoBehaviour
             Boost();
             rb.velocity = Vector3.up * velocity;
         }
+        if (enabledToPlay)
+        {
+            timeAlive += Time.deltaTime;
+            playerStats.timeAlive = timeAlive;
+        }
     }
-    void Boost()
+    public void SetColor(Material newMaterial)
+    {
+        colorRenderer.color = newMaterial.color;
+    }
+    private void Boost()
     {
         propulsorParticle.GetComponentInChildren<ParticleSystem>().Play();
     }
-    void Explode()
+    [PunRPC]
+    private void Explode()
     {
         GameObject explosion = Instantiate(FlappyRoyaleGameManager.Instance.explosion, transform.position, Quaternion.identity);
         explosion.GetComponentInChildren<ParticleSystem>().Play();
@@ -54,10 +75,29 @@ public class SpaceShipController : MonoBehaviour
         yield return new WaitForSeconds(3f);
         Destroy(explosion);
     }
-    private IEnumerator EnableFalling()
+    public void EnableFalling()
     {
-        yield return new WaitForSeconds(3f);
         rb.useGravity = true;
         enabledToPlay = true;
+    }
+    [PunRPC]
+    public void Initialize(Player newPhotonPlayer)
+    {
+        // change player color
+        Material newColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber - 1].mainColor;
+        SetColor(newColor);
+        // set photon player
+        playerStats = FlappyRoyaleGameManager.Instance.GetStats(newPhotonPlayer.ActorNumber);
+        photonPlayer = newPhotonPlayer;
+
+        // Only main player should be affected by physics
+        if (!photonView.IsMine)
+        {
+            rb.isKinematic = true;
+        } else
+        { 
+            FlappyRoyaleGameManager.Instance.mainPlayer = this;
+            shipCollider.isTrigger = false;
+        }
     }
 }

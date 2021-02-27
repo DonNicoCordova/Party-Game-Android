@@ -24,7 +24,9 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         base.Awake();
         _stateMachine = new StateMachine();
 
-        var initialize = new Initialize(3f);
+        var initialize = new InitializeRound(3f);
+        phases.Add(initialize);
+        var welcome = new WelcomePhase(3f);
         phases.Add(initialize);
         var orderingPhase = new OrderDecidingPhase(15f);
         phases.Add(orderingPhase);
@@ -47,7 +49,7 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         var gameOverPhase = new GameOverPhase(3f);
         phases.Add(gameOverPhase);
 
-        At(initialize, orderingPhase, orderNotDefined());
+        At(welcome, orderingPhase, orderNotDefined());
         At(initialize, throwPhase, orderDefined());
         At(orderingPhase, orderingResultPhase, orderingThrowFinished());
         At(orderingResultPhase, initialize, orderingDone());
@@ -59,7 +61,7 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         At(minigameResultsPhase, gameOverPhase, finalRoundFinished());
         At(minigameResultsPhase, initialize, nextRoundReady());
 
-        StartCoroutine(Setup(initialize));
+        StartCoroutine(Setup(welcome));
         void At(IState from, IState to, Func<bool> condition) => _stateMachine.AddTransition(from, to, condition);
 
         Func<bool> orderingThrowFinished() => () => {
@@ -161,10 +163,12 @@ public class GameSystem : GenericSingletonClass<GameSystem>
     {
 
         yield return new WaitForSeconds(0.5f);
+        Debug.Log($"CHECK IF NOT ALL PLAYERS JOINED {!GameManager.Instance.AllPlayersJoined()}");
         while (!GameManager.Instance.AllPlayersJoined())
         {
             yield return new WaitForSeconds(0.5f);
         }
+        Debug.Log("CALLING SETSTATE");
         _stateMachine.SetState(initialState);
     }
 

@@ -43,7 +43,7 @@ internal class MovePiecePhase : IState
                 GameManager.Instance.EnableJoystick();
                 SkillsUI.Instance.EnableSkillsButton();
             }
-            if (actualPlayer.playerStats.PlayerDone() || turnDone)
+            if ((actualPlayer.playerStats.PlayerDone() || turnDone) && SkillsUI.Instance.noAnimationsPlaying)
             {
                 if (GameManager.Instance.ActualPlayerIsMainPlayer())
                 {
@@ -52,6 +52,7 @@ internal class MovePiecePhase : IState
                     {
                         GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
                     }
+                    SkillsUI.Instance.OnClickHideSkills();
                     actualPlayer.rig.velocity = Vector3.zero;
                     actualPlayer.rig.angularVelocity = Vector3.zero;
                 }

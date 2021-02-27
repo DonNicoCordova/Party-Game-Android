@@ -10,13 +10,13 @@ public class Bridge : MonoBehaviourPunCallbacks
     public Transform cutPosition2;
     public Transform cameraHighlighPosition;
     public MeshRenderer bridgeRenderer;
+    [SerializeField]
+    private Animator animator;
+    public bool usable = true;
 
     [Header("Minimap")]
     public SpriteRenderer minimapIcon;
     public SpriteRenderer minimapSelectableIcon;
-    public bool usable = true;
-    [SerializeField]
-    private Animator animator;
     private Transform originalPosition;
     private int energyCost = 0;
     private Vector3 originalScale;
@@ -24,12 +24,14 @@ public class Bridge : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        bridgeRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
+        if (bridgeRenderer == null)
+        {
+            bridgeRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
+        }
         if (!bridgeRenderer.enabled)
         {
             usable = false;
         }
-        animator = gameObject.GetComponentInChildren<Animator>();
         originalPosition = transform;
         if (minimapIcon != null)
         {
@@ -37,18 +39,25 @@ public class Bridge : MonoBehaviourPunCallbacks
         }
     }
     [PunRPC]
-    public void CutOut()
+    public void CutOut(PhotonMessageInfo info)
     {
-        Vector3 position1 = cutPosition1.position;
-        Vector3 position2 = cutPosition2.position;
-        animator.SetTrigger("Fall");
-        usable = false;
+        if (usable)
+        {
+            Vector3 position1 = cutPosition1.position;
+            Vector3 position2 = cutPosition2.position;
+            SkillsUI.Instance.noAnimationsPlaying = false;
+            SkillsUI.Instance.playerUsingSkills = info.Sender;
+            animator.SetTrigger("Fall");
+            usable = false;
+        }
     }
     [PunRPC]
-    public void Spawn()
+    public void Spawn(PhotonMessageInfo info)
     {
         if (!usable)
         {
+            SkillsUI.Instance.noAnimationsPlaying = false;
+            SkillsUI.Instance.playerUsingSkills = info.Sender;
             animator.SetTrigger("Spawn");
         }
     }
@@ -66,33 +75,28 @@ public class Bridge : MonoBehaviourPunCallbacks
     }
     public void BecomeClickable(SkillToUse mode)
     {
-        if (!minimapSelectableIcon.gameObject.activeSelf)
-        {
-            Button button = minimapIcon.GetComponent<Button>();
-            minimapIcon.gameObject.SetActive(true);
-            minimapSelectableIcon.gameObject.SetActive(true);
-            minimapIcon.sortingOrder += 4;
-            minimapSelectableIcon.sortingOrder += 4;
-            skillToUse = mode;
-            if (mode == SkillToUse.Spawn)
-            {
-                minimapIcon.enabled = true;
-            }
-        }
+        Button button = minimapIcon.GetComponent<Button>();
+        button.interactable = true;
+        minimapIcon.enabled = true;
+        minimapSelectableIcon.enabled = true;
+        minimapIcon.sortingOrder += 10;
+        minimapSelectableIcon.sortingOrder += 10;
+        skillToUse = mode;
     }
     public void RemoveClickable()
     {
-        if (minimapSelectableIcon.gameObject.activeSelf)
+        if (!bridgeRenderer.enabled) {
+            minimapIcon.enabled = false ;
+        } else
         {
-            if (!bridgeRenderer.enabled) {
-                minimapIcon.gameObject.SetActive(false);
-            }
-            minimapSelectableIcon.gameObject.SetActive(false);
-            minimapIcon.sortingOrder -= 4;
-            minimapSelectableIcon.sortingOrder -= 4;
-            Button button = minimapIcon.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
+            minimapIcon.enabled = true;
         }
+        minimapSelectableIcon.enabled = false;
+        minimapIcon.sortingOrder -= 10;
+        minimapSelectableIcon.sortingOrder -= 10;
+        Button button = minimapIcon.GetComponent<Button>();
+        button.interactable = false;
+        button.onClick.RemoveAllListeners();
     }
 
     public void ProcessClick()
@@ -103,6 +107,7 @@ public class Bridge : MonoBehaviourPunCallbacks
             switch (skillToUse)
             {
                 case SkillToUse.Cut:
+                    Debug.Log($"PROCESSING CUT {gameObject.name}");
                     photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
                     GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost);
                     StartCoroutine(DelayRPC("CutOut"));
@@ -120,7 +125,6 @@ public class Bridge : MonoBehaviourPunCallbacks
     }
     public void ShowMap()
     {
-        RemoveClickable();
         SkillsUI.Instance.ShowMap(skillToUse);
     }
     private IEnumerator DelayRPC(string call)

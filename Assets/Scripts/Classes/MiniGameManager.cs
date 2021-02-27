@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System.Linq;
-public class MiniGameManager : GenericPunSingletonClass<MiniGameManager>
+public class MiniGameManager<T> : GenericPunSingletonClass<T> where T : Component 
 {
     public GameObject instructionsCanvas;
     public GameObject gameResultsCanvas;
     public GameObject guiCanvas;
+    private int numberOfPlayers = 0;
     public bool AllPlayersStateDone()
     {
         if (GameManager.Instance.AllPlayersJoined())
@@ -26,10 +27,10 @@ public class MiniGameManager : GenericPunSingletonClass<MiniGameManager>
             return false;
         }
     }
+    public bool AllPlayersJoined() => numberOfPlayers == PhotonNetwork.PlayerList.Length;
     [PunRPC]
     public void SetCurrentState(string state)
     {
-        MinigameSystem.Instance.SetState(state);
     }
     [PunRPC]
     public void SetStateDone(int playerId)
@@ -57,8 +58,8 @@ public class MiniGameManager : GenericPunSingletonClass<MiniGameManager>
     }
     public void InitializeGameOver()
     {
-        MinigameOverController gameOverController = gameResultsCanvas.GetComponent<MinigameOverController>();
-        gameOverController.Initialize();
+        //FlappyMiniGameOverController gameOverController = gameResultsCanvas.GetComponent<FlappyMiniGameOverController>();
+        //gameOverController.Initialize();
     }
 }
 

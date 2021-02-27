@@ -82,19 +82,24 @@ public class PlayerStats
     }
     public void AddEnergy(int newEnergy)
     {
-        energy += newEnergy;
-
-        if (EnergyChanged != null)
-            EnergyChanged(this, new EnergyChangedArgs(energy));
+        if (playableCharacter.gameObject.GetPhotonView().IsMine)
+        {
+            energy += newEnergy;
+            GameboardRPCManager.Instance.photonView.RPC("UpdateEnergy", RpcTarget.Others, id, energy);
+            if (EnergyChanged != null)
+                EnergyChanged(this, new EnergyChangedArgs(energy));
+        }
     }
 
     public void ReduceEnergy(int newEnergy)
     {
-        energy -= newEnergy;
-        if (energy == 0)
-            GameboardRPCManager.Instance.photonView.RPC("UpdateEnergy", RpcTarget.MasterClient, id, energy);
-        if (EnergyChanged != null)
-            EnergyChanged(this, new EnergyChangedArgs(energy));
+        if (playableCharacter.gameObject.GetPhotonView().IsMine)
+        {
+            energy -= newEnergy;
+            GameboardRPCManager.Instance.photonView.RPC("UpdateEnergy", RpcTarget.Others, id, energy);
+            if (EnergyChanged != null)
+                EnergyChanged(this, new EnergyChangedArgs(energy));
+        }
     }
     public int EnergyLeft() => energy;
     public class CapturedZoneArgs : EventArgs

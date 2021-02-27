@@ -26,7 +26,6 @@ public class GameManager : GenericSingletonClass<GameManager>
     public GameOverController gameOverUI;
     public GameObject miniMap;
 
-
     [Header("Dice Locations")]
     public float lerpTime = 5.0f;
     public Transform diceOnCameraPosition1;
@@ -39,7 +38,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     public int numberOfPlayers;
 
     [Header("Game Configuration")]
-    public int maxRounds;
+    public int maxRounds = 10;
 
     [Header("Flags")]
     public Boolean diceOnDisplay = false;
@@ -74,9 +73,10 @@ public class GameManager : GenericSingletonClass<GameManager>
         phaseAnimator.gameObject.SetActive(false);
         InitializeGUI();
         LevelLoader.Instance.FadeIn();
-        Screen.autorotateToPortrait = false;
-        Screen.orientation = ScreenOrientation.LandscapeLeft;
-        Physics.gravity = new Vector3(0, -9.81f, 0);
+        Screen.autorotateToPortrait = true;
+        Screen.autorotateToLandscapeLeft = false;
+        Screen.autorotateToLandscapeRight = false;
+        Screen.orientation = ScreenOrientation.Portrait;
     }
     private void Update()
     {
@@ -558,17 +558,20 @@ public class GameManager : GenericSingletonClass<GameManager>
     public void PopulateMinigamesForRound()
     {
         int index = 0;
+        Debug.Log($"i = {index}");
         while (index < maxRounds && miniGamesPool.Any())
         {
+            Debug.Log($"index < maxRounds && miniGamesPool.Any() => {index} < {maxRounds} && {miniGamesPool.Any()}");
             var rand = new System.Random();
-            var pollIndex = rand.Next(miniGamesPool.Count);
-            MiniGameScene miniGame = miniGamesPool[pollIndex];
-            if (numberOfPlayers >= miniGame.minimumPlayers)
-            {
-                miniGamesQueue.Enqueue(miniGame);
-                miniGamesPool.RemoveAt(pollIndex);
-            }
+            List<MiniGameScene> playableGames = miniGamesPool.FindAll(mg => numberOfPlayers >= mg.minimumPlayers);
+            var poolIndex = rand.Next(playableGames.Count);
+            MiniGameScene miniGame = playableGames[poolIndex];
+            Debug.Log($"MINIGAME TO CHECK IF PLAYABLE {JsonUtility.ToJson(miniGame)}");
+            Debug.Log($"NUMBER OF PLAYERS: {numberOfPlayers}");
+            miniGamesQueue.Enqueue(miniGame);
+            miniGamesPool.Remove(miniGame);
             index++;
+            Debug.Log($"ADDING TO INDEX => {index}");
         }
     }
     public void HideMinimap()

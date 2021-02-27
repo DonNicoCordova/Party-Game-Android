@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-public class PathSpawner : MonoBehaviour
+using Photon.Pun;
+using Photon.Realtime;
+public class PathSpawner : MonoBehaviourPunCallbacks
 {
     public List<GameObject> paths = new List<GameObject>();
-    public List<GameObject> obstacles = new List<GameObject>();
+    public List<string> obstacles = new List<string>();
     public Transform spawnPosition;
     public float defaultDelayTime = 1f;
     private float pathDelayTime;
     private float obstacleDelayTime;
     private static PathSpawner instance;
+    private bool enabledToSpawn = false;
 
     public static PathSpawner Instance
     {
@@ -48,25 +51,34 @@ public class PathSpawner : MonoBehaviour
             paths.Add(firstPath);
             pathDelayTime = defaultDelayTime;
         }
-        if (obstacleDelayTime <= 0f)
+        if (PhotonNetwork.IsMasterClient)
         {
-            PlaceObstacle();
-            obstacleDelayTime = 4 * defaultDelayTime;
+            if (obstacleDelayTime <= 0f && enabledToSpawn)
+            {
+                int randomIndex = Random.Range(0, obstacles.Count);
+                string obstacle = obstacles[randomIndex];
+                this.photonView.RPC("PlaceObstacle", RpcTarget.All, obstacle);
+                obstacleDelayTime = 4 * defaultDelayTime;
+            }
+            obstacleDelayTime -= Time.deltaTime;
+            obstacleDelayTime = Mathf.Clamp(obstacleDelayTime, 0f, Mathf.Infinity);
         }
         pathDelayTime -= Time.deltaTime;
         pathDelayTime = Mathf.Clamp(pathDelayTime, 0f, Mathf.Infinity);
-        obstacleDelayTime -= Time.deltaTime;
-        obstacleDelayTime = Mathf.Clamp(obstacleDelayTime, 0f, Mathf.Infinity);
     }
     public void MovePath(GameObject path)
     {
         path.transform.position = spawnPosition.position;
     }
-    public void PlaceObstacle()
+    public void EnableSpawning()
     {
-        int randomIndex = Random.Range(0, obstacles.Count);
-        GameObject obstacle = Instantiate(obstacles[randomIndex], spawnPosition.position, Quaternion.identity);
-        StartCoroutine(destroyObstacle(obstacle));
+        enabledToSpawn = true;
+    }
+    [PunRPC]
+    public void PlaceObstacle(string obstacle)
+    {
+        GameObject obstacleGo = PhotonNetwork.Instantiate(obstacle, spawnPosition.position, Quaternion.identity);
+        StartCoroutine(destroyObstacle(obstacleGo));
     }
 
     public IEnumerator destroyObstacle(GameObject obstacle)

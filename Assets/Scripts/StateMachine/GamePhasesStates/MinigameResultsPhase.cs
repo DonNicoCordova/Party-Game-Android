@@ -33,9 +33,11 @@ internal class MinigameResultsPhase : IState
             GameManager.Instance.timerBar?.SetTimeLeft(stayTime);
         } else
         {
+            Debug.Log("TRYING TO CONNECT REFERENCES");
             GameManager.Instance.ConnectReferences();
             if (GameManager.Instance.allReferencesReady && GameManager.Instance.AllPlayersCharacterSpawned())
             {
+                Debug.Log("SETUP COMPLETE");
                 setupComplete = true;
                 LevelLoader.Instance.FadeIn();
                 GameManager.Instance.RefreshPhaseAnimator();
@@ -52,6 +54,7 @@ internal class MinigameResultsPhase : IState
     public void FixedTick() { }
     public void OnEnter()
     {
+        Debug.Log($"ENTERING MINIGAME RESULTS PHASE ON ROUND {GameManager.Instance.GetRound()}");
         if (PhotonNetwork.IsMasterClient)
         {
             GameManager.Instance.SetCurrentState(this.GetType().Name);
@@ -63,7 +66,7 @@ internal class MinigameResultsPhase : IState
         {
             GameManager.Instance.ShowMessage("¡Que penita! Mejor suerte para la proxima...");
         }
-
+        setupComplete = false;
         GameManager.Instance.ResetStateOnPlayers();
         GameManager.Instance.notActionTakenPlayers.Clear();
         GameManager.Instance.actionTakenPlayers.Clear();
@@ -73,6 +76,8 @@ internal class MinigameResultsPhase : IState
     }
     public void OnExit()
     {
+        Debug.Log($"EXITING MINIGAME RESULTS PHASE ON ROUND {GameManager.Instance.GetRound()}");
+
         stayTime = defaultStayTime;
         GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }

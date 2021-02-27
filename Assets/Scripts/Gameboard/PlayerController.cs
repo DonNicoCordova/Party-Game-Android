@@ -21,6 +21,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     [Header("UI")]
     public TextMeshProUGUI playerNameText;
     public TextMeshProUGUI energyText;
+    [SerializeField]
+    private GameObject energyContainer;
+    public bool enabledToPlay = false;
     private void OnTriggerEnter(Collider other)
     {
 
@@ -66,7 +69,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private void Awake() => _characterController = GetComponent<CharacterController>();
     private void FixedUpdate()
     {
-        if (photonView.IsMine)
+        if (photonView.IsMine && enabledToPlay)
         {
             if (joystick.gameObject.activeSelf && GameManager.Instance.ActualPlayerIsMainPlayer())
             {
@@ -127,7 +130,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             joystick = GameManager.Instance.joystick.GetComponent<FloatingJoystick>();
         }
         playerStats.EnergyChanged += (sender, args) => UpdateEnergy();
-
+        HideEnergyContainer();
+        enabledToPlay = true;
     }
     [PunRPC]
     public void Resume(Player newPhotonPlayer)
@@ -202,5 +206,16 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private void OnDestroy()
     {
         playerStats.EnergyChanged -= (sender, args) => UpdateEnergy();
+    }
+    public void ShowEnergyContainer() 
+    {
+        if (!energyContainer.activeSelf)
+        {
+            energyContainer.SetActive(true);
+        }
+    }
+    private void HideEnergyContainer() 
+    {
+        energyContainer.SetActive(false);
     }
 }

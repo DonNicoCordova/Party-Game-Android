@@ -10,21 +10,18 @@ public class FallingGameManager : GenericPunSingletonClass<FallingGameManager>
     public int points = 0;
     public Queue<string> attackQueue = new Queue<string>();
     public TimerBar timerBar;
+    public event System.EventHandler UpdatedPoints;
+    public List<FallingMinigameStats> playersMinigameStats;
     public GameObject instructionsCanvas;
     public GameObject gameResultsCanvas;
     public GameObject guiCanvas;
-    public event System.EventHandler UpdatedPoints;
-    public List<FallingMinigameStats> playersMinigameStats;
+    private int numberOfPlayers = 0;
 
     // Start is called before the first frame update
     void Start()
     {
         playersMinigameStats = new List<FallingMinigameStats>();
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
+
         UpdatePointsText();
         foreach(PlayerController player in GameManager.Instance.players)
         {
@@ -55,10 +52,11 @@ public class FallingGameManager : GenericPunSingletonClass<FallingGameManager>
             return false;
         }
     }
+    public bool AllPlayersJoined() => numberOfPlayers == PhotonNetwork.PlayerList.Length;
     [PunRPC]
     public void SetCurrentState(string state)
     {
-        MinigameSystem.Instance.SetState(state);
+        FallingMinigameSystem.Instance.SetState(state);
     }
     [PunRPC]
     public void SetStateDone(int playerId)
@@ -86,7 +84,7 @@ public class FallingGameManager : GenericPunSingletonClass<FallingGameManager>
     }
     public void InitializeGameOver()
     {
-        MinigameOverController gameOverController = gameResultsCanvas.GetComponent<MinigameOverController>();
+        FallingMinigameOverController gameOverController = gameResultsCanvas.GetComponent<FallingMinigameOverController>();
         gameOverController.Initialize();
     }
     private void Update()
