@@ -1149,6 +1149,7 @@ MonoBehaviour:
     lastSpawnPosition: {fileID: 0}
     playableCharacter: {fileID: 0}
     energy: 0
+    turnDone: 0
   rig: {fileID: 3516471651007979380}
   IsGrounded: 0
   animator: {fileID: 6057256821174708557}

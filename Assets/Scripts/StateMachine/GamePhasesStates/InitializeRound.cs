@@ -26,13 +26,12 @@ internal class InitializeRound : IState
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
 
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void FixedTick() { }
     public void OnEnter()
     {
-
+        GameManager.Instance.timerBar.SetTimeLeft(0);
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
@@ -50,15 +49,12 @@ internal class InitializeRound : IState
             player.ShowEnergyContainer(); 
         }
         GameManager.Instance.ShowMessage($"¡Ronda {GameManager.Instance.GetRound()}!");
-        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
 
     
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.initializePhaseTimerDone)
             GameSystem.Instance.initializePhaseTimerDone = false;
         GameManager.Instance.throwController?.AnimateReadyToPlay();

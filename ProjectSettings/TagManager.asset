@@ -24,6 +24,9 @@ TagManager:
   - MiniMap
   - Saw
   - Path
+  - CapturePointIcon
+  - BridgeIcon
+  - EnergyCounter
   layers:
   - Default
   - TransparentFX

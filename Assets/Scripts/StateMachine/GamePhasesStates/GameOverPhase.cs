@@ -24,7 +24,6 @@ internal class GameOverPhase : IState
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
     public void FixedTick() { }
     public void OnEnter()
@@ -39,15 +38,13 @@ internal class GameOverPhase : IState
             GameSystem.Instance.gameOverPhaseTimerDone = false;
 
         GameManager.Instance.FinishGame();
-        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(0);
 
     }
     public void OnExit()
     {
         stayTime = defaultStayTime;
 
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.gameOverPhaseTimerDone)
             GameSystem.Instance.gameOverPhaseTimerDone = false;
     }

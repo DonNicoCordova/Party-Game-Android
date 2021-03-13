@@ -25,6 +25,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     public TimerBar timerBar;
     public GameOverController gameOverUI;
     public GameObject miniMap;
+    public EnergyCounter energyCounter = null;
 
     [Header("Dice Locations")]
     public float lerpTime = 5.0f;
@@ -71,8 +72,6 @@ public class GameManager : GenericSingletonClass<GameManager>
         phaseText = phaseIndicator.GetComponentInChildren<TextMeshProUGUI>();
         phaseAnimator = phaseIndicator.GetComponent<Animator>();
         phaseAnimator.gameObject.SetActive(false);
-        InitializeGUI();
-        LevelLoader.Instance.FadeIn();
         Screen.autorotateToPortrait = true;
         Screen.autorotateToLandscapeLeft = false;
         Screen.autorotateToLandscapeRight = false;
@@ -183,7 +182,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     {
         return notActionTakenPlayers.Count == numberOfPlayers && playersOrdered;
     }
-    public bool RoundDone() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers && roundFinished;
+    public bool RoundDone() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers && SkillsUI.Instance.noAnimationsPlaying;
     public bool NextRoundReady()
     {
         return notActionTakenPlayers.Count == numberOfPlayers && actionTakenPlayers.Count == 0;
@@ -416,7 +415,6 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("PhaseIndicator") == null)
         {
-
             allReferencesReady = false;
             return;
         }
@@ -489,16 +487,27 @@ public class GameManager : GenericSingletonClass<GameManager>
             allReferencesReady = false;
             return;
         }
-
+        if (energyCounter == null && GameObject.FindGameObjectWithTag("EnergyCounter") != null)
+        {
+            
+            energyCounter = GameObject.FindGameObjectWithTag("EnergyCounter").gameObject.GetComponent<EnergyCounter>();
+        }
+        else if (GameObject.FindGameObjectWithTag("EnergyCounter") == null)
+        {
+            allReferencesReady = false;
+            return;
+        }
         allReferencesReady = true;
     }
     public void InitializeGUI()
     {
+
         DisableJoystick();
         playersLadder.gameObject.SetActive(false);
         gameOverUI.gameObject.SetActive(false);
         SkillsUI.Instance.Initialize();
         SkillsUI.Instance.HideSkills();
+        energyCounter.Hide();
     }
     public void ResumeGUI()
     {
@@ -558,20 +567,15 @@ public class GameManager : GenericSingletonClass<GameManager>
     public void PopulateMinigamesForRound()
     {
         int index = 0;
-        Debug.Log($"i = {index}");
         while (index < maxRounds && miniGamesPool.Any())
         {
-            Debug.Log($"index < maxRounds && miniGamesPool.Any() => {index} < {maxRounds} && {miniGamesPool.Any()}");
             var rand = new System.Random();
             List<MiniGameScene> playableGames = miniGamesPool.FindAll(mg => numberOfPlayers >= mg.minimumPlayers);
             var poolIndex = rand.Next(playableGames.Count);
             MiniGameScene miniGame = playableGames[poolIndex];
-            Debug.Log($"MINIGAME TO CHECK IF PLAYABLE {JsonUtility.ToJson(miniGame)}");
-            Debug.Log($"NUMBER OF PLAYERS: {numberOfPlayers}");
             miniGamesQueue.Enqueue(miniGame);
             miniGamesPool.Remove(miniGame);
             index++;
-            Debug.Log($"ADDING TO INDEX => {index}");
         }
     }
     public void HideMinimap()

@@ -13,9 +13,6 @@ public class SkillsUI : MonoBehaviour
     [SerializeField]
     private GameObject skillsPanel;
 
-    [Header("TEST")]
-    public Bridge bridgeToLookAt;
-
     [Header("Skills")]
     public List<SkillInfo> skills = new List<SkillInfo>();
     public List<SkillButton> skillButtons = new List<SkillButton>();
@@ -65,7 +62,11 @@ public class SkillsUI : MonoBehaviour
                 if (hit.collider.gameObject.tag == "BridgeIcon")
                 {
                     Bridge bridgeSelected = hit.collider.gameObject.GetComponentInParent<Bridge>();
-                    bridgeSelected.ProcessClick();
+                    Button minimapButton = hit.collider.gameObject.GetComponent<Button>();
+                    if (minimapButton.interactable)
+                    {
+                        bridgeSelected.ProcessClick();
+                    }
                 }
             }
         }
@@ -101,7 +102,6 @@ public class SkillsUI : MonoBehaviour
     private void Start()
     {
         bridges = new List<Bridge>(GameObject.FindObjectsOfType<Bridge>());
-        Debug.Log($"BRIDGES AFTER START SEARCH: {JsonUtility.ToJson(bridges)}");
         locations = new List<LocationController>(GameObject.FindObjectsOfType<LocationController>());
     }
     public void HideSkills()
@@ -121,6 +121,7 @@ public class SkillsUI : MonoBehaviour
     }
     public void MoveCameraBackToPlayer()
     {
+        GameManager.Instance.energyCounter.Hide();
         if (cinemachineAnimator.GetCurrentAnimatorStateInfo(0).IsName("MoveToShowMap") || cinemachineAnimator.GetCurrentAnimatorStateInfo(0).IsName("MoveToPlace"))
         {
             playerUsingSkills = null;
@@ -134,10 +135,10 @@ public class SkillsUI : MonoBehaviour
     }
     public void OnClickShowSkills()
     {
-        
+        GameManager.Instance.energyCounter.Show();
         if (!skillsPanel.activeSelf)
         {
-            foreach(SkillButton skillButton in skillButtons)
+            foreach (SkillButton skillButton in skillButtons)
             {
                 Button button = skillButton.obj.GetComponent<Button>();
                 if (skillButton.CanAfford())
@@ -191,7 +192,6 @@ public class SkillsUI : MonoBehaviour
     }
     public void ShowMap(SkillToUse skill)
     {
-
         HideSkills();
         GameManager.Instance.DisableJoystick();
         GameManager.Instance.HideMinimap();

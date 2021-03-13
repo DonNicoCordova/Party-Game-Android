@@ -24,7 +24,6 @@ internal class FinalResultsPhase : IState
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
     public void FixedTick() { }
     public void OnEnter()
@@ -39,16 +38,14 @@ internal class FinalResultsPhase : IState
         if (GameSystem.Instance.finalResultsPhaseTimerDone)
             GameSystem.Instance.finalResultsPhaseTimerDone = false;
         GameManager.Instance.ShowMessage("Final de la ronda! WOOOOOOO");
+        GameManager.Instance.timerBar.SetTimeLeft(0);
 
-        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
 
     }
     public void OnExit()
     {
         stayTime = defaultStayTime;
 
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.finalResultsPhaseTimerDone)
             GameSystem.Instance.finalResultsPhaseTimerDone = false;
     }

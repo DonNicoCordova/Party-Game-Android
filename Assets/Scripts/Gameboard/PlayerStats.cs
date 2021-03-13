@@ -37,6 +37,8 @@ public class PlayerStats
     private GameObject playableCharacter;
     [SerializeField]
     private int energy;
+    [SerializeField]
+    public bool turnDone = false;
     public event EventHandler<CapturedZoneArgs> CapturedZone;
     public event EventHandler<EnergyChangedArgs> EnergyChanged;
     public int GetCapturedZonesAmount() => capturedZones.Count;
@@ -69,14 +71,17 @@ public class PlayerStats
         if (energy >= 1)
         {
             lastSpawnPosition = location.waypoint.transform;
-            ReduceEnergy(1);
+            ReduceEnergy(1, "CAPTURE");
             location.photonView.RPC("SetOwner",RpcTarget.All,id);
         } 
     }
     public void SetEnergyLeft(int newEnergy)
     {
         energy = newEnergy;
-
+        if (energy == 0)
+        {
+            turnDone = true;
+        }
         if (EnergyChanged != null)
             EnergyChanged(this, new EnergyChangedArgs(energy));
     }
@@ -91,11 +96,15 @@ public class PlayerStats
         }
     }
 
-    public void ReduceEnergy(int newEnergy)
+    public void ReduceEnergy(int newEnergy, string reason)
     {
         if (playableCharacter.gameObject.GetPhotonView().IsMine)
         {
             energy -= newEnergy;
+            if (energy == 0)
+            {
+                turnDone = true;
+            }
             GameboardRPCManager.Instance.photonView.RPC("UpdateEnergy", RpcTarget.Others, id, energy);
             if (EnergyChanged != null)
                 EnergyChanged(this, new EnergyChangedArgs(energy));

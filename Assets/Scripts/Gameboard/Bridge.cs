@@ -45,8 +45,8 @@ public class Bridge : MonoBehaviourPunCallbacks
         {
             Vector3 position1 = cutPosition1.position;
             Vector3 position2 = cutPosition2.position;
-            SkillsUI.Instance.noAnimationsPlaying = false;
             SkillsUI.Instance.playerUsingSkills = info.Sender;
+            Debug.Log($"{info.Sender.NickName} IS USING CUT");
             animator.SetTrigger("Fall");
             usable = false;
         }
@@ -56,8 +56,8 @@ public class Bridge : MonoBehaviourPunCallbacks
     {
         if (!usable)
         {
-            SkillsUI.Instance.noAnimationsPlaying = false;
             SkillsUI.Instance.playerUsingSkills = info.Sender;
+            Debug.Log($"{info.Sender.NickName} IS USING CUT");
             animator.SetTrigger("Spawn");
         }
     }
@@ -65,6 +65,11 @@ public class Bridge : MonoBehaviourPunCallbacks
     public void BecomeSticky()
     {
         energyCost = 3;
+    }
+    [PunRPC]
+    public void SetNoAnimationIsPlaying(bool state)
+    {
+        SkillsUI.Instance.noAnimationsPlaying = state;
     }
     [PunRPC]
     public void MoveCameraToHighlightArea()
@@ -86,7 +91,7 @@ public class Bridge : MonoBehaviourPunCallbacks
     public void RemoveClickable()
     {
         if (!bridgeRenderer.enabled) {
-            minimapIcon.enabled = false ;
+            minimapIcon.enabled = false;
         } else
         {
             minimapIcon.enabled = true;
@@ -101,24 +106,28 @@ public class Bridge : MonoBehaviourPunCallbacks
 
     public void ProcessClick()
     {
+        Debug.Log($"PROCESSING CLICK ON BRIDGE {gameObject.name}");
         SkillInfo skillInfo = SkillsUI.Instance.GetSkillInfo(skillToUse);
         if (skillInfo.energyCost <= GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft())
         {
             switch (skillToUse)
             {
                 case SkillToUse.Cut:
-                    Debug.Log($"PROCESSING CUT {gameObject.name}");
                     photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
-                    GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost);
+                    Debug.Log($"CALLING REDUCE ENERGY FROM CUT -{skillInfo.energyCost}");
+                    GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"UPDATING ENERGY TO PLAYER ID: {GameManager.Instance.GetMainPlayer().playerStats.nickName} WITH: -{skillInfo.energyCost} FOR REASON CUT ");
+                    GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "CUT");
                     StartCoroutine(DelayRPC("CutOut"));
                     break;
                 case SkillToUse.Spawn:
                     photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
-                    GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost);
+                    Debug.Log($"CALLING REDUCE ENERGY FROM SPAWN -{skillInfo.energyCost}"); 
+                    GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"UPDATING ENERGY TO PLAYER ID: {GameManager.Instance.GetMainPlayer().playerStats.nickName} WITH: -{skillInfo.energyCost} FOR REASON SPAWN");
+                    GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "SPAWN");
                     StartCoroutine(DelayRPC("Spawn"));
                     break;
                 case SkillToUse.Sticky:
-                    GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost);
+                    GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "STICKY");
                     break;
             }
         }
@@ -129,7 +138,9 @@ public class Bridge : MonoBehaviourPunCallbacks
     }
     private IEnumerator DelayRPC(string call)
     {
-        yield return new WaitForSeconds(1.8f);
+        Debug.Log("SETTING NOANIMATIONSPLAYING TO FALSE");
+        photonView.RPC("SetNoAnimationIsPlaying", RpcTarget.All, false);
+        yield return new WaitForSeconds(1.6f);
         photonView.RPC(call, RpcTarget.All);
     }
 }

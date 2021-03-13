@@ -30,7 +30,6 @@ internal class MinigameResultsPhase : IState
             }
             stayTime -= Time.deltaTime;
             stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-            GameManager.Instance.timerBar?.SetTimeLeft(stayTime);
         } else
         {
             Debug.Log("TRYING TO CONNECT REFERENCES");
@@ -45,8 +44,6 @@ internal class MinigameResultsPhase : IState
                 {
                     GameManager.Instance.notActionTakenPlayers.Enqueue(player);
                 }
-                GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
-                GameManager.Instance.timerBar.SetTimeLeft(stayTime);
                 GameManager.Instance.ResumeGUI();
             }
         }
@@ -69,9 +66,8 @@ internal class MinigameResultsPhase : IState
         setupComplete = false;
         GameManager.Instance.ResetStateOnPlayers();
         GameManager.Instance.notActionTakenPlayers.Clear();
+        GameManager.Instance.timerBar.SetTimeLeft(0);
         GameManager.Instance.actionTakenPlayers.Clear();
-        GameManager.Instance.timerBar?.SetMaxTime(defaultStayTime);
-        GameManager.Instance.timerBar?.SetTimeLeft(stayTime);
 
     }
     public void OnExit()
@@ -79,6 +75,5 @@ internal class MinigameResultsPhase : IState
         Debug.Log($"EXITING MINIGAME RESULTS PHASE ON ROUND {GameManager.Instance.GetRound()}");
 
         stayTime = defaultStayTime;
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
 }

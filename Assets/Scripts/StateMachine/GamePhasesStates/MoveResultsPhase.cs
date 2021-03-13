@@ -26,12 +26,12 @@ internal class MoveResultsPhase : IState
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void FixedTick() { }
     public void OnEnter()
     {
+        GameManager.Instance.ShowMessage("¡Se viene un minijuego!");
         if (PhotonNetwork.IsMasterClient)
         {
             GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
@@ -40,9 +40,8 @@ internal class MoveResultsPhase : IState
         GameManager.Instance.ResetStateOnPlayers();
         if (GameSystem.Instance.moveResultsPhaseTimerDone)
             GameSystem.Instance.moveResultsPhaseTimerDone = false;
-        GameManager.Instance.ShowMessage("¡Se viene un minijuego!");
-        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(0);
+
     }
 
     public void OnExit()
@@ -50,7 +49,6 @@ internal class MoveResultsPhase : IState
         GameManager.Instance.DisableJoystick();
         GameManager.Instance.SavePlayers();
         stayTime = defaultStayTime;
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.moveResultsPhaseTimerDone)
             GameSystem.Instance.moveResultsPhaseTimerDone = false;
     }

@@ -4295,6 +4295,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 86ec89ec96e51cf489dc68dfcab32d1a, type: 3}
+--- !u!114 &1936793537 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6108249338241532011, guid: 614102791435b084a9ffa285268c83e1, type: 3}
+  m_PrefabInstance: {fileID: 613096729323318951}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1f030bc540f3dd45877aba007b5378b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1963802405
 GameObject:
   m_ObjectHideFlags: 0
@@ -5267,6 +5278,10 @@ PrefabInstance:
     - target: {fileID: 3819476692652249549, guid: 614102791435b084a9ffa285268c83e1, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3863698356782004883, guid: 614102791435b084a9ffa285268c83e1, type: 3}
+      propertyPath: m_TagString
+      value: EnergyCounter
       objectReference: {fileID: 0}
     - target: {fileID: 3889445101800571871, guid: 614102791435b084a9ffa285268c83e1, type: 3}
       propertyPath: m_AnchorMax.y
@@ -6789,6 +6804,10 @@ PrefabInstance:
       propertyPath: playerPrefab
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
+      propertyPath: energyCounter
+      value: 
+      objectReference: {fileID: 1936793537}
     - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
       propertyPath: playersLadder
       value: 

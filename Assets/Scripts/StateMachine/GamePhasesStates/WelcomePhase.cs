@@ -26,13 +26,13 @@ internal class WelcomePhase : IState
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
 
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
 
     public void FixedTick() { }
     public void OnEnter()
     {
-        
+        GameManager.Instance.InitializeGUI();
+        LevelLoader.Instance.FadeIn();
         //reset state done
         if (PhotonNetwork.IsMasterClient)
         {
@@ -45,8 +45,7 @@ internal class WelcomePhase : IState
         if (GameSystem.Instance.initializePhaseTimerDone)
             GameSystem.Instance.initializePhaseTimerDone = false;
         GameManager.Instance.ShowMessage("¡Bienvenido a tu fiestita!");
-        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(0);
     }
 
     
@@ -54,11 +53,9 @@ internal class WelcomePhase : IState
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("CALLING POPULATE MINIGAMES FOR ROUND");
             GameManager.Instance.PopulateMinigamesForRound();
         }
         stayTime = defaultStayTime;
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.initializePhaseTimerDone)
             GameSystem.Instance.initializePhaseTimerDone = false;
         GameManager.Instance.throwController?.AnimateReadyToPlay();

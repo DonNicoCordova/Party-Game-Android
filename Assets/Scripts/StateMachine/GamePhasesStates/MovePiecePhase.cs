@@ -9,7 +9,8 @@ internal class MovePiecePhase : IState
     private float defaultTurnTime = 30f;
     private float stayTime;
     private float turnTime;
-    private bool turnDone = false;
+    private bool turnTimerDone = false;
+    private bool yourTurnMessage = false;
     private MovesIndicatorController movesIndicator;
     public MovePiecePhase(float minimumTime, float minimumTurnTime)
     {
@@ -22,28 +23,32 @@ internal class MovePiecePhase : IState
     {
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-        if (stayTime == 0f)
-        {
-            GameSystem.Instance.movePiecePhaseTimerDone = true;
-        }
         //Only mainClient can rotate over players and only informs the other clients
         PlayerController actualPlayer = GameManager.Instance.GetActualPlayer();
-        if (actualPlayer != null)
+        if (actualPlayer != null && !actualPlayer.playerStats.PlayerDone())
         {
-            turnTime -= Time.deltaTime;
-            turnTime = Mathf.Clamp(turnTime, 0f, Mathf.Infinity);
+            if (SkillsUI.Instance.noAnimationsPlaying)
+            {
+                turnTime -= Time.deltaTime;
+                turnTime = Mathf.Clamp(turnTime, 0f, Mathf.Infinity);
+            }
             GameManager.Instance.timerBar.SetTimeLeft(turnTime);
             if (turnTime == 0f)
             {
-                turnDone = true;
+                turnTimerDone = true;
             }
-            if (GameManager.Instance.ActualPlayerIsMainPlayer() && !GameManager.Instance.joystick.activeSelf)
+            if (GameManager.Instance.ActualPlayerIsMainPlayer() && !yourTurnMessage)
             {
                 GameManager.Instance.ShowMessage("¡Te toca!");
+                yourTurnMessage = true;
+            }
+            if (GameManager.Instance.ActualPlayerIsMainPlayer() && !GameManager.Instance.joystick.activeSelf && SkillsUI.Instance.playerUsingSkills == null)
+            {
+                GameboardRPCManager.Instance.photonView.RPC("DebugMessage",RpcTarget.MasterClient, $"ENABLING JOYSTICK AND SKILLS BUTTON ON PLAYER {GameManager.Instance.GetMainPlayer().photonPlayer.NickName}");
                 GameManager.Instance.EnableJoystick();
                 SkillsUI.Instance.EnableSkillsButton();
             }
-            if ((actualPlayer.playerStats.PlayerDone() || turnDone) && SkillsUI.Instance.noAnimationsPlaying)
+            if (turnTimerDone && SkillsUI.Instance.noAnimationsPlaying)
             {
                 if (GameManager.Instance.ActualPlayerIsMainPlayer())
                 {
@@ -52,20 +57,21 @@ internal class MovePiecePhase : IState
                     {
                         GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
                     }
-                    SkillsUI.Instance.OnClickHideSkills();
                     actualPlayer.rig.velocity = Vector3.zero;
                     actualPlayer.rig.angularVelocity = Vector3.zero;
                 }
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
+                    GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.All);
                 }
+
+                yourTurnMessage = false;
                 turnTime = defaultTurnTime;
             }
         }
         else if (PhotonNetwork.IsMasterClient)
         {
-            GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
+            GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.All);
         }
     }
 
@@ -83,7 +89,7 @@ internal class MovePiecePhase : IState
         if (GameSystem.Instance.movePiecePhaseTimerDone)
             GameSystem.Instance.movePiecePhaseTimerDone = false;
         if (actualPlayer == null && PhotonNetwork.IsMasterClient)
-            GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.AllBuffered);
+            GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.All);
         GameManager.Instance.ShowMessage("¡Hora de moverse!");
         turnTime = defaultTurnTime;
         GameManager.Instance.timerBar.SetMaxTime(defaultTurnTime);
