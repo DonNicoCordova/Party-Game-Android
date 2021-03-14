@@ -24,30 +24,32 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         base.Awake();
         _stateMachine = new StateMachine();
 
-        var initialize = new Initialize(3f);
+        var initialize = new InitializeRound(2f);
+        phases.Add(initialize);
+        var welcome = new WelcomePhase(2f);
         phases.Add(initialize);
         var orderingPhase = new OrderDecidingPhase(15f);
         phases.Add(orderingPhase);
-        var orderingResultPhase = new OrderResultsPhase(3f);
+        var orderingResultPhase = new OrderResultsPhase(2f);
         phases.Add(orderingResultPhase);
         var throwPhase = new ThrowPhase(15f);
         phases.Add(throwPhase);
-        var throwResultsPhase = new ThrowResultsPhase(3f);
+        var throwResultsPhase = new ThrowResultsPhase(2f);
         phases.Add(throwResultsPhase);
         var movePiecePhase = new MovePiecePhase(3f, 60f);
         phases.Add(movePiecePhase);
-        var moveResultsPhase = new MoveResultsPhase(3f);
+        var moveResultsPhase = new MoveResultsPhase(2f);
         phases.Add(moveResultsPhase);
         var minigamePhase = new MinigamePhase(90f);
         phases.Add(minigamePhase);
         var minigameResultsPhase = new MinigameResultsPhase(5f);
         phases.Add(minigameResultsPhase);
-        var finalResultsPhase = new FinalResultsPhase(3f);
+        var finalResultsPhase = new FinalResultsPhase(2f);
         phases.Add(finalResultsPhase);
-        var gameOverPhase = new GameOverPhase(3f);
+        var gameOverPhase = new GameOverPhase(2f);
         phases.Add(gameOverPhase);
 
-        At(initialize, orderingPhase, orderNotDefined());
+        At(welcome, orderingPhase, orderNotDefined());
         At(initialize, throwPhase, orderDefined());
         At(orderingPhase, orderingResultPhase, orderingThrowFinished());
         At(orderingResultPhase, initialize, orderingDone());
@@ -59,7 +61,7 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         At(minigameResultsPhase, gameOverPhase, finalRoundFinished());
         At(minigameResultsPhase, initialize, nextRoundReady());
 
-        StartCoroutine(Setup(initialize));
+        StartCoroutine(Setup(welcome));
         void At(IState from, IState to, Func<bool> condition) => _stateMachine.AddTransition(from, to, condition);
 
         Func<bool> orderingThrowFinished() => () => {
@@ -106,7 +108,9 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         Func<bool> nothingElseToDo() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
+            {
                 return GameManager.Instance.RoundDone() && GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };

@@ -30,12 +30,13 @@ internal class MinigameResultsPhase : IState
             }
             stayTime -= Time.deltaTime;
             stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-            GameManager.Instance.timerBar?.SetTimeLeft(stayTime);
         } else
         {
+            Debug.Log("TRYING TO CONNECT REFERENCES");
             GameManager.Instance.ConnectReferences();
             if (GameManager.Instance.allReferencesReady && GameManager.Instance.AllPlayersCharacterSpawned())
             {
+                Debug.Log("SETUP COMPLETE");
                 setupComplete = true;
                 LevelLoader.Instance.FadeIn();
                 GameManager.Instance.RefreshPhaseAnimator();
@@ -43,8 +44,6 @@ internal class MinigameResultsPhase : IState
                 {
                     GameManager.Instance.notActionTakenPlayers.Enqueue(player);
                 }
-                GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
-                GameManager.Instance.timerBar.SetTimeLeft(stayTime);
                 GameManager.Instance.ResumeGUI();
             }
         }
@@ -52,6 +51,7 @@ internal class MinigameResultsPhase : IState
     public void FixedTick() { }
     public void OnEnter()
     {
+        Debug.Log($"ENTERING MINIGAME RESULTS PHASE ON ROUND {GameManager.Instance.GetRound()}");
         if (PhotonNetwork.IsMasterClient)
         {
             GameManager.Instance.SetCurrentState(this.GetType().Name);
@@ -63,17 +63,17 @@ internal class MinigameResultsPhase : IState
         {
             GameManager.Instance.ShowMessage("¡Que penita! Mejor suerte para la proxima...");
         }
-
+        setupComplete = false;
         GameManager.Instance.ResetStateOnPlayers();
         GameManager.Instance.notActionTakenPlayers.Clear();
+        GameManager.Instance.timerBar.SetTimeLeft(0);
         GameManager.Instance.actionTakenPlayers.Clear();
-        GameManager.Instance.timerBar?.SetMaxTime(defaultStayTime);
-        GameManager.Instance.timerBar?.SetTimeLeft(stayTime);
 
     }
     public void OnExit()
     {
+        Debug.Log($"EXITING MINIGAME RESULTS PHASE ON ROUND {GameManager.Instance.GetRound()}");
+
         stayTime = defaultStayTime;
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
 }

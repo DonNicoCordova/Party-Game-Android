@@ -17,6 +17,8 @@ public class LoginMenu : MonoBehaviourPunCallbacks
             Debug.Log($"CHECKING IF VISIBLE LEVELLOADER: {LevelLoader.Instance.visible}");
             LevelLoader.Instance.FadeIn();
         }
+        Screen.autorotateToLandscapeLeft = false;
+        Screen.autorotateToLandscapeRight = false;
     }
     public override void OnConnectedToMaster()
     {

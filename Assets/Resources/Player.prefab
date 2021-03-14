@@ -661,7 +661,7 @@ RectTransform:
   - {fileID: 1164720338784710049}
   - {fileID: 1449297488326145625}
   m_Father: {fileID: 6511445374764256941}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1064,6 +1064,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 4290682775981769863}
   - {fileID: 7727658614912772101}
   - {fileID: 4815127642505487917}
   m_Father: {fileID: 0}
@@ -1148,11 +1149,14 @@ MonoBehaviour:
     lastSpawnPosition: {fileID: 0}
     playableCharacter: {fileID: 0}
     energy: 0
+    turnDone: 0
   rig: {fileID: 3516471651007979380}
   IsGrounded: 0
   animator: {fileID: 6057256821174708557}
   playerNameText: {fileID: 4582277687527695729}
   energyText: {fileID: 6465180145972308920}
+  energyContainer: {fileID: 8618789121137851166}
+  enabledToPlay: 0
 --- !u!114 &454481483443336894
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1445,12 +1449,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7613629982077557734}
-  m_LocalRotation: {x: 0.3420201, y: 0, z: 0, w: 0.9396927}
-  m_LocalPosition: {x: -10.7, y: 5.89, z: -5.34}
+  m_LocalRotation: {x: 0.656059, y: -0, z: -0, w: 0.75470966}
+  m_LocalPosition: {x: -10.699999, y: 7.2902803, z: -0.027213579}
   m_LocalScale: {x: 11, y: 11, z: 11}
   m_Children: []
-  m_Father: {fileID: 4815127642505487917}
-  m_RootOrder: 6
+  m_Father: {fileID: 6511445374764256941}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 40, y: 0, z: 0}
 --- !u!212 &5993735758042765122
 SpriteRenderer:
@@ -1489,8 +1493,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 532148421
-  m_SortingLayer: 2
+  m_SortingLayerID: -1342883085
+  m_SortingLayer: 5
   m_SortingOrder: 3
   m_Sprite: {fileID: 2706231784725188507, guid: 2146b1048bf85e94facef37f18a9ec53, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1537,9 +1541,8 @@ Transform:
   - {fileID: 6723577294788339371}
   - {fileID: 5581754998227645271}
   - {fileID: 882198333108168360}
-  - {fileID: 4290682775981769863}
   m_Father: {fileID: 6511445374764256941}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 42, y: 0, z: 0}
 --- !u!114 &7352845794198001816
 MonoBehaviour:
@@ -1571,7 +1574,7 @@ GameObject:
   - component: {fileID: 1925522649811429415}
   - component: {fileID: 2240191392443766518}
   m_Layer: 5
-  m_Name: Image
+  m_Name: EnergyContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

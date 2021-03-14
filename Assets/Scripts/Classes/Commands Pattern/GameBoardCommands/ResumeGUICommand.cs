@@ -28,6 +28,9 @@ public class ResumeGUICommand : Command
         GameManager.Instance.playersLadder.gameObject.SetActive(true);
         GameManager.Instance.gameOverUI.gameObject.SetActive(false);
         GameManager.Instance.playersLadder.Initialize();
+        Debug.Log("HIDING ENERGYCOUNTER ON RESUME GUI COMMAND");
+        GameManager.Instance.energyCounter.Hide();
+        Debug.Log("HIDING SKILLS ON RESUME GUI COMMAND");
         SkillsUI.Instance.HideSkills();
         _finished = true;
         return;

@@ -8,7 +8,12 @@ public class TimerBar : MonoBehaviour
     public Slider slider;
     public Gradient gradient;
     public Image fill;
+    private TMPro.TextMeshProUGUI counter;
 
+    private void Start()
+    {
+        counter = gameObject.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+    }
     public void SetMaxTime(float maxTime)
     {
         slider.maxValue = maxTime;
@@ -20,6 +25,7 @@ public class TimerBar : MonoBehaviour
     {
         if (fill != null && slider != null)
         {
+            counter.text = $"{timeLeft.ToString("0")} seg.";
             slider.value = timeLeft;
             fill.color = gradient.Evaluate(slider.normalizedValue);
         }

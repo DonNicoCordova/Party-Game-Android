@@ -24,7 +24,6 @@ internal class ThrowResultsPhase : IState
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
     public void FixedTick() { }
     public void OnEnter()
@@ -50,15 +49,11 @@ internal class ThrowResultsPhase : IState
         {
             GameManager.Instance.ShowMessage("¡WOW! Juegate un kino...");
         }
-        
-
-        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(0);
     }
     public void OnExit()
     {
         stayTime = defaultStayTime;
-        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
         if (GameSystem.Instance.throwResultsPhaseTimerDone)
             GameSystem.Instance.throwResultsPhaseTimerDone = false;
     }

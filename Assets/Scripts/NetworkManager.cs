@@ -39,7 +39,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
     public void CreateRoom(string roomName, int maxPlayers, bool privateRoom)
     {
-        Debug.Log($"CREATING ROOM WITH {roomName} {maxPlayers} {privateRoom} => visible = {!privateRoom}");
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = (byte) maxPlayers;
         roomOptions.IsVisible = !privateRoom;

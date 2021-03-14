@@ -21,6 +21,7 @@ public class ResumeCommand : Command
     }
     public override void Execute()
     {
+        Debug.Log($"RESUMING PLAYER {_newPhotonPlayer.NickName} ON ROUND {GameManager.Instance.GetRound()}");
         CapturedLocation oldCapturedLocations = GameManager.Instance.GetSavedCapturedLocation(_newPhotonPlayer.ActorNumber);
         PlayerStats oldPlayerStats = GameManager.Instance.GetSavedPlayerStats(_newPhotonPlayer.ActorNumber);
         oldPlayerStats.mainColor = GameManager.Instance.playerConfigs[_newPhotonPlayer.ActorNumber - 1].mainColor;
@@ -38,7 +39,7 @@ public class ResumeCommand : Command
         {
             GameObject locationGo = GameObject.Find(locationName);
             LocationController location = locationGo.GetComponent<LocationController>();
-            oldPlayerStats.AddEnergy(1);
+            oldPlayerStats.SetEnergyLeft(1);
             oldPlayerStats.CaptureZone(location);
         }
         // set photon player
@@ -71,6 +72,7 @@ public class ResumeCommand : Command
         _playerController.playerNameText.text = oldPlayerStats.nickName;
         _playerController.energyText.text = "0";
         _playerController.ResetPosition();
+        _playerController.enabledToPlay = true;
         oldPlayerStats.EnergyChanged += (sender, args) => _playerController.UpdateEnergy();
         _finished = true;
     }

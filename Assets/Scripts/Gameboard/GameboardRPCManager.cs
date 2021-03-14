@@ -61,9 +61,9 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
         GameSystem.Instance.SetState(state);
     }
     [PunRPC]
-    public void DebugMessage(string message, string player)
+    public void DebugMessage(string message, PhotonMessageInfo info)
     {
-        Debug.Log($"Player: {player} Message: {message}");
+        Debug.Log($"DEBUG MESSAGE FROM {info.Sender.NickName}: {message}");
     }
     [PunRPC]
     public void SetStateDone(int playerId)
@@ -83,7 +83,6 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
     {
         if (GameManager.Instance.GetMainPlayer().playerStats.id != playerId)
         {
-            Debug.Log($"UPDATING ENERGY TO PLAYER ID: {playerId} WITH: {newEnergy}");
             PlayerController player = GameManager.Instance.GetPlayer(playerId);
             player.playerStats.SetEnergyLeft(newEnergy);
             player.UpdateEnergy();

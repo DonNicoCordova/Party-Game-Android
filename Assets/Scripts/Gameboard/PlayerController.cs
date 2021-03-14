@@ -21,6 +21,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     [Header("UI")]
     public TextMeshProUGUI playerNameText;
     public TextMeshProUGUI energyText;
+    [SerializeField]
+    private GameObject energyContainer;
+    public bool enabledToPlay = false;
     private void OnTriggerEnter(Collider other)
     {
 
@@ -66,7 +69,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private void Awake() => _characterController = GetComponent<CharacterController>();
     private void FixedUpdate()
     {
-        if (photonView.IsMine)
+        if (photonView.IsMine && enabledToPlay)
         {
             if (joystick.gameObject.activeSelf && GameManager.Instance.ActualPlayerIsMainPlayer())
             {
@@ -121,13 +124,15 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             // set player to main player and assign camera to follow plus enable joystick
+            GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"INITIALIZING MAIN PLAYER AS {playerStats.nickName}");
             GameManager.Instance.SetMainPlayer(this);
             GameManager.Instance.virtualCamera.Follow = transform;
             GameManager.Instance.virtualCamera.LookAt = transform;
             joystick = GameManager.Instance.joystick.GetComponent<FloatingJoystick>();
         }
         playerStats.EnergyChanged += (sender, args) => UpdateEnergy();
-
+        HideEnergyContainer();
+        enabledToPlay = true;
     }
     [PunRPC]
     public void Resume(Player newPhotonPlayer)
@@ -172,6 +177,10 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public void UpdateEnergy()
     {
         energyText.text = playerStats.EnergyLeft().ToString();
+        if (photonView.IsMine)
+        {
+            GameManager.Instance.energyCounter.SetEnergy(playerStats.EnergyLeft());
+        }
     }
     public void WonMiniGame()
     {
@@ -183,24 +192,20 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         playerStats.currentStateFinished = false;
         playerStats.currentMinigameStateFinished = false;
     }
-    public void CutBridge(Bridge bridgeToCut) 
-    {
-        bridgeToCut.photonView.RPC("CutOut", RpcTarget.AllBuffered);
-    }
-    public void BuildBridge(Bridge bridgeToBuild) 
-    {
-        bridgeToBuild.photonView.RPC("Spawn", RpcTarget.AllBuffered);
-    }
-    public void AddStickyToBridge(Bridge bridgeToGetSticky)
-    {
-        bridgeToGetSticky.photonView.RPC("BecomeSticky", RpcTarget.AllBuffered);
-    }
-    public void ThrowBomb(LocationController locationToPaint) 
-    {
 
-    }
     private void OnDestroy()
     {
         playerStats.EnergyChanged -= (sender, args) => UpdateEnergy();
+    }
+    public void ShowEnergyContainer() 
+    {
+        if (!energyContainer.activeSelf)
+        {
+            energyContainer.SetActive(true);
+        }
+    }
+    private void HideEnergyContainer() 
+    {
+        energyContainer.SetActive(false);
     }
 }

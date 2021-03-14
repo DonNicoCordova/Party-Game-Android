@@ -6,14 +6,12 @@ using Cinemachine;
 using System.Linq;
 using TMPro;
 using System;
+using Photon.Realtime;
 
 public class SkillsUI : MonoBehaviour
 {
     [SerializeField]
     private GameObject skillsPanel;
-
-    [Header("TEST")]
-    public Bridge bridgeToLookAt;
 
     [Header("Skills")]
     public List<SkillInfo> skills = new List<SkillInfo>();
@@ -21,6 +19,8 @@ public class SkillsUI : MonoBehaviour
     [SerializeField]
     private GameObject skillsButton;
     public Button backButton;
+    public Player playerUsingSkills;
+    public bool noAnimationsPlaying = true;
 
     public CinemachineSmoothPath cinemachinePath;
     public Animator cinemachineAnimator;
@@ -62,17 +62,19 @@ public class SkillsUI : MonoBehaviour
                 if (hit.collider.gameObject.tag == "BridgeIcon")
                 {
                     Bridge bridgeSelected = hit.collider.gameObject.GetComponentInParent<Bridge>();
-                    bridgeSelected.ProcessClick();
+                    Button minimapButton = hit.collider.gameObject.GetComponent<Button>();
+                    if (minimapButton.interactable)
+                    {
+                        bridgeSelected.ProcessClick();
+                    }
                 }
             }
         }
     }
     public void Initialize()
     {
-        Debug.Log("INITIALIZING SKILLS UI");
         for (int i = 0; i < skillButtons.Count; ++i)
         {
-            Debug.Log($"SKILL BUTTON {i} : {JsonUtility.ToJson(skillButtons[i])}");
             SkillButton skillButton = skillButtons[i];
             if (i < skills.Count)
             {
@@ -119,25 +121,32 @@ public class SkillsUI : MonoBehaviour
     }
     public void MoveCameraBackToPlayer()
     {
+        GameManager.Instance.energyCounter.Hide();
         if (cinemachineAnimator.GetCurrentAnimatorStateInfo(0).IsName("MoveToShowMap") || cinemachineAnimator.GetCurrentAnimatorStateInfo(0).IsName("MoveToPlace"))
         {
+            playerUsingSkills = null;
             bridges.ForEach(o => o.RemoveClickable());
             cinemachineAnimator.ResetTrigger("ShowMap");
             cinemachineAnimator.ResetTrigger("MoveToPlace");
             cinemachineAnimator.SetTrigger("BackToOrigin");
             GameManager.Instance.ShowMinimap();
+            GameManager.Instance.EnableJoystick();
         }
     }
     public void OnClickShowSkills()
     {
+        GameManager.Instance.energyCounter.Show();
         if (!skillsPanel.activeSelf)
         {
-            foreach(SkillButton skillButton in skillButtons)
+            foreach (SkillButton skillButton in skillButtons)
             {
                 Button button = skillButton.obj.GetComponent<Button>();
                 if (skillButton.CanAfford())
                 {
-                    button.interactable = true;
+                    if (skillButton.associatedSkill.skill != SkillToUse.Paint && skillButton.associatedSkill.skill != SkillToUse.Sticky )
+                    {
+                        button.interactable = true;
+                    }
                 } else
                 {
                     button.interactable = false;
@@ -184,10 +193,16 @@ public class SkillsUI : MonoBehaviour
     public void ShowMap(SkillToUse skill)
     {
         HideSkills();
+        GameManager.Instance.DisableJoystick();
         GameManager.Instance.HideMinimap();
         cinemachineAnimator.ResetTrigger("BackToOrigin");
         cinemachineAnimator.ResetTrigger("MoveToPlace");
         cinemachineAnimator.SetTrigger("ShowMap");
+        if (bridges.Count == 0)
+        {
+            bridges = GameObject.FindObjectsOfType<Bridge>().ToList();
+        }
+        
         switch (skill)
         {
             case SkillToUse.Cut:
@@ -205,18 +220,33 @@ public class SkillsUI : MonoBehaviour
     }
     private void CanSpawn(Bridge bridge)
     {
-        if (!bridge.bridgeRenderer.enabled)
+        if (!bridge.bridgeRenderer.enabled) { 
             bridge.BecomeClickable(SkillToUse.Spawn);
+        } else
+        {
+            bridge.RemoveClickable();
+        }
     }
     private void CanCut(Bridge bridge)
     {
         if (bridge.bridgeRenderer.enabled)
+        {
+
             bridge.BecomeClickable(SkillToUse.Cut);
+        } else
+        {
+            bridge.RemoveClickable();
+        }
     }
     private void CanGetSticky(Bridge bridge)
     {
         if (bridge.bridgeRenderer.enabled)
+        {
             bridge.BecomeClickable(SkillToUse.Sticky);
+        } else
+        {
+            bridge.RemoveClickable();
+        }
     }
     public void DisableSkillsButton()
     {
@@ -259,10 +289,9 @@ public class SkillButton
     public TextMeshProUGUI skillNameText;
     public TextMeshProUGUI energyCostText;
     public Image skillIcon;
-    private SkillInfo associatedSkill;
+    public SkillInfo associatedSkill;
     public void InitializeFromSkill(SkillInfo skill)
     {
-        Debug.Log($"INITIALIAZING BUTTON {obj.name} WITH DATA {JsonUtility.ToJson(skill)}");
         associatedSkill = skill;
         skillNameText.text = skill.verboseName;
         energyCostText.text = $"-{skill.energyCost}";

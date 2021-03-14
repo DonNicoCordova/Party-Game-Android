@@ -23,6 +23,10 @@ TagManager:
   - VirtualCamera
   - MiniMap
   - Saw
+  - Path
+  - CapturePointIcon
+  - BridgeIcon
+  - EnergyCounter
   layers:
   - Default
   - TransparentFX

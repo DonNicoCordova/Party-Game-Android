@@ -25,7 +25,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     public TimerBar timerBar;
     public GameOverController gameOverUI;
     public GameObject miniMap;
-
+    public EnergyCounter energyCounter = null;
 
     [Header("Dice Locations")]
     public float lerpTime = 5.0f;
@@ -39,7 +39,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     public int numberOfPlayers;
 
     [Header("Game Configuration")]
-    public int maxRounds;
+    public int maxRounds = 10;
 
     [Header("Flags")]
     public Boolean diceOnDisplay = false;
@@ -72,8 +72,10 @@ public class GameManager : GenericSingletonClass<GameManager>
         phaseText = phaseIndicator.GetComponentInChildren<TextMeshProUGUI>();
         phaseAnimator = phaseIndicator.GetComponent<Animator>();
         phaseAnimator.gameObject.SetActive(false);
-        InitializeGUI();
-        LevelLoader.Instance.FadeIn();
+        Screen.autorotateToPortrait = true;
+        Screen.autorotateToLandscapeLeft = false;
+        Screen.autorotateToLandscapeRight = false;
+        Screen.orientation = ScreenOrientation.Portrait;
     }
     private void Update()
     {
@@ -180,7 +182,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     {
         return notActionTakenPlayers.Count == numberOfPlayers && playersOrdered;
     }
-    public bool RoundDone() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers && roundFinished;
+    public bool RoundDone() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers && SkillsUI.Instance.noAnimationsPlaying;
     public bool NextRoundReady()
     {
         return notActionTakenPlayers.Count == numberOfPlayers && actionTakenPlayers.Count == 0;
@@ -413,7 +415,6 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("PhaseIndicator") == null)
         {
-
             allReferencesReady = false;
             return;
         }
@@ -486,16 +487,27 @@ public class GameManager : GenericSingletonClass<GameManager>
             allReferencesReady = false;
             return;
         }
-
+        if (energyCounter == null && GameObject.FindGameObjectWithTag("EnergyCounter") != null)
+        {
+            
+            energyCounter = GameObject.FindGameObjectWithTag("EnergyCounter").gameObject.GetComponent<EnergyCounter>();
+        }
+        else if (GameObject.FindGameObjectWithTag("EnergyCounter") == null)
+        {
+            allReferencesReady = false;
+            return;
+        }
         allReferencesReady = true;
     }
     public void InitializeGUI()
     {
+
         DisableJoystick();
         playersLadder.gameObject.SetActive(false);
         gameOverUI.gameObject.SetActive(false);
         SkillsUI.Instance.Initialize();
         SkillsUI.Instance.HideSkills();
+        energyCounter.Hide();
     }
     public void ResumeGUI()
     {
@@ -558,13 +570,11 @@ public class GameManager : GenericSingletonClass<GameManager>
         while (index < maxRounds && miniGamesPool.Any())
         {
             var rand = new System.Random();
-            var pollIndex = rand.Next(miniGamesPool.Count);
-            MiniGameScene miniGame = miniGamesPool[pollIndex];
-            if (numberOfPlayers >= miniGame.minimumPlayers)
-            {
-                miniGamesQueue.Enqueue(miniGame);
-                miniGamesPool.RemoveAt(pollIndex);
-            }
+            List<MiniGameScene> playableGames = miniGamesPool.FindAll(mg => numberOfPlayers >= mg.minimumPlayers);
+            var poolIndex = rand.Next(playableGames.Count);
+            MiniGameScene miniGame = playableGames[poolIndex];
+            miniGamesQueue.Enqueue(miniGame);
+            miniGamesPool.Remove(miniGame);
             index++;
         }
     }
