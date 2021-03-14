@@ -138,7 +138,6 @@ public class Bridge : MonoBehaviourPunCallbacks
     }
     private IEnumerator DelayRPC(string call)
     {
-        Debug.Log("SETTING NOANIMATIONSPLAYING TO FALSE");
         photonView.RPC("SetNoAnimationIsPlaying", RpcTarget.All, false);
         yield return new WaitForSeconds(1.6f);
         photonView.RPC(call, RpcTarget.All);
