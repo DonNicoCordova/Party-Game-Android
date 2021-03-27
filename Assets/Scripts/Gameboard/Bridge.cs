@@ -3,6 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class Bridge : MonoBehaviourPunCallbacks
 {
@@ -12,59 +13,75 @@ public class Bridge : MonoBehaviourPunCallbacks
     public MeshRenderer bridgeRenderer;
     [SerializeField]
     private Animator animator;
-    public bool usable = true;
-
+    public BridgeStats bridgeStats;
     [Header("Minimap")]
     public SpriteRenderer minimapIcon;
     public SpriteRenderer minimapSelectableIcon;
     private Transform originalPosition;
-    private int energyCost = 0;
     private Vector3 originalScale;
     public SkillToUse skillToUse;
 
     private void Start()
     {
+        BridgeStats newBridgeStats = new BridgeStats();
+
         if (bridgeRenderer == null)
         {
             bridgeRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
         }
         if (!bridgeRenderer.enabled)
         {
-            usable = false;
+            newBridgeStats.usable = false;
         }
         originalPosition = transform;
         if (minimapIcon != null)
         {
             originalScale = minimapIcon.transform.localScale;
         }
+        newBridgeStats.name = gameObject.name;
+        bridgeStats = newBridgeStats;
     }
     [PunRPC]
     public void CutOut(PhotonMessageInfo info)
     {
-        if (usable)
+        if (bridgeStats.usable)
         {
             Vector3 position1 = cutPosition1.position;
             Vector3 position2 = cutPosition2.position;
             SkillsUI.Instance.playerUsingSkills = info.Sender;
             Debug.Log($"{info.Sender.NickName} IS USING CUT");
+            AnimateCut();
+            bridgeStats.usable = false;
+        }
+    }
+    public void AnimateCut()
+    {
+        if (bridgeRenderer.enabled)
+        {
             animator.SetTrigger("Fall");
-            usable = false;
         }
     }
     [PunRPC]
     public void Spawn(PhotonMessageInfo info)
     {
-        if (!usable)
+        if (!bridgeStats.usable)
         {
             SkillsUI.Instance.playerUsingSkills = info.Sender;
             Debug.Log($"{info.Sender.NickName} IS USING CUT");
+            AnimateSpawn();
+        }
+    }
+    public void AnimateSpawn()
+    {
+        if (!bridgeRenderer.enabled)
+        {
             animator.SetTrigger("Spawn");
         }
     }
     [PunRPC]
     public void BecomeSticky()
     {
-        energyCost = 3;
+        bridgeStats.energyCost = 3;
     }
     [PunRPC]
     public void SetNoAnimationIsPlaying(bool state)
@@ -106,29 +123,32 @@ public class Bridge : MonoBehaviourPunCallbacks
 
     public void ProcessClick()
     {
-        Debug.Log($"PROCESSING CLICK ON BRIDGE {gameObject.name}");
-        SkillInfo skillInfo = SkillsUI.Instance.GetSkillInfo(skillToUse);
-        if (skillInfo.energyCost <= GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft())
+        if (SkillsUI.Instance.noAnimationsPlaying)
         {
-            switch (skillToUse)
+            Debug.Log($"PROCESSING CLICK ON BRIDGE {gameObject.name}");
+            SkillInfo skillInfo = SkillsUI.Instance.GetSkillInfo(skillToUse);
+            if (skillInfo.energyCost <= GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft())
             {
-                case SkillToUse.Cut:
-                    photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
-                    Debug.Log($"CALLING REDUCE ENERGY FROM CUT -{skillInfo.energyCost}");
-                    GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"UPDATING ENERGY TO PLAYER ID: {GameManager.Instance.GetMainPlayer().playerStats.nickName} WITH: -{skillInfo.energyCost} FOR REASON CUT ");
-                    GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "CUT");
-                    StartCoroutine(DelayRPC("CutOut"));
-                    break;
-                case SkillToUse.Spawn:
-                    photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
-                    Debug.Log($"CALLING REDUCE ENERGY FROM SPAWN -{skillInfo.energyCost}"); 
-                    GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"UPDATING ENERGY TO PLAYER ID: {GameManager.Instance.GetMainPlayer().playerStats.nickName} WITH: -{skillInfo.energyCost} FOR REASON SPAWN");
-                    GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "SPAWN");
-                    StartCoroutine(DelayRPC("Spawn"));
-                    break;
-                case SkillToUse.Sticky:
-                    GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "STICKY");
-                    break;
+                switch (skillToUse)
+                {
+                    case SkillToUse.Cut:
+                        photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
+                        Debug.Log($"CALLING REDUCE ENERGY FROM CUT -{skillInfo.energyCost}");
+                        GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"UPDATING ENERGY TO PLAYER ID: {GameManager.Instance.GetMainPlayer().playerStats.nickName} WITH: -{skillInfo.energyCost} FOR REASON CUT ");
+                        GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "CUT");
+                        StartCoroutine(DelayRPC("CutOut"));
+                        break;
+                    case SkillToUse.Spawn:
+                        photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
+                        Debug.Log($"CALLING REDUCE ENERGY FROM SPAWN -{skillInfo.energyCost}"); 
+                        GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"UPDATING ENERGY TO PLAYER ID: {GameManager.Instance.GetMainPlayer().playerStats.nickName} WITH: -{skillInfo.energyCost} FOR REASON SPAWN");
+                        GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "SPAWN");
+                        StartCoroutine(DelayRPC("Spawn"));
+                        break;
+                    case SkillToUse.Sticky:
+                        GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "STICKY");
+                        break;
+                }
             }
         }
     }
@@ -144,3 +164,13 @@ public class Bridge : MonoBehaviourPunCallbacks
     }
 }
 
+[Serializable]
+public class BridgeStats
+{
+    [SerializeField]
+    public int energyCost = 0;
+    [SerializeField]
+    public bool usable = true;
+    [SerializeField]
+    public string name;
+}

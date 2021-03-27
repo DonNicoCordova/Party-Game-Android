@@ -25,7 +25,7 @@ public class TimerBar : MonoBehaviour
     {
         if (fill != null && slider != null)
         {
-            counter.text = $"{timeLeft.ToString("0")} seg.";
+            counter.text = $"{timeLeft:0} seg.";
             slider.value = timeLeft;
             fill.color = gradient.Evaluate(slider.normalizedValue);
         }

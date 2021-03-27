@@ -8,7 +8,7 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
 {
     public float velocity = 1;
     public GameObject propulsorParticle;
-
+    public ForceShield forceShield;
     [SerializeField]
     private SpriteRenderer colorRenderer;
     [SerializeField]
@@ -21,6 +21,8 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
     private Player photonPlayer;
     private FlappyRoyaleStats playerStats;
     private float timeAlive;
+    private bool enabledToDie = false;
+
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
@@ -30,8 +32,8 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (photonView.IsMine && enabledToPlay)
-            this.photonView.RPC("Explode",RpcTarget.All);
+        if (photonView.IsMine && enabledToPlay && enabledToDie)
+            this.photonView.RPC("Explode",RpcTarget.All, timeAlive);
     }
     private void Update()
     {
@@ -63,12 +65,22 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
         propulsorParticle.GetComponentInChildren<ParticleSystem>().Play();
     }
     [PunRPC]
-    private void Explode()
+    private void Explode(float timeAlive, PhotonMessageInfo info)
     {
-        GameObject explosion = Instantiate(FlappyRoyaleGameManager.Instance.explosion, transform.position, Quaternion.identity);
-        explosion.GetComponentInChildren<ParticleSystem>().Play();
-        StartCoroutine(GarbageCollect(explosion));
-        Destroy(gameObject);
+        if (enabledToDie)
+        {
+            GameObject explosion = Instantiate(FlappyRoyaleGameManager.Instance.explosion, transform.position, Quaternion.identity);
+            explosion.GetComponentInChildren<ParticleSystem>().Play();
+            StartCoroutine(GarbageCollect(explosion));
+            Destroy(gameObject);
+            playerStats.alive = false;
+            if (info.Sender.ActorNumber != GameManager.Instance.GetMainPlayer().photonPlayer.ActorNumber)
+            {
+                FlappyRoyaleStats playerToUpdate = FlappyRoyaleGameManager.Instance.GetStats(info.Sender.ActorNumber);
+                playerToUpdate.timeAlive = timeAlive;
+            }
+
+        }
     }
     private IEnumerator GarbageCollect(GameObject explosion)
     {
@@ -81,6 +93,12 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
         enabledToPlay = true;
     }
     [PunRPC]
+    public void ShieldsDown()
+    {
+        forceShield.Down();
+        enabledToDie = true;
+    }
+    [PunRPC]
     public void Initialize(Player newPhotonPlayer)
     {
         // change player color
@@ -89,15 +107,27 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
         // set photon player
         playerStats = FlappyRoyaleGameManager.Instance.GetStats(newPhotonPlayer.ActorNumber);
         photonPlayer = newPhotonPlayer;
+        Collider shieldCollider = forceShield.GetComponent<Collider>();
 
         // Only main player should be affected by physics
         if (!photonView.IsMine)
         {
-            rb.isKinematic = true;
+            if (rb != null)
+            {
+                rb.isKinematic = true;
+            } else
+            {
+                rb = gameObject.GetComponent<Rigidbody>();
+                rb.useGravity = false;
+                rb.isKinematic = true;
+            }
+            shieldCollider.enabled = false;
+            shipCollider.enabled = false;
         } else
         { 
             FlappyRoyaleGameManager.Instance.mainPlayer = this;
             shipCollider.isTrigger = false;
+            shieldCollider.isTrigger = false;
         }
     }
 }

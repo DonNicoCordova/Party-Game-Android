@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             ResetPosition();
         }
+
     }
     public void ProcessCommands()
     {
@@ -93,6 +94,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private void Update()
     {
         ProcessCommands();
+
     }
     [PunRPC]
     public void Initialize(Player newPhotonPlayer)
@@ -177,7 +179,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public void UpdateEnergy()
     {
         energyText.text = playerStats.EnergyLeft().ToString();
-        if (photonView.IsMine)
+        if (photonView.IsMine && GameManager.Instance.energyCounter != null)
         {
             GameManager.Instance.energyCounter.SetEnergy(playerStats.EnergyLeft());
         }

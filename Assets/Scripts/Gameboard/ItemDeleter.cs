@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class ItemDeleter : MonoBehaviour
 {
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("FallingItem"))
+        if (other.CompareTag("FallingItem") && !other.isTrigger)
         {
-            Destroy(other.gameObject);
+            FallingItemController catchedItem = other.GetComponent<FallingItemController>();
+            catchedItem.Die();
         }
     }
 }

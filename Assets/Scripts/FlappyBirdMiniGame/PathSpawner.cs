@@ -57,7 +57,7 @@ public class PathSpawner : MonoBehaviourPunCallbacks
             {
                 int randomIndex = Random.Range(0, obstacles.Count);
                 string obstacle = obstacles[randomIndex];
-                this.photonView.RPC("PlaceObstacle", RpcTarget.All, obstacle);
+                this.photonView.RPC("PlaceObstacle", RpcTarget.MasterClient, obstacle);
                 obstacleDelayTime = 4 * defaultDelayTime;
             }
             obstacleDelayTime -= Time.deltaTime;

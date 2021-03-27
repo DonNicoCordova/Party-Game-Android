@@ -95,11 +95,11 @@ public class PlayerStats
                 EnergyChanged(this, new EnergyChangedArgs(energy));
         }
     }
-
     public void ReduceEnergy(int newEnergy, string reason)
     {
         if (playableCharacter.gameObject.GetPhotonView().IsMine)
         {
+            Debug.Log($"PLAYER OWNED... REDUCING ENERGY FOR REASON {reason} | {energy} => {energy - newEnergy}");
             energy -= newEnergy;
             if (energy == 0)
             {

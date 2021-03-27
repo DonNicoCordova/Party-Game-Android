@@ -19,11 +19,13 @@ public class GameOverController : MonoBehaviour
         gameObject.SetActive(false);
         List<PlayerController> winners = GameManager.Instance.players.OrderBy(o => o.playerStats.ladderPosition).ToList();
         firstNicknameText.text = $"1º {winners[0].playerStats.nickName}";
-        secondNicknameText.text = $"2º {winners[1].playerStats.nickName}";
         firstZonesCapturedText.text = $"{winners[0].playerStats.capturedZones.Count} zonas";
-        secondZonesCapturedText.text = $"{winners[1].playerStats.capturedZones.Count} zonas";
-        
-        if (winners.Count > 2)
+        if (winners.Count >= 2)
+        {
+            secondNicknameText.text = $"2º {winners[1].playerStats.nickName}";
+            secondZonesCapturedText.text = $"{winners[1].playerStats.capturedZones.Count} zonas";
+        }
+        if (winners.Count >= 3)
         {
             thirdNicknameText.text = $"3º {winners[2].playerStats.nickName}";
             thirdZonesCapturedText.text = $"{winners[2].playerStats.capturedZones.Count} zonas";

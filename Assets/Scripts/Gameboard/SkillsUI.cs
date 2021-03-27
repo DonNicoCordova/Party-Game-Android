@@ -6,6 +6,7 @@ using Cinemachine;
 using System.Linq;
 using TMPro;
 using System;
+using Photon.Pun;
 using Photon.Realtime;
 
 public class SkillsUI : MonoBehaviour
@@ -29,7 +30,7 @@ public class SkillsUI : MonoBehaviour
     [Header("Mini Map")]
     public Animator minimapAnimator;
     public Camera minimapCamera;
-    private List<Bridge> bridges;
+    public List<Bridge> bridges;
     private List<LocationController> locations;
     private static SkillsUI instance;
     public static SkillsUI Instance
@@ -50,7 +51,7 @@ public class SkillsUI : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -135,6 +136,9 @@ public class SkillsUI : MonoBehaviour
     }
     public void OnClickShowSkills()
     {
+        Debug.Log("OPENNING SKILLS PANEL. DISABLING JOYSTICK");
+        playerUsingSkills = GameManager.Instance.GetMainPlayer().photonPlayer;
+        GameManager.Instance.DisableJoystick();
         GameManager.Instance.energyCounter.Show();
         if (!skillsPanel.activeSelf)
         {
@@ -193,7 +197,6 @@ public class SkillsUI : MonoBehaviour
     public void ShowMap(SkillToUse skill)
     {
         HideSkills();
-        GameManager.Instance.DisableJoystick();
         GameManager.Instance.HideMinimap();
         cinemachineAnimator.ResetTrigger("BackToOrigin");
         cinemachineAnimator.ResetTrigger("MoveToPlace");
@@ -251,18 +254,24 @@ public class SkillsUI : MonoBehaviour
     public void DisableSkillsButton()
     {
         Button skills = skillsButton.GetComponent<Button>();
-        skills.interactable = false;
+        if (skills.interactable)
+        {
+            skills.interactable = false;
+        }
     }
     public void EnableSkillsButton()
     {
         Button skills = skillsButton.GetComponent<Button>();
-        skills.interactable = true;
+        if (!skills.interactable)
+        {
+            skills.interactable = true;
+        }
     }
 }
 
 public enum SkillToUse
 {
-    Sticky, Cut, Spawn, Paint
+    None, Sticky, Cut, Spawn, Paint,
 }
 
 [System.Serializable]
@@ -313,6 +322,8 @@ public class SkillButton
             case SkillToUse.Sticky:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickStickyBridge);
                 button.interactable = false;
+                break;
+            case SkillToUse.None:
                 break;
         }
     }

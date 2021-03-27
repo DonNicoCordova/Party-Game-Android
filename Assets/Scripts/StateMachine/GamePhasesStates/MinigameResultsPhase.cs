@@ -32,11 +32,9 @@ internal class MinigameResultsPhase : IState
             stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
         } else
         {
-            Debug.Log("TRYING TO CONNECT REFERENCES");
             GameManager.Instance.ConnectReferences();
             if (GameManager.Instance.allReferencesReady && GameManager.Instance.AllPlayersCharacterSpawned())
             {
-                Debug.Log("SETUP COMPLETE");
                 setupComplete = true;
                 LevelLoader.Instance.FadeIn();
                 GameManager.Instance.RefreshPhaseAnimator();
@@ -45,13 +43,17 @@ internal class MinigameResultsPhase : IState
                     GameManager.Instance.notActionTakenPlayers.Enqueue(player);
                 }
                 GameManager.Instance.ResumeGUI();
+                GameManager.Instance.ResumeBridges();
             }
         }
     }
     public void FixedTick() { }
     public void OnEnter()
     {
-        Debug.Log($"ENTERING MINIGAME RESULTS PHASE ON ROUND {GameManager.Instance.GetRound()}");
+        Screen.autorotateToPortrait = true;
+        Screen.autorotateToLandscapeLeft = false;
+        Screen.autorotateToLandscapeRight = false;
+        Screen.orientation = ScreenOrientation.Portrait;
         if (PhotonNetwork.IsMasterClient)
         {
             GameManager.Instance.SetCurrentState(this.GetType().Name);
@@ -68,12 +70,11 @@ internal class MinigameResultsPhase : IState
         GameManager.Instance.notActionTakenPlayers.Clear();
         GameManager.Instance.timerBar.SetTimeLeft(0);
         GameManager.Instance.actionTakenPlayers.Clear();
+        GameManager.Instance.LoadBridges();
 
     }
     public void OnExit()
     {
-        Debug.Log($"EXITING MINIGAME RESULTS PHASE ON ROUND {GameManager.Instance.GetRound()}");
-
         stayTime = defaultStayTime;
     }
 }

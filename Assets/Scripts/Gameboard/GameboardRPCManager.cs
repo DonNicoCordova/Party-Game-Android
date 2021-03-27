@@ -13,8 +13,11 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
     [PunRPC]
     public void GetNextPlayer()
     {
+        photonView.RPC("DebugMessage",RpcTarget.MasterClient, $"GETTING NEXT PLAYER");
         if (GameManager.Instance.notActionTakenPlayers.Count == 0 && GameManager.Instance.GetActualPlayer() == null)
         {
+
+            photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"NO MORE PLAYERS. ROUND FINISHED");
             GameManager.Instance.SetActualPlayer(null);
             GameManager.Instance.roundFinished = true;
         }
@@ -22,13 +25,24 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
         {
             if (GameManager.Instance.GetActualPlayer() != null)
             {
+                if (GameManager.Instance.ActualPlayerIsMainPlayer())
+                {
+                    SkillsUI.Instance.DisableSkillsButton();
+                }
+                photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"ACTUAL PLAYER WAS: {GameManager.Instance.GetActualPlayer().photonPlayer.NickName}");
                 GameManager.Instance.actionTakenPlayers.Enqueue(GameManager.Instance.GetActualPlayer());
                 GameManager.Instance.SetActualPlayer(null);
             }
 
             if (GameManager.Instance.notActionTakenPlayers.Count != 0)
             {
-                GameManager.Instance.SetActualPlayer(GameManager.Instance.notActionTakenPlayers.Dequeue());
+                PlayerController newActualPlayer = GameManager.Instance.notActionTakenPlayers.Dequeue();
+                photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"NEW ACTUAL PLAYER IS: {newActualPlayer.photonPlayer.NickName}");
+                GameManager.Instance.SetActualPlayer(newActualPlayer);
+                if (GameManager.Instance.ActualPlayerIsMainPlayer())
+                {
+                    SkillsUI.Instance.EnableSkillsButton();
+                }
                 GameManager.Instance.playersLadder.UpdateLadderInfo();
                 GameManager.Instance.virtualCamera.Follow = GameManager.Instance.GetActualPlayer().transform;
                 GameManager.Instance.virtualCamera.LookAt = GameManager.Instance.GetActualPlayer().transform;
@@ -84,8 +98,11 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
         if (GameManager.Instance.GetMainPlayer().playerStats.id != playerId)
         {
             PlayerController player = GameManager.Instance.GetPlayer(playerId);
-            player.playerStats.SetEnergyLeft(newEnergy);
-            player.UpdateEnergy();
+            if (player != null)
+            {
+                player.playerStats.SetEnergyLeft(newEnergy);
+                player.UpdateEnergy();
+            }
         }
     }
     public IEnumerator processImInGame()
