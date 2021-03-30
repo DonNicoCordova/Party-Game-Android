@@ -512,6 +512,30 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         allReferencesReady = true;
     }
+    public void GetNextPlayer()
+    {
+        if (notActionTakenPlayers.Count == 0 && GetActualPlayer() == null)
+        {
+            Debug.Log("CALLING RPC FOR FINISH ROUND");
+            GameboardRPCManager.Instance.photonView.RPC("FinishRound", RpcTarget.All);
+        }
+        else
+        {
+            if (GetActualPlayer() != null)
+            {
+                actionTakenPlayers.Enqueue(GetActualPlayer());
+            }
+            if (notActionTakenPlayers.Count != 0)
+            {
+                PlayerController newActualPlayer = notActionTakenPlayers.Dequeue();
+                Debug.Log($"CALLING RPC FOR SET ACTUAL PLAYER {newActualPlayer.photonPlayer.NickName}");
+                GameboardRPCManager.Instance.photonView.RPC("SetActualPlayer", RpcTarget.All, newActualPlayer.photonPlayer.ActorNumber);
+            } else
+            {
+                GameManager.Instance.SetActualPlayer(null);
+            }
+        }
+    }
     public void InitializeGUI()
     {
 

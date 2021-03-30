@@ -76,6 +76,8 @@ MonoBehaviour:
   - PlaceObstacle
   - SetNoAnimationIsPlaying
   - ShieldsDown
+  - FinishRound
+  - SetActualPlayer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

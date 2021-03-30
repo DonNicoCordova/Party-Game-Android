@@ -13,6 +13,7 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
     private SpriteRenderer colorRenderer;
     [SerializeField]
     private MeshCollider shipCollider;
+    private MeshRenderer shipRenderer;
     private Rigidbody rb;
     [SerializeField]
     private bool enabledToPlay = false;
@@ -29,6 +30,7 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
         rb.useGravity = false;
         anim = gameObject.GetComponent<Animator>();
         shipCollider = gameObject.GetComponent<MeshCollider>();
+        shipRenderer = gameObject.GetComponent<MeshRenderer>();
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -72,7 +74,7 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
             GameObject explosion = Instantiate(FlappyRoyaleGameManager.Instance.explosion, transform.position, Quaternion.identity);
             explosion.GetComponentInChildren<ParticleSystem>().Play();
             StartCoroutine(GarbageCollect(explosion));
-            Destroy(gameObject);
+            gameObject.SetActive(false);
             playerStats.alive = false;
             if (info.Sender.ActorNumber != GameManager.Instance.GetMainPlayer().photonPlayer.ActorNumber)
             {
@@ -121,6 +123,8 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
                 rb.useGravity = false;
                 rb.isKinematic = true;
             }
+            shipRenderer.material.SetColor(name, new Color(shipRenderer.material.color.r, shipRenderer.material.color.g, shipRenderer.material.color.b, 0.5f));
+            transform.localScale = transform.localScale * 0.7f;
             shieldCollider.enabled = false;
             shipCollider.enabled = false;
         } else

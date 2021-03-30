@@ -15,17 +15,14 @@ public class ResumeBridgesCommand : Command
     }
     public override void Execute()
     {
-        Debug.Log("EXECUTING RESUME BRIDGES COMMAND");
         if (SkillsUI.Instance.bridges == null)
         {
-            Debug.Log("RESUME BRIDGES FAILED FOR NO BRIDGES IN SKILLS UI");
             SkillsUI.Instance.bridges = new List<Bridge>(GameObject.FindObjectsOfType<Bridge>());
             _failed = true;
             return;
         }
         if (!GameManager.Instance.CheckIfBridgesLoaded())
         {
-            Debug.Log("RESUME BRIDGES FAILED BECAUSE BRIDGES ARE STILL NOT LOADED FROM MEMORY");
             GameManager.Instance.LoadBridges();
             _failed = true;
             return;
@@ -36,7 +33,6 @@ public class ResumeBridgesCommand : Command
             BridgeStats savedBridgeStats = GameManager.Instance.GetSavedBridges(bridge.bridgeStats.name);
             if (savedBridgeStats == null)
             {
-                Debug.Log("RESUME BRIDGES FAILED BECAUSE SAVED BRIDGE STATS NOT FOUND");
                 _failed = true;
                 return;
             }
@@ -44,8 +40,6 @@ public class ResumeBridgesCommand : Command
             bridge.bridgeStats.usable = savedBridgeStats.usable;
             bridge.bridgeStats.energyCost = savedBridgeStats.energyCost;
 
-            Debug.Log("BRIDGE STATS REPLACED. TRYING TO SPAWN OR CUT IF NEEDED");
-            Debug.Log($"BRIDGE STATS TO CHECK: {JsonUtility.ToJson(savedBridgeStats)}");
             if (savedBridgeStats.usable && !bridge.bridgeRenderer.enabled)
             {
                 bridge.AnimateSpawn();

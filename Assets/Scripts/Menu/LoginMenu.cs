@@ -17,8 +17,13 @@ public class LoginMenu : MonoBehaviourPunCallbacks
             Debug.Log($"CHECKING IF VISIBLE LEVELLOADER: {LevelLoader.Instance.visible}");
             LevelLoader.Instance.FadeIn();
         }
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Screen.autorotateToLandscapeLeft = false;
         Screen.autorotateToLandscapeRight = false;
+        if (PhotonNetwork.IsConnected)
+        {
+            startGameButton.interactable = true;
+        }
     }
     public override void OnConnectedToMaster()
     {

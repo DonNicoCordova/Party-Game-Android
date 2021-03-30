@@ -36,10 +36,7 @@ public class GameOverController : MonoBehaviour
         }
             gameObject.SetActive(true);
 
-        if (PhotonNetwork.IsMasterClient)
-            replayButton.interactable = true;
-        else
-            replayButton.interactable = false;
+        replayButton.interactable = true;
     }
 
     public void OnBackToMenuClick()
