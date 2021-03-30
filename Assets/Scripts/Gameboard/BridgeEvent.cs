@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class BridgeEvent : MonoBehaviour
 {
@@ -11,7 +10,7 @@ public class BridgeEvent : MonoBehaviour
     }
     public void ShowMap()
     {
-        if (!parent.usable)
+        if (!parent.bridgeStats.usable)
         {
             parent.bridgeRenderer.enabled = false;
             parent.minimapIcon.enabled = false;
@@ -34,6 +33,6 @@ public class BridgeEvent : MonoBehaviour
             SkillsUI.Instance.MoveCameraBackToPlayer();
             SkillsUI.Instance.backButton.onClick.Invoke();
         }
-        SkillsUI.Instance.noAnimationsPlaying = true;
+        parent.photonView.RPC("SetNoAnimationIsPlaying", RpcTarget.All, true);
     }
 }

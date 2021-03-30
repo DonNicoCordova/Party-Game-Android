@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
-using Photon.Pun;
 using UnityEngine.UI;
+using System;
 
 public class FlappyMiniGameOverController : MonoBehaviour
 {
@@ -13,12 +11,12 @@ public class FlappyMiniGameOverController : MonoBehaviour
     public void Initialize()
     {
         gameObject.SetActive(false);
-        //List<PlayerController> winners = new List<PlayerController>();
         FlappyRoyaleStats winner = FlappyRoyaleGameManager.Instance.GetWinner();
         PlayerController winnerController = GameManager.Instance.GetPlayer(winner.playerId);
         winnerController.WonMiniGame();
         winnerName.text = $"{winnerController.playerStats.nickName}";
-        winnerPoints.text = $"{winner.timeAlive}";
+        string timeAliveString = String.Format(winner.timeAlive % 1 == 0 ? "{0:0}" : "{0:0.00}", winner.timeAlive);
+        winnerPoints.text = $"{timeAliveString} seg.";
         winnerColor.color = winnerController.playerStats.mainColor.color;
         gameObject.SetActive(true);
     }

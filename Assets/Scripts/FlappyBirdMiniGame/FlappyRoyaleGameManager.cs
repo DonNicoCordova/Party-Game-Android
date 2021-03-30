@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using System.Collections;
+using TMPro;
 
 public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGameManager>
 {
@@ -19,6 +20,9 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
     public string spaceShipPrefab;
     public Transform spawnPoint;
     public SpaceShipController mainPlayer;
+
+    [Header("UI")]
+    public TextMeshProUGUI countdownCounter;
 
     private List<FlappyRoyaleStats> playersStats;
     private Vector3 originalGravity;
@@ -42,9 +46,6 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
         LevelLoader.Instance.FadeIn();
         StartCoroutine(processImInGame());
         StartCoroutine(InitializeGuiProcess());
-    }
-    private void Update()
-    {
     }
     public bool AllPlayersJoined() => numberOfPlayers == PhotonNetwork.PlayerList.Length;
     [PunRPC]
@@ -125,7 +126,7 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
         guiCanvas.SetActive(false);
         gameResultsCanvas.SetActive(true);
     }
-    public System.Collections.IEnumerator InitializeGuiProcess()
+    public IEnumerator InitializeGuiProcess()
     {
         while (!GameManager.Instance.AllPlayersJoined())
         {
@@ -139,7 +140,7 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
     public bool LastPlayerDied()
     {
         Debug.Log("CHECKING IF LAST PLAYER ALIVE");
-        Debug.Log($"playersStats.FindAll(s => s.alive == true).ToList().Count <= 1 => {playersStats.FindAll(s => s.alive == true).ToList().Count} <= 1 BOOL {playersStats.FindAll(s => s.alive == true).ToList().Count <= 1}");
+        Debug.Log($"playersStats.FindAll(s => s.alive == true).ToList().Count ({playersStats.FindAll(s => s.alive == true).ToList().Count}) == 0 => {playersStats.FindAll(s => s.alive == true).ToList().Count == 0}");
         return playersStats.FindAll(s => s.alive == true).ToList().Count == 0;
     }
     public IEnumerator processImInGame()
@@ -177,5 +178,5 @@ public class FlappyRoyaleStats
 {
     public int playerId;
     public float timeAlive;
-    public bool alive = false;
+    public bool alive = true;
 }

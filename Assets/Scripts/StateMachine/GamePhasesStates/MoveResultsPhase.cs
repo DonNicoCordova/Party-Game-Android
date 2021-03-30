@@ -48,6 +48,7 @@ internal class MoveResultsPhase : IState
     {
         GameManager.Instance.DisableJoystick();
         GameManager.Instance.SavePlayers();
+        GameManager.Instance.SaveBridges();
         stayTime = defaultStayTime;
         if (GameSystem.Instance.moveResultsPhaseTimerDone)
             GameSystem.Instance.moveResultsPhaseTimerDone = false;
