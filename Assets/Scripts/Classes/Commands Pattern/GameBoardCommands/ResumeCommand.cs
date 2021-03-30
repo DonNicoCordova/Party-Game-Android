@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Realtime;
+using Photon.Pun;
 
 public class ResumeCommand : Command
 {
@@ -21,7 +22,7 @@ public class ResumeCommand : Command
     }
     public override void Execute()
     {
-        Debug.Log($"RESUMING PLAYER {_newPhotonPlayer.NickName} ON ROUND {GameManager.Instance.GetRound()}");
+        GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"RESUMING PLAYER {_newPhotonPlayer.NickName} ON ROUND {GameManager.Instance.GetRound()}");
         CapturedLocation oldCapturedLocations = GameManager.Instance.GetSavedCapturedLocation(_newPhotonPlayer.ActorNumber);
         PlayerStats oldPlayerStats = GameManager.Instance.GetSavedPlayerStats(_newPhotonPlayer.ActorNumber);
         oldPlayerStats.mainColor = GameManager.Instance.playerConfigs[_newPhotonPlayer.ActorNumber - 1].mainColor;

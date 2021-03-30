@@ -12,6 +12,7 @@ internal class MovePiecePhase : IState
     private bool turnTimerDone = false;
     private bool yourTurnMessage = false;
     private MovesIndicatorController movesIndicator;
+    private PlayerController lastPlayer;
     public MovePiecePhase(float minimumTime, float minimumTurnTime)
     {
         defaultTurnTime = minimumTurnTime;
@@ -25,7 +26,8 @@ internal class MovePiecePhase : IState
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
         //Only mainClient can rotate over players and only informs the other clients
         PlayerController actualPlayer = GameManager.Instance.GetActualPlayer();
-        if (actualPlayer != null && !actualPlayer.playerStats.PlayerDone())
+        //IF ACTUAL PLAYER EXISTS AND IS NOT DONE PLAYING AND IS IN SYNC (LAST PLAYER IS STILL ACTUAL PLAYER)
+        if (actualPlayer != null && !actualPlayer.playerStats.PlayerDone() && lastPlayer == actualPlayer)
         {
             if (SkillsUI.Instance.noAnimationsPlaying)
             {
@@ -37,19 +39,13 @@ internal class MovePiecePhase : IState
             {
                 turnTimerDone = true;
             }
-            if (GameManager.Instance.ActualPlayerIsMainPlayer() && !yourTurnMessage)
-            {
-                GameManager.Instance.ShowMessage("¡Te toca!");
-                yourTurnMessage = true;
-            }
             if (GameManager.Instance.ActualPlayerIsMainPlayer() && !GameManager.Instance.joystick.activeSelf && SkillsUI.Instance.playerUsingSkills == null)
             {
-                GameboardRPCManager.Instance.photonView.RPC("DebugMessage",RpcTarget.MasterClient, $"ENABLING JOYSTICK AND SKILLS BUTTON ON PLAYER {GameManager.Instance.GetMainPlayer().photonPlayer.NickName}");
                 GameManager.Instance.EnableJoystick();
-                SkillsUI.Instance.EnableSkillsButton();
             }
-            if (turnTimerDone && SkillsUI.Instance.noAnimationsPlaying)
+            if (turnTimerDone  && SkillsUI.Instance.noAnimationsPlaying)
             {
+                GameboardRPCManager.Instance.photonView.RPC("UpdateEnergy", RpcTarget.Others, actualPlayer.photonPlayer.ActorNumber, 0); ;
                 if (GameManager.Instance.ActualPlayerIsMainPlayer())
                 {
                     PlayerController player = GameManager.Instance?.GetMainPlayer();
@@ -60,18 +56,45 @@ internal class MovePiecePhase : IState
                     actualPlayer.rig.velocity = Vector3.zero;
                     actualPlayer.rig.angularVelocity = Vector3.zero;
                 }
+
+                lastPlayer = actualPlayer;
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.All);
+                    GameManager.Instance.GetNextPlayer();
                 }
-
                 yourTurnMessage = false;
                 turnTime = defaultTurnTime;
             }
         }
-        else if (PhotonNetwork.IsMasterClient)
+        // IF NOT IN SYNC. SYNC.
+        else if (actualPlayer != null && !actualPlayer.playerStats.PlayerDone() && lastPlayer != actualPlayer)
         {
-            GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.All);
+            lastPlayer = actualPlayer;
+            
+            yourTurnMessage = false;
+            turnTime = defaultTurnTime;
+        }
+        // IF ACTUAL PLAYER IS IN SYNC AND PLAYER IS DONE PLAYING
+        else if (actualPlayer != null && actualPlayer.playerStats.PlayerDone() && lastPlayer == actualPlayer)
+        {
+            Debug.Log($"ACTUAL PLAYER ({actualPlayer.photonPlayer.NickName}) IS DONE PLAYING");
+            if (GameManager.Instance.ActualPlayerIsMainPlayer())
+            {
+                PlayerController player = GameManager.Instance?.GetMainPlayer();
+                if (player)
+                {
+                    GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
+                }
+                actualPlayer.rig.velocity = Vector3.zero;
+                actualPlayer.rig.angularVelocity = Vector3.zero;
+            }
+            if (PhotonNetwork.IsMasterClient)
+            {
+                Debug.Log($"GETTING NEXT PLAYER BECAUSE PLAYER WAS DONE.");
+                GameManager.Instance.GetNextPlayer();
+            }
+            yourTurnMessage = false;
+            turnTime = defaultTurnTime;
         }
     }
 
@@ -85,15 +108,17 @@ internal class MovePiecePhase : IState
             GameboardRPCManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
         GameManager.Instance.ResetStateOnPlayers();
+        lastPlayer = GameManager.Instance.notActionTakenPlayers.Peek();
         PlayerController actualPlayer = GameManager.Instance.GetActualPlayer();
         if (GameSystem.Instance.movePiecePhaseTimerDone)
             GameSystem.Instance.movePiecePhaseTimerDone = false;
         if (actualPlayer == null && PhotonNetwork.IsMasterClient)
-            GameboardRPCManager.Instance.photonView.RPC("GetNextPlayer", RpcTarget.All);
+            GameManager.Instance.GetNextPlayer();
         GameManager.Instance.ShowMessage("¡Hora de moverse!");
         turnTime = defaultTurnTime;
         GameManager.Instance.timerBar.SetMaxTime(defaultTurnTime);
         GameManager.Instance.timerBar.SetTimeLeft(turnTime);
+
     }
 
     public void OnExit()

@@ -31,6 +31,7 @@ internal class InitializeRound : IState
     public void FixedTick() { }
     public void OnEnter()
     {
+        
         GameManager.Instance.timerBar.SetTimeLeft(0);
         //reset state done
         if (PhotonNetwork.IsMasterClient)

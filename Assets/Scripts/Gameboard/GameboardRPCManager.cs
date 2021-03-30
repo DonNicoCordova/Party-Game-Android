@@ -11,31 +11,37 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
         StartCoroutine(processImInGame());
     }
     [PunRPC]
-    public void GetNextPlayer()
+    private void SetActualPlayer(int playerId)
     {
-        if (GameManager.Instance.notActionTakenPlayers.Count == 0 && GameManager.Instance.GetActualPlayer() == null)
+        if (GameManager.Instance.GetActualPlayer() != null)
         {
-            GameManager.Instance.SetActualPlayer(null);
-            GameManager.Instance.roundFinished = true;
-        }
-        else
-        {
-            if (GameManager.Instance.GetActualPlayer() != null)
+            if (GameManager.Instance.ActualPlayerIsMainPlayer())
             {
-                GameManager.Instance.actionTakenPlayers.Enqueue(GameManager.Instance.GetActualPlayer());
-                GameManager.Instance.SetActualPlayer(null);
+                SkillsUI.Instance.DisableSkillsButton();
             }
+        }
+        PlayerController newActualPlayer = GameManager.Instance.GetPlayer(playerId);
+        GameManager.Instance.SetActualPlayer(newActualPlayer);
+        
+        if (GameManager.Instance.ActualPlayerIsMainPlayer())
+        {
+            SkillsUI.Instance.EnableSkillsButton();
+            GameManager.Instance.ShowMessage("¡Te toca!");
+        }
 
-            if (GameManager.Instance.notActionTakenPlayers.Count != 0)
-            {
-                GameManager.Instance.SetActualPlayer(GameManager.Instance.notActionTakenPlayers.Dequeue());
-                GameManager.Instance.playersLadder.UpdateLadderInfo();
-                GameManager.Instance.virtualCamera.Follow = GameManager.Instance.GetActualPlayer().transform;
-                GameManager.Instance.virtualCamera.LookAt = GameManager.Instance.GetActualPlayer().transform;
-            }
-        }
+        GameManager.Instance.playersLadder.UpdateLadderInfo();
+        GameManager.Instance.virtualCamera.Follow = GameManager.Instance.GetActualPlayer().transform;
+        GameManager.Instance.virtualCamera.LookAt = GameManager.Instance.GetActualPlayer().transform;
+
     }
+    [PunRPC]
+    private void FinishRound()
+    {
+        Debug.Log("TRYING TO FINISH ROUND");
+        GameManager.Instance.SetActualPlayer(null);
+        GameManager.Instance.roundFinished = true;
 
+    }
     [PunRPC]
     private void AddThrow(string newThrow)
     {
@@ -84,8 +90,11 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
         if (GameManager.Instance.GetMainPlayer().playerStats.id != playerId)
         {
             PlayerController player = GameManager.Instance.GetPlayer(playerId);
-            player.playerStats.SetEnergyLeft(newEnergy);
-            player.UpdateEnergy();
+            if (player != null)
+            {
+                player.playerStats.SetEnergyLeft(newEnergy);
+                player.UpdateEnergy();
+            }
         }
     }
     public IEnumerator processImInGame()

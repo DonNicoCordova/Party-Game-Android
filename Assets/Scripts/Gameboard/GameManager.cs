@@ -57,6 +57,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     [SerializeField]
     private List<MiniGameScene> miniGamesPool = new List<MiniGameScene>();
     private SavedPlayersCollection savedPlayersCollection;
+    private SavedBridgesCollection savedBridgesCollection;
     private PlayerController mainPlayer;
     private PlayerController actualPlayer = null;
     private int round = -1;
@@ -89,14 +90,13 @@ public class GameManager : GenericSingletonClass<GameManager>
             string state = statesQueue.Dequeue();
             StartCoroutine(processChangeState(state));
         }
-        if (Input.GetKeyDown("r"))
+        if (Input.GetKeyDown("s"))
         {
-            SavePlayers();
+            SaveBridges();
         }
-
-        if (Input.GetKeyDown("t"))
+        if (Input.GetKeyDown("l"))
         {
-            LoadPlayers();
+            LoadBridges();
         }
         ProcessCommands();
     }
@@ -174,15 +174,28 @@ public class GameManager : GenericSingletonClass<GameManager>
     public bool YourTurn() => diceOnDisplay && ActualPlayerIsMainPlayer();
     public void DisableJoystick()
     {
-        joystick.SetActive(false);
+        if (joystick.activeSelf)
+        {
+            joystick.SetActive(false);
+        }
     }
-    public void EnableJoystick() => joystick.SetActive(true);
+    public void EnableJoystick() 
+    {
+        if (!joystick.activeSelf)
+        {
+            joystick.SetActive(true);
+        }
+    } 
     public float GetRound() => round;
     public bool PlayersSetAndOrdered()
     {
         return notActionTakenPlayers.Count == numberOfPlayers && playersOrdered;
     }
-    public bool RoundDone() => notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers && SkillsUI.Instance.noAnimationsPlaying;
+    public bool RoundDone()
+    {
+        //Debug.Log($"CHECKING IF ROUND DONE: NO MORE PLAYERS LEFT => {notActionTakenPlayers.Count == 0} ALL PLAYERS HAD TAKEN ACTION => {actionTakenPlayers.Count == numberOfPlayers} NoAnimationsPlaying => {SkillsUI.Instance.noAnimationsPlaying}");
+        return notActionTakenPlayers.Count == 0 && actionTakenPlayers.Count == numberOfPlayers && SkillsUI.Instance.noAnimationsPlaying;
+    }
     public bool NextRoundReady()
     {
         return notActionTakenPlayers.Count == numberOfPlayers && actionTakenPlayers.Count == 0;
@@ -499,6 +512,30 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         allReferencesReady = true;
     }
+    public void GetNextPlayer()
+    {
+        if (notActionTakenPlayers.Count == 0 && GetActualPlayer() == null)
+        {
+            Debug.Log("CALLING RPC FOR FINISH ROUND");
+            GameboardRPCManager.Instance.photonView.RPC("FinishRound", RpcTarget.All);
+        }
+        else
+        {
+            if (GetActualPlayer() != null)
+            {
+                actionTakenPlayers.Enqueue(GetActualPlayer());
+            }
+            if (notActionTakenPlayers.Count != 0)
+            {
+                PlayerController newActualPlayer = notActionTakenPlayers.Dequeue();
+                Debug.Log($"CALLING RPC FOR SET ACTUAL PLAYER {newActualPlayer.photonPlayer.NickName}");
+                GameboardRPCManager.Instance.photonView.RPC("SetActualPlayer", RpcTarget.All, newActualPlayer.photonPlayer.ActorNumber);
+            } else
+            {
+                GameManager.Instance.SetActualPlayer(null);
+            }
+        }
+    }
     public void InitializeGUI()
     {
 
@@ -509,10 +546,54 @@ public class GameManager : GenericSingletonClass<GameManager>
         SkillsUI.Instance.HideSkills();
         energyCounter.Hide();
     }
+    public void ResumeBridges()
+    {
+        ResumeBridgesCommand resumeCommand = new ResumeBridgesCommand();
+        _commands.Enqueue(resumeCommand);
+    }
     public void ResumeGUI()
     {
         ResumeGUICommand resumeGUICommand = new ResumeGUICommand();
         _commands.Enqueue(resumeGUICommand);
+    }
+    public void SaveBridges()
+    {
+        SavedBridgesCollection newSavedBridgesCollection = new SavedBridgesCollection();
+        List<Bridge> bridges = new List<Bridge>(GameObject.FindObjectsOfType<Bridge>());
+        Debug.Log($"BRIDGES FOUND {bridges.Count}");
+        newSavedBridgesCollection.savedBridges = new BridgeStats[bridges.Count];
+        string jsonString = "{ \"savedBridges\" : [";
+        foreach (Bridge bridge in bridges)
+        {
+            jsonString += $"{JsonUtility.ToJson(bridge.bridgeStats)},";
+        }
+        jsonString = jsonString.Remove(jsonString.Length - 1, 1);
+        jsonString += "]}";
+        Debug.Log($"JSON STRING TO SAVE {jsonString}");
+        string path;
+        if (File.Exists(Application.persistentDataPath + $"/SaveStates/"))
+        {
+            path = Application.persistentDataPath + $"/SaveStates/Bridges.json";
+        }
+        else
+        {
+            Directory.CreateDirectory(Application.persistentDataPath + $"/SaveStates/");
+            path = Application.persistentDataPath + $"/SaveStates/Bridges.json";
+        }
+        File.WriteAllText(path, jsonString);
+    }
+    public void LoadBridges()
+    {
+        Debug.Log($"LOADING SAVED BRIDGES...");
+        if (savedBridgesCollection != null)
+        {
+            Debug.Log($"SAVED BRIDGES BEFORE {savedBridgesCollection.savedBridges.Length}");
+        }
+        string path = Application.persistentDataPath + $"/SaveStates/Bridges.json";
+        string jsonString = File.ReadAllText(path);
+        Debug.Log($"JSON STRING TO LOAD {jsonString}");
+        savedBridgesCollection = JsonUtility.FromJson<SavedBridgesCollection>(jsonString);
+        Debug.Log($"SAVED BRIDGES AFTER {savedBridgesCollection.savedBridges.Length}");
     }
     public void SavePlayers()
     {
@@ -547,23 +628,27 @@ public class GameManager : GenericSingletonClass<GameManager>
         string path;
         if (File.Exists(Application.persistentDataPath + $"/SaveStates/"))
         {
-            path = Application.persistentDataPath + $"/SaveStates/{PhotonNetwork.CurrentRoom.Name}.json";
+            path = Application.persistentDataPath + $"/SaveStates/Players.json";
         }
         else
         {
             Directory.CreateDirectory(Application.persistentDataPath + $"/SaveStates/");
-            path = Application.persistentDataPath + $"/SaveStates/{PhotonNetwork.CurrentRoom.Name}.json";
+            path = Application.persistentDataPath + $"/SaveStates/Players.json";
         }
+        GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"SAVING PLAYERS {jsonString}");
         File.WriteAllText(path, jsonString);
     }
     public void LoadPlayers()
     {
-        string path = Application.persistentDataPath + $"/SaveStates/{PhotonNetwork.CurrentRoom.Name}.json";
+        string path = Application.persistentDataPath + $"/SaveStates/Players.json";
         string jsonString = File.ReadAllText(path);
+        GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"LOADING PLAYERS {jsonString}");
         savedPlayersCollection = JsonUtility.FromJson<SavedPlayersCollection>(jsonString);
     }
     public PlayerStats GetSavedPlayerStats(int playerId) => savedPlayersCollection.savedPlayers.First(x => x.id == playerId);
     public CapturedLocation GetSavedCapturedLocation(int playerId) => savedPlayersCollection.capturedLocations.First(x => x.playerId == playerId);
+    public bool CheckIfBridgesLoaded() => savedBridgesCollection != null;
+    public BridgeStats GetSavedBridges(string bridgeName) => savedBridgesCollection.savedBridges.First(x => x.name == bridgeName);
     public void PopulateMinigamesForRound()
     {
         int index = 0;
@@ -603,7 +688,12 @@ public class SavedPlayersCollection
     [SerializeField]
     public CapturedLocation[] capturedLocations;
 }
-
+[Serializable]
+public class SavedBridgesCollection
+{
+    [SerializeField]
+    public BridgeStats[] savedBridges;
+}
 [Serializable]
 public class CapturedLocation
 {

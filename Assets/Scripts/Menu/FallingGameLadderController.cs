@@ -15,12 +15,11 @@ public class FallingGameLadderController : MonoBehaviourPunCallbacks
         for(int i = 0; i < playerPointsContainers.Length; ++i)
         {
             PlayerPointsContainer container = playerPointsContainers[i];
-            if (i < GameManager.Instance.actionTakenPlayers.Count)
+            if (i < GameManager.Instance.players.Count)
             {
                 container.obj.SetActive(true);
-                PlayerController controller = GameManager.Instance.actionTakenPlayers.Dequeue();
+                PlayerController controller = GameManager.Instance.players[i];
                 container.InitializeFromPlayer(controller);
-                GameManager.Instance.actionTakenPlayers.Enqueue(controller);
             } else
             {
                 container.obj.SetActive(false);
