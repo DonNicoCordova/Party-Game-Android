@@ -63,7 +63,6 @@ public class MainMenu : MonoBehaviourPunCallbacks
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        Debug.Log($"{returnCode} ERROR CONNECTING: {message}");
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)

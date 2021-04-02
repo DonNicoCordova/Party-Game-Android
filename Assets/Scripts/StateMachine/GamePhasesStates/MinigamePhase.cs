@@ -45,7 +45,6 @@ internal class MinigamePhase : IState
 
     public void OnExit()
     {
-        Debug.Log($"EXITING MINIGAME PHASE ON ROUND {GameManager.Instance.GetRound()}");
         stayTime = defaultStayTime;
         if (GameSystem.Instance.minigamePhaseTimerDone)
             GameSystem.Instance.minigamePhaseTimerDone = false;

@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class Path : MonoBehaviour
 {
-    
-    private void OnTriggerEnter(Collider other)
+    public Fence TopFence;
+    public Fence BotFence;
+
+    public void RemoveBotFence()
     {
-        Debug.Log("TRIGGER ENTER");
-        PathSpawner.Instance.MovePath(gameObject);
+        BotFence.Remove();
+    }
+    public void RemoveTopFence()
+    {
+        TopFence.Remove();
     }
 }

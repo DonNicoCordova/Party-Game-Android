@@ -10,11 +10,9 @@ public class PathSpawner : MonoBehaviourPunCallbacks
     public List<string> obstacles = new List<string>();
     public Transform spawnPosition;
     public float defaultDelayTime = 1f;
-    private float pathDelayTime;
     private float obstacleDelayTime;
     private static PathSpawner instance;
     private bool enabledToSpawn = false;
-
     public static PathSpawner Instance
     {
         get
@@ -35,22 +33,23 @@ public class PathSpawner : MonoBehaviourPunCallbacks
     private void Start()
     {
         obstacleDelayTime = 8 * defaultDelayTime;
-        pathDelayTime = 0f;
         if (paths != null && paths.Count > 0)
         {
             paths = paths.OrderBy(p => p.transform.position.x).ToList();
         }
     }
-    private void Update()
+    private void OnTriggerExit(Collider other)
     {
-        if (pathDelayTime <= 0f)
+        if (other.CompareTag("Path"))
         {
             GameObject firstPath = paths.First();
             paths.Remove(firstPath);
             MovePath(firstPath);
             paths.Add(firstPath);
-            pathDelayTime = defaultDelayTime;
         }
+    }
+    private void Update()
+    {
         if (PhotonNetwork.IsMasterClient)
         {
             if (obstacleDelayTime <= 0f && enabledToSpawn)
@@ -63,8 +62,6 @@ public class PathSpawner : MonoBehaviourPunCallbacks
             obstacleDelayTime -= Time.deltaTime;
             obstacleDelayTime = Mathf.Clamp(obstacleDelayTime, 0f, Mathf.Infinity);
         }
-        pathDelayTime -= Time.deltaTime;
-        pathDelayTime = Mathf.Clamp(pathDelayTime, 0f, Mathf.Infinity);
     }
     public void MovePath(GameObject path)
     {

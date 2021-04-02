@@ -16,7 +16,6 @@ public class FallingMinigameSystem : MonoBehaviour
 
         if (Instance != null)
         {
-            Debug.LogError("More than one GameSystem in scene!");
             return;
         }
         Instance = this;

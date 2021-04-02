@@ -27,6 +27,8 @@ TagManager:
   - CapturePointIcon
   - BridgeIcon
   - EnergyCounter
+  - Fence
+  - Obstacle
   layers:
   - Default
   - TransparentFX

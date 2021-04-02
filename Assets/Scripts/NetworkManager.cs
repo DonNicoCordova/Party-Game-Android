@@ -27,15 +27,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("CONNECTED TO PHOTON MASTER");
     }
     public override void OnCreatedRoom()
     {
-        Debug.Log("ROOM CREATED");
     }
     public override void OnJoinedRoom()
     {
-        Debug.Log("ROOM JOINED");
     }
     public void CreateRoom(string roomName, int maxPlayers, bool privateRoom)
     {

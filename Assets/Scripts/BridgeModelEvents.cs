@@ -13,7 +13,6 @@ public class BridgeModelEvents : MonoBehaviour
 
     private void ShowMap()
     {
-        Debug.Log("CALLING EVENT SHOWMAP");
         bridgeController.ShowMap();
     }
 }

@@ -99,7 +99,6 @@ public class PlayerStats
     {
         if (playableCharacter.gameObject.GetPhotonView().IsMine)
         {
-            Debug.Log($"PLAYER OWNED... REDUCING ENERGY FOR REASON {reason} | {energy} => {energy - newEnergy}");
             energy -= newEnergy;
             if (energy == 0)
             {

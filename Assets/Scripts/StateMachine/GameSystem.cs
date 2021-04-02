@@ -109,7 +109,6 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                Debug.Log($"CHECKING IF NOTHING ELSE TO DO: ROUND DONE({GameManager.Instance.RoundDone()})  All PlayersStateDone({GameManager.Instance.AllPlayersStateDone()})");
                 return GameManager.Instance.RoundDone() && GameManager.Instance.AllPlayersStateDone();
             }
             else

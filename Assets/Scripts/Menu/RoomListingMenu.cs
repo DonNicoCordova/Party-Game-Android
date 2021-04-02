@@ -16,10 +16,8 @@ public class RoomListingMenu : MonoBehaviourPunCallbacks
     
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        Debug.Log($"ON ROOM LIST UPDATE: ");
         foreach (RoomInfo room in roomList)
         {
-            Debug.Log($"ROOM ON LIST ITERATING: {JsonUtility.ToJson(room)}");
             if (room.RemovedFromList)
             {
                 int index = _listings.FindIndex(x => x.SavedRoomInfo.Name == room.Name);

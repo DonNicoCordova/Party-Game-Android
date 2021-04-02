@@ -516,7 +516,6 @@ public class GameManager : GenericSingletonClass<GameManager>
     {
         if (notActionTakenPlayers.Count == 0 && GetActualPlayer() == null)
         {
-            Debug.Log("CALLING RPC FOR FINISH ROUND");
             GameboardRPCManager.Instance.photonView.RPC("FinishRound", RpcTarget.All);
         }
         else
@@ -528,7 +527,6 @@ public class GameManager : GenericSingletonClass<GameManager>
             if (notActionTakenPlayers.Count != 0)
             {
                 PlayerController newActualPlayer = notActionTakenPlayers.Dequeue();
-                Debug.Log($"CALLING RPC FOR SET ACTUAL PLAYER {newActualPlayer.photonPlayer.NickName}");
                 GameboardRPCManager.Instance.photonView.RPC("SetActualPlayer", RpcTarget.All, newActualPlayer.photonPlayer.ActorNumber);
             } else
             {
@@ -560,7 +558,6 @@ public class GameManager : GenericSingletonClass<GameManager>
     {
         SavedBridgesCollection newSavedBridgesCollection = new SavedBridgesCollection();
         List<Bridge> bridges = new List<Bridge>(GameObject.FindObjectsOfType<Bridge>());
-        Debug.Log($"BRIDGES FOUND {bridges.Count}");
         newSavedBridgesCollection.savedBridges = new BridgeStats[bridges.Count];
         string jsonString = "{ \"savedBridges\" : [";
         foreach (Bridge bridge in bridges)
@@ -569,7 +566,6 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         jsonString = jsonString.Remove(jsonString.Length - 1, 1);
         jsonString += "]}";
-        Debug.Log($"JSON STRING TO SAVE {jsonString}");
         string path;
         if (File.Exists(Application.persistentDataPath + $"/SaveStates/"))
         {
@@ -584,16 +580,9 @@ public class GameManager : GenericSingletonClass<GameManager>
     }
     public void LoadBridges()
     {
-        Debug.Log($"LOADING SAVED BRIDGES...");
-        if (savedBridgesCollection != null)
-        {
-            Debug.Log($"SAVED BRIDGES BEFORE {savedBridgesCollection.savedBridges.Length}");
-        }
         string path = Application.persistentDataPath + $"/SaveStates/Bridges.json";
         string jsonString = File.ReadAllText(path);
-        Debug.Log($"JSON STRING TO LOAD {jsonString}");
         savedBridgesCollection = JsonUtility.FromJson<SavedBridgesCollection>(jsonString);
-        Debug.Log($"SAVED BRIDGES AFTER {savedBridgesCollection.savedBridges.Length}");
     }
     public void SavePlayers()
     {
@@ -635,14 +624,12 @@ public class GameManager : GenericSingletonClass<GameManager>
             Directory.CreateDirectory(Application.persistentDataPath + $"/SaveStates/");
             path = Application.persistentDataPath + $"/SaveStates/Players.json";
         }
-        GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"SAVING PLAYERS {jsonString}");
         File.WriteAllText(path, jsonString);
     }
     public void LoadPlayers()
     {
         string path = Application.persistentDataPath + $"/SaveStates/Players.json";
         string jsonString = File.ReadAllText(path);
-        GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"LOADING PLAYERS {jsonString}");
         savedPlayersCollection = JsonUtility.FromJson<SavedPlayersCollection>(jsonString);
     }
     public PlayerStats GetSavedPlayerStats(int playerId) => savedPlayersCollection.savedPlayers.First(x => x.id == playerId);

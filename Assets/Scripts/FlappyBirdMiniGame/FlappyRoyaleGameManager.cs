@@ -26,12 +26,12 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
 
     private List<FlappyRoyaleStats> playersStats;
     private Vector3 originalGravity;
+    private List<Path> paths;
     // Start is called before the first frame update
     void Start()
     {
         Screen.autorotateToPortrait = false;
         Screen.orientation = ScreenOrientation.LandscapeLeft;
-        Debug.Log($"GRAVITY {Physics.gravity}");
         originalGravity = Physics.gravity;
         Physics.gravity = originalGravity * gravityFactor;
         playersStats = new List<FlappyRoyaleStats>();
@@ -42,29 +42,25 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
             newPlayerMinigameStat.timeAlive = 0f;
             playersStats.Add(newPlayerMinigameStat);
         }
-        Debug.Log("FADE IN ON ROYALE GAME");
         LevelLoader.Instance.FadeIn();
         StartCoroutine(processImInGame());
         StartCoroutine(InitializeGuiProcess());
+        paths = GameObject.FindObjectsOfType<Path>().ToList();
     }
     public bool AllPlayersJoined() => numberOfPlayers == PhotonNetwork.PlayerList.Length;
     [PunRPC]
     private void ImInGame()
     {
-        Debug.Log("CALLING IM IN GAME ON FLAPPY");
         numberOfPlayers++;
         if (AllPlayersJoined())
         {
-            Debug.Log("SPAWNING PLAYER");
             SpawnPlayer();
         }
     }
     public void SpawnPlayer()
     {
         GameObject playerShip = PhotonNetwork.Instantiate(spaceShipPrefab, spawnPoint.position, spawnPoint.rotation);
-        Debug.Log($"SPACESHIP SPAWNED {playerShip.name}");
         SpaceShipController spaceShip = playerShip.GetComponentInChildren<SpaceShipController>();
-        Debug.Log($"SPACESHIP CONTROLLER {spaceShip.gameObject.name}");
         spaceShip.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
     }
     [PunRPC]
@@ -77,11 +73,9 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("SETTING STATE DONE FOR FLAPPY MINIGAME");
             PlayerController player = GameManager.Instance.GetPlayer(playerId);
             if (!player.playerStats.currentMinigameStateFinished)
             {
-                Debug.Log($"SETTING MINIGAME STATE DONDE TO PLAYER {player.playerStats.nickName}");
                 player.playerStats.currentMinigameStateFinished = true;
             }
         }
@@ -139,8 +133,6 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
     }
     public bool LastPlayerDied()
     {
-        Debug.Log("CHECKING IF LAST PLAYER ALIVE");
-        Debug.Log($"playersStats.FindAll(s => s.alive == true).ToList().Count ({playersStats.FindAll(s => s.alive == true).ToList().Count}) == 0 => {playersStats.FindAll(s => s.alive == true).ToList().Count == 0}");
         return playersStats.FindAll(s => s.alive == true).ToList().Count == 0;
     }
     public IEnumerator processImInGame()
@@ -172,6 +164,21 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
     public FlappyRoyaleStats GetWinner()
     {
         return playersStats.OrderByDescending(o => o.timeAlive).ToList()[0];
+    }
+
+    public void RemoveBottomFences()
+    {
+        foreach (Path path in paths)
+        {
+            path.RemoveBotFence();
+        }
+    }
+    public void RemoveTopFences()
+    {
+        foreach (Path path in paths)
+        {
+            path.RemoveTopFence();
+        }
     }
 }
 public class FlappyRoyaleStats

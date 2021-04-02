@@ -49,7 +49,6 @@ public class Bridge : MonoBehaviourPunCallbacks
             Vector3 position1 = cutPosition1.position;
             Vector3 position2 = cutPosition2.position;
             SkillsUI.Instance.playerUsingSkills = info.Sender;
-            Debug.Log($"{info.Sender.NickName} IS USING CUT");
             AnimateCut();
             bridgeStats.usable = false;
         }
@@ -67,7 +66,6 @@ public class Bridge : MonoBehaviourPunCallbacks
         if (!bridgeStats.usable)
         {
             SkillsUI.Instance.playerUsingSkills = info.Sender;
-            Debug.Log($"{info.Sender.NickName} IS USING CUT");
             AnimateSpawn();
         }
     }
@@ -125,7 +123,6 @@ public class Bridge : MonoBehaviourPunCallbacks
     {
         if (SkillsUI.Instance.noAnimationsPlaying)
         {
-            Debug.Log($"PROCESSING CLICK ON BRIDGE {gameObject.name}");
             SkillInfo skillInfo = SkillsUI.Instance.GetSkillInfo(skillToUse);
             if (skillInfo.energyCost <= GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft())
             {
@@ -133,15 +130,11 @@ public class Bridge : MonoBehaviourPunCallbacks
                 {
                     case SkillToUse.Cut:
                         photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
-                        Debug.Log($"CALLING REDUCE ENERGY FROM CUT -{skillInfo.energyCost}");
-                        GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"UPDATING ENERGY TO PLAYER ID: {GameManager.Instance.GetMainPlayer().playerStats.nickName} WITH: -{skillInfo.energyCost} FOR REASON CUT ");
                         GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "CUT");
                         StartCoroutine(DelayRPC("CutOut"));
                         break;
                     case SkillToUse.Spawn:
                         photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
-                        Debug.Log($"CALLING REDUCE ENERGY FROM SPAWN -{skillInfo.energyCost}"); 
-                        GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"UPDATING ENERGY TO PLAYER ID: {GameManager.Instance.GetMainPlayer().playerStats.nickName} WITH: -{skillInfo.energyCost} FOR REASON SPAWN");
                         GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "SPAWN");
                         StartCoroutine(DelayRPC("Spawn"));
                         break;

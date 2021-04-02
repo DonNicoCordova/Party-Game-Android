@@ -34,8 +34,10 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (photonView.IsMine && enabledToPlay && enabledToDie)
+        if (photonView.IsMine && enabledToPlay && enabledToDie && (collision.gameObject.CompareTag("Path") || collision.gameObject.CompareTag("Obstacle")))
+        {
             this.photonView.RPC("Explode",RpcTarget.All, timeAlive);
+        }
     }
     private void Update()
     {
@@ -51,6 +53,7 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
         {
             Boost();
             rb.velocity = Vector3.up * velocity;
+            Debug.DrawRay(transform.position, Vector3.up * velocity, Color.red, 3f);
         }
         if (enabledToPlay)
         {
@@ -69,19 +72,15 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
     [PunRPC]
     private void Explode(float timeAlive, PhotonMessageInfo info)
     {
-        if (enabledToDie)
+        GameObject explosion = Instantiate(FlappyRoyaleGameManager.Instance.explosion, transform.position, Quaternion.identity);
+        explosion.GetComponentInChildren<ParticleSystem>().Play();
+        StartCoroutine(GarbageCollect(explosion));
+        gameObject.SetActive(false);
+        playerStats.alive = false;
+        if (info.Sender.ActorNumber != GameManager.Instance.GetMainPlayer().photonPlayer.ActorNumber)
         {
-            GameObject explosion = Instantiate(FlappyRoyaleGameManager.Instance.explosion, transform.position, Quaternion.identity);
-            explosion.GetComponentInChildren<ParticleSystem>().Play();
-            StartCoroutine(GarbageCollect(explosion));
-            gameObject.SetActive(false);
-            playerStats.alive = false;
-            if (info.Sender.ActorNumber != GameManager.Instance.GetMainPlayer().photonPlayer.ActorNumber)
-            {
-                FlappyRoyaleStats playerToUpdate = FlappyRoyaleGameManager.Instance.GetStats(info.Sender.ActorNumber);
-                playerToUpdate.timeAlive = timeAlive;
-            }
-
+            FlappyRoyaleStats playerToUpdate = FlappyRoyaleGameManager.Instance.GetStats(info.Sender.ActorNumber);
+            playerToUpdate.timeAlive = timeAlive;
         }
     }
     private IEnumerator GarbageCollect(GameObject explosion)
@@ -94,10 +93,8 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
         rb.useGravity = true;
         enabledToPlay = true;
     }
-    [PunRPC]
-    public void ShieldsDown()
+    public void EnableDying()
     {
-        forceShield.Down();
         enabledToDie = true;
     }
     [PunRPC]
@@ -123,7 +120,6 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
                 rb.useGravity = false;
                 rb.isKinematic = true;
             }
-            shipRenderer.material.SetColor(name, new Color(shipRenderer.material.color.r, shipRenderer.material.color.g, shipRenderer.material.color.b, 0.5f));
             transform.localScale = transform.localScale * 0.7f;
             shieldCollider.enabled = false;
             shipCollider.enabled = false;

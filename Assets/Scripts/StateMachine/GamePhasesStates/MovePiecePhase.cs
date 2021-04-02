@@ -77,7 +77,6 @@ internal class MovePiecePhase : IState
         // IF ACTUAL PLAYER IS IN SYNC AND PLAYER IS DONE PLAYING
         else if (actualPlayer != null && actualPlayer.playerStats.PlayerDone() && lastPlayer == actualPlayer)
         {
-            Debug.Log($"ACTUAL PLAYER ({actualPlayer.photonPlayer.NickName}) IS DONE PLAYING");
             if (GameManager.Instance.ActualPlayerIsMainPlayer())
             {
                 PlayerController player = GameManager.Instance?.GetMainPlayer();
@@ -90,7 +89,6 @@ internal class MovePiecePhase : IState
             }
             if (PhotonNetwork.IsMasterClient)
             {
-                Debug.Log($"GETTING NEXT PLAYER BECAUSE PLAYER WAS DONE.");
                 GameManager.Instance.GetNextPlayer();
             }
             yourTurnMessage = false;

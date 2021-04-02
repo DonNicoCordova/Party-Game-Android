@@ -37,7 +37,6 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
     [PunRPC]
     private void FinishRound()
     {
-        Debug.Log("TRYING TO FINISH ROUND");
         GameManager.Instance.SetActualPlayer(null);
         GameManager.Instance.roundFinished = true;
 

@@ -14,7 +14,6 @@ public class LoginMenu : MonoBehaviourPunCallbacks
     {
         if (LevelLoader.Instance != null && LevelLoader.Instance.visible)
         {
-            Debug.Log($"CHECKING IF VISIBLE LEVELLOADER: {LevelLoader.Instance.visible}");
             LevelLoader.Instance.FadeIn();
         }
         Screen.sleepTimeout = SleepTimeout.NeverSleep;

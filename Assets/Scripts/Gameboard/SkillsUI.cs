@@ -136,7 +136,6 @@ public class SkillsUI : MonoBehaviour
     }
     public void OnClickShowSkills()
     {
-        Debug.Log("OPENNING SKILLS PANEL. DISABLING JOYSTICK");
         playerUsingSkills = GameManager.Instance.GetMainPlayer().photonPlayer;
         GameManager.Instance.DisableJoystick();
         GameManager.Instance.energyCounter.Show();
