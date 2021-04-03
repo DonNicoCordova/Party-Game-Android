@@ -124,23 +124,26 @@ public class Bridge : MonoBehaviourPunCallbacks
         if (SkillsUI.Instance.noAnimationsPlaying)
         {
             SkillInfo skillInfo = SkillsUI.Instance.GetSkillInfo(skillToUse);
-            if (skillInfo.energyCost <= GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft())
+            if (skillInfo != null)
             {
-                switch (skillToUse)
+                if (skillInfo.energyCost <= GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft())
                 {
-                    case SkillToUse.Cut:
-                        photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
-                        GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "CUT");
-                        StartCoroutine(DelayRPC("CutOut"));
-                        break;
-                    case SkillToUse.Spawn:
-                        photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
-                        GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "SPAWN");
-                        StartCoroutine(DelayRPC("Spawn"));
-                        break;
-                    case SkillToUse.Sticky:
-                        GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "STICKY");
-                        break;
+                    switch (skillToUse)
+                    {
+                        case SkillToUse.Cut:
+                            photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
+                            GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "CUT");
+                            StartCoroutine(DelayRPC("CutOut"));
+                            break;
+                        case SkillToUse.Spawn:
+                            photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
+                            GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "SPAWN");
+                            StartCoroutine(DelayRPC("Spawn"));
+                            break;
+                        case SkillToUse.Sticky:
+                            GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "STICKY");
+                            break;
+                    }
                 }
             }
         }
