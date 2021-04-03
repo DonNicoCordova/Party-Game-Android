@@ -46,6 +46,12 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
             timeAlive += Time.deltaTime;
             playerStats.timeAlive = timeAlive;
         }
+        if (Input.GetMouseButtonDown(0) && enabledToPlay)
+        {
+            Boost();
+            rb.velocity = Vector3.up * velocity;
+            Debug.DrawRay(transform.position, Vector3.up * velocity, Color.red, 3f);
+        }
     }
     private void FixedUpdate()
     {
@@ -60,12 +66,6 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
 
         anim.SetFloat("Vertical", vertical);
 
-        if (Input.GetMouseButtonDown(0) && enabledToPlay)
-        {
-            Boost();
-            rb.velocity = Vector3.up * velocity;
-            Debug.DrawRay(transform.position, Vector3.up * velocity, Color.red, 3f);
-        }
     }
     public void SetColor(Material newMaterial)
     {
