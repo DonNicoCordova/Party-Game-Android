@@ -22,7 +22,6 @@ public class ResumeCommand : Command
     }
     public override void Execute()
     {
-        GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"RESUMING PLAYER {_newPhotonPlayer.NickName} ON ROUND {GameManager.Instance.GetRound()}");
         CapturedLocation oldCapturedLocations = GameManager.Instance.GetSavedCapturedLocation(_newPhotonPlayer.ActorNumber);
         PlayerStats oldPlayerStats = GameManager.Instance.GetSavedPlayerStats(_newPhotonPlayer.ActorNumber);
         oldPlayerStats.mainColor = GameManager.Instance.playerConfigs[_newPhotonPlayer.ActorNumber - 1].mainColor;
