@@ -126,7 +126,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             // set player to main player and assign camera to follow plus enable joystick
-            GameboardRPCManager.Instance.photonView.RPC("DebugMessage", RpcTarget.MasterClient, $"INITIALIZING MAIN PLAYER AS {playerStats.nickName}");
             GameManager.Instance.SetMainPlayer(this);
             GameManager.Instance.virtualCamera.Follow = transform;
             GameManager.Instance.virtualCamera.LookAt = transform;

@@ -18,7 +18,7 @@ internal class WelcomePhase : IState
         {
             GameSystem.Instance.initializePhaseTimerDone = true;
             PlayerController player = GameManager.Instance?.GetMainPlayer();
-            if (player)
+            if (player && !player.playerStats.currentStateFinished)
             {
                 GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }

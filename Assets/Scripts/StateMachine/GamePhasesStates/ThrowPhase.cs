@@ -30,7 +30,7 @@ internal class ThrowPhase : IState
         if (GameManager.Instance.throwController.DicesStopped())
         {
             PlayerController player = GameManager.Instance?.GetMainPlayer();
-            if (player)
+            if (player && !player.playerStats.currentStateFinished)
             {
                 GameboardRPCManager.Instance?.photonView.RPC("SetStateDone", RpcTarget.MasterClient, player.playerStats.id);
             }

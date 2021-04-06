@@ -67,6 +67,8 @@ public class GameManager : GenericSingletonClass<GameManager>
     private Queue<string> statesQueue = new Queue<string>();
     private Queue<Command> _commands = new Queue<Command>();
     private Command _currentCommand;
+
+    public event EventHandler<ActualPlayerChangedArgs> ActualPlayerChanged;
     private void Start()
     {
         ConnectReferences();
@@ -167,7 +169,17 @@ public class GameManager : GenericSingletonClass<GameManager>
         ResetPlayers();
     }
     public PlayerController GetActualPlayer() => actualPlayer;
-    public void SetActualPlayer(PlayerController nPlayer) => actualPlayer = nPlayer;
+    public void SetActualPlayer(PlayerController nPlayer)
+    {
+        actualPlayer = nPlayer;
+        ActualPlayerChangedArgs args = new ActualPlayerChangedArgs(-1);
+        if (nPlayer != null){
+
+            args = new ActualPlayerChangedArgs(nPlayer.photonPlayer.ActorNumber);
+        } 
+        if (ActualPlayerChanged != null)
+            ActualPlayerChanged(this, args);
+    }
     public PlayerController GetMainPlayer() => mainPlayer;
     public bool ActualPlayerIsMainPlayer() => mainPlayer == actualPlayer;
     public bool DiceOnDisplay() => diceOnDisplay;
@@ -530,7 +542,7 @@ public class GameManager : GenericSingletonClass<GameManager>
                 GameboardRPCManager.Instance.photonView.RPC("SetActualPlayer", RpcTarget.All, newActualPlayer.photonPlayer.ActorNumber);
             } else
             {
-                GameManager.Instance.SetActualPlayer(null);
+                GameboardRPCManager.Instance.photonView.RPC("SetActualPlayer", RpcTarget.All, -1);
             }
         }
     }
@@ -663,6 +675,14 @@ public class GameManager : GenericSingletonClass<GameManager>
         {
             miniMap.SetActive(true);
         }
+    }
+    public class ActualPlayerChangedArgs : EventArgs
+    {
+        public ActualPlayerChangedArgs(int newPlayer)
+        {
+            NewPlayer = newPlayer;
+        }
+        public int NewPlayer { get; private set; }
     }
 }
 //These classes are for saving data over one scene to another

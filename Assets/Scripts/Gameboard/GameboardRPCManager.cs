@@ -13,25 +13,33 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
     [PunRPC]
     private void SetActualPlayer(int playerId)
     {
-        if (GameManager.Instance.GetActualPlayer() != null)
+        if (playerId == -1)
         {
+            GameManager.Instance.SetActualPlayer(null);
+        }
+        else
+        {
+            if (GameManager.Instance.GetActualPlayer() != null)
+            {
+                if (GameManager.Instance.ActualPlayerIsMainPlayer())
+                {
+                    SkillsUI.Instance.DisableSkillsButton();
+                }
+            }
+            PlayerController newActualPlayer = GameManager.Instance.GetPlayer(playerId);
+            GameManager.Instance.SetActualPlayer(newActualPlayer);
+
             if (GameManager.Instance.ActualPlayerIsMainPlayer())
             {
-                SkillsUI.Instance.DisableSkillsButton();
+                SkillsUI.Instance.EnableSkillsButton();
+                GameManager.Instance.ShowMessage("¡Te toca!");
             }
-        }
-        PlayerController newActualPlayer = GameManager.Instance.GetPlayer(playerId);
-        GameManager.Instance.SetActualPlayer(newActualPlayer);
-        
-        if (GameManager.Instance.ActualPlayerIsMainPlayer())
-        {
-            SkillsUI.Instance.EnableSkillsButton();
-            GameManager.Instance.ShowMessage("¡Te toca!");
-        }
 
-        GameManager.Instance.playersLadder.UpdateLadderInfo();
-        GameManager.Instance.virtualCamera.Follow = GameManager.Instance.GetActualPlayer().transform;
-        GameManager.Instance.virtualCamera.LookAt = GameManager.Instance.GetActualPlayer().transform;
+            GameManager.Instance.playersLadder.UpdateLadderInfo();
+            GameManager.Instance.virtualCamera.Follow = GameManager.Instance.GetActualPlayer().transform;
+            GameManager.Instance.virtualCamera.LookAt = GameManager.Instance.GetActualPlayer().transform;
+
+        }
 
     }
     [PunRPC]
@@ -71,7 +79,7 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
         Debug.Log($"DEBUG MESSAGE FROM {info.Sender.NickName}: {message}");
     }
     [PunRPC]
-    public void SetStateDone(int playerId)
+    public void SetStateDone(int playerId, PhotonMessageInfo info)
     {
         if (PhotonNetwork.IsMasterClient)
         {
@@ -91,6 +99,7 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
             PlayerController player = GameManager.Instance.GetPlayer(playerId);
             if (player != null)
             {
+                Debug.Log($"UPDATING ENERGY OF {player.playerStats.nickName} WITH ({newEnergy})");
                 player.playerStats.SetEnergyLeft(newEnergy);
                 player.UpdateEnergy();
             }
