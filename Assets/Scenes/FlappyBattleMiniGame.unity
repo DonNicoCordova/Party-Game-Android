@@ -339,7 +339,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6468453549299313469, guid: 825a37f46c5ce7743b4b0e423465fe34, type: 3}
       propertyPath: m_RootOrder
-      value: 9
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6468453549299313469, guid: 825a37f46c5ce7743b4b0e423465fe34, type: 3}
       propertyPath: m_LocalScale.x
@@ -1540,6 +1540,8 @@ MonoBehaviour:
   - Obstacle
   spawnPosition: {fileID: 664711756}
   defaultDelayTime: 0.522
+  testObstacle: {fileID: 4915700647248059719, guid: 428986f6e0b4c70478b1f5b4b18a1501, type: 3}
+  enabledToSpawn: 0
 --- !u!4 &702153490
 Transform:
   m_ObjectHideFlags: 0
@@ -1681,7 +1683,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 191.029, y: 157.725, z: 75.611}
 --- !u!1 &785049958
 GameObject:
@@ -3041,7 +3043,7 @@ Transform:
   m_LocalScale: {x: 0.79, y: 0.79, z: 0.79}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90.075}
 --- !u!1 &1756566341 stripped
 GameObject:
@@ -3431,7 +3433,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6468453549299313469, guid: e77a08840976ad341b9a6a10b5045ab6, type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6468453549299313469, guid: e77a08840976ad341b9a6a10b5045ab6, type: 3}
       propertyPath: m_LocalScale.x
