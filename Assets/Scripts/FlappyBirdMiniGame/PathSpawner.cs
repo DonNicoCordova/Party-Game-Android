@@ -10,9 +10,10 @@ public class PathSpawner : MonoBehaviourPunCallbacks
     public List<string> obstacles = new List<string>();
     public Transform spawnPosition;
     public float defaultDelayTime = 1f;
+    public GameObject testObstacle;
     private float obstacleDelayTime;
     private static PathSpawner instance;
-    private bool enabledToSpawn = false;
+    public bool enabledToSpawn = false;
     public static PathSpawner Instance
     {
         get
@@ -54,9 +55,13 @@ public class PathSpawner : MonoBehaviourPunCallbacks
         {
             if (obstacleDelayTime <= 0f && enabledToSpawn)
             {
+                Debug.Log("OBSTACLE DELAY TIME <= 0");
                 int randomIndex = Random.Range(0, obstacles.Count);
                 string obstacle = obstacles[randomIndex];
-                this.photonView.RPC("PlaceObstacle", RpcTarget.MasterClient, obstacle);
+                int yPosition = Random.Range(-5, 5);
+                Debug.Log("CALLING PLACE OBSTACLE RPC");
+                this.photonView.RPC("PlaceObstacle", RpcTarget.MasterClient, obstacle, yPosition);
+
                 obstacleDelayTime = 4 * defaultDelayTime;
             }
             obstacleDelayTime -= Time.deltaTime;
@@ -72,9 +77,19 @@ public class PathSpawner : MonoBehaviourPunCallbacks
         enabledToSpawn = true;
     }
     [PunRPC]
-    public void PlaceObstacle(string obstacle)
+    public void PlaceObstacle(string obstacle, int yPosition)
     {
-        GameObject obstacleGo = PhotonNetwork.Instantiate(obstacle, spawnPosition.position, Quaternion.identity);
+        Debug.Log("CALLING PLACE OBSTACLE");
+        Vector3 newSpawnPosition = spawnPosition.position + new Vector3(0, yPosition);
+        GameObject obstacleGo = PhotonNetwork.Instantiate(obstacle, newSpawnPosition, Quaternion.identity);
+        StartCoroutine(destroyObstacle(obstacleGo));
+    }
+
+    private void TestPlaceObstacle(GameObject obstacle, int yPosition)
+    {
+        Debug.Log("CALLING PLACE OBSTACLE");
+        Vector3 newSpawnPosition = spawnPosition.position + new Vector3(0, yPosition);
+        GameObject obstacleGo = GameObject.Instantiate(obstacle, newSpawnPosition, Quaternion.identity, transform);
         StartCoroutine(destroyObstacle(obstacleGo));
     }
 
