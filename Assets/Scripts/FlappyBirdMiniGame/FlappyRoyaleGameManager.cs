@@ -14,7 +14,7 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
     public GameObject instructionsCanvas;
     public GameObject gameResultsCanvas;
     public GameObject guiCanvas;
-    private int numberOfPlayers = 0;
+    public List<DifficultyInfo> difficulties;
 
     [Header("Player")]
     public string spaceShipPrefab;
@@ -24,9 +24,11 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
     [Header("UI")]
     public TextMeshProUGUI countdownCounter;
 
+    private int numberOfPlayers = 0;
     private List<FlappyRoyaleStats> playersStats;
     private Vector3 originalGravity;
     private List<Path> paths;
+    public DifficultyInfo actualDifficulty;
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +48,34 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
         StartCoroutine(processImInGame());
         StartCoroutine(InitializeGuiProcess());
         paths = GameObject.FindObjectsOfType<Path>().ToList();
+        actualDifficulty = GetDifficultyInfo(Difficulty.Passive);
+    }
+    public DifficultyInfo GetDifficultyInfo(Difficulty difficulty)
+    {
+        bool skillExists = difficulties.Any(info => info.difficulty == difficulty);
+        if (skillExists)
+        {
+            return difficulties.First(info => info.difficulty == difficulty);
+        }
+        else
+        {
+            return null;
+        }
+    }
+    public void DifficultyUp()
+    {
+        switch (actualDifficulty.difficulty)
+        {
+            case Difficulty.Passive:
+                actualDifficulty = GetDifficultyInfo(Difficulty.Easy);
+                break;
+            case Difficulty.Easy:
+                actualDifficulty = GetDifficultyInfo(Difficulty.Medium);
+                break;
+            case Difficulty.Medium:
+                actualDifficulty = GetDifficultyInfo(Difficulty.Hard);
+                break;
+        }
     }
     public bool AllPlayersJoined() => numberOfPlayers == PhotonNetwork.PlayerList.Length;
     [PunRPC]
@@ -186,4 +216,23 @@ public class FlappyRoyaleStats
     public int playerId;
     public float timeAlive;
     public bool alive = true;
+}
+[System.Serializable]
+public enum Difficulty
+{
+    Passive, Easy, Medium, Hard
+}
+[System.Serializable]
+public class DifficultyInfo
+{
+    [SerializeField]
+    public Difficulty difficulty;
+    [SerializeField]
+    public float obstacleDelay;
+    [SerializeField]
+    public float singleObstacleChance;
+    [SerializeField]
+    public float wallObstacleChance;
+    [SerializeField]
+    public float israObstacleChance;
 }

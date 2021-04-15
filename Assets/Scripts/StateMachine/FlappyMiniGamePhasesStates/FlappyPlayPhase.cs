@@ -9,23 +9,20 @@ internal class FlappyPlayPhase : IState
     private float defaultSecondDifficultyTime = 5f;
     private float difficultyUpgradeTime;
     private float preparationTime;
-    private Difficulty actualDifficulty = Difficulty.Passive;
-    public enum Difficulty
-    {
-        Passive, Easy, Medium, Hard
-    }
+    private FlappyRoyaleGameManager gameManager;
     public FlappyPlayPhase()
     {
         stateDone = false;
         difficultyUpgradeTime = defaultFirstDifficultyTime;
         preparationTime = defaultPreparationTime;
+        gameManager = FlappyRoyaleGameManager.Instance;
     }
     public void Tick()
     {
-        if (preparationTime <= 0f && actualDifficulty == Difficulty.Passive)
+        if (preparationTime <= 0f && gameManager.actualDifficulty.difficulty == Difficulty.Passive)
         {
             FlappyRoyaleGameManager.Instance.countdownCounter.gameObject.SetActive(false);
-            actualDifficulty = Difficulty.Easy;
+            gameManager.DifficultyUp();
             PathSpawner.Instance.EnableSpawning();
             FlappyRoyaleGameManager.Instance.mainPlayer.EnableDying();
         } else
@@ -35,16 +32,17 @@ internal class FlappyPlayPhase : IState
 
         if (difficultyUpgradeTime <= 0f)
         {
-            if (actualDifficulty == Difficulty.Easy)
+            gameManager.DifficultyUp();
+            difficultyUpgradeTime = defaultSecondDifficultyTime;
+            if (gameManager.actualDifficulty.difficulty == Difficulty.Easy)
             {
                 FlappyRoyaleGameManager.Instance.RemoveBottomFences();
-                actualDifficulty = Difficulty.Medium;
-                difficultyUpgradeTime = defaultSecondDifficultyTime;
-            } else if (actualDifficulty == Difficulty.Medium)
+            } else if (gameManager.actualDifficulty.difficulty == Difficulty.Medium)
             {
                 FlappyRoyaleGameManager.Instance.RemoveTopFences();
-                actualDifficulty = Difficulty.Hard;
             }
+
+            
         }
 
         if (!FlappyRoyaleGameManager.Instance.GetStats(GameManager.Instance.GetMainPlayer().playerStats.id).alive && !stateDone)
@@ -59,7 +57,7 @@ internal class FlappyPlayPhase : IState
 
 
 
-        if (actualDifficulty != Difficulty.Passive && difficultyUpgradeTime > 0)
+        if (gameManager.actualDifficulty.difficulty != Difficulty.Passive && difficultyUpgradeTime > 0)
         {
             difficultyUpgradeTime -= Time.deltaTime;
             difficultyUpgradeTime = Mathf.Clamp(difficultyUpgradeTime, 0f, Mathf.Infinity);

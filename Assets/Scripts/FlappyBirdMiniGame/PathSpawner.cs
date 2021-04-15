@@ -7,10 +7,12 @@ using Photon.Realtime;
 public class PathSpawner : MonoBehaviourPunCallbacks
 {
     public List<GameObject> paths = new List<GameObject>();
-    public List<string> obstacles = new List<string>();
+    public string singleObstacle = "SingleObstacle";
+    public string wallObstacle = "WallObstacle";
     public Transform spawnPosition;
-    public float defaultDelayTime = 1f;
+    public Transform wallSpawnPoint;
     public GameObject testObstacle;
+    public float defaultObstacleDelay = 1f;
     private float obstacleDelayTime;
     private static PathSpawner instance;
     public bool enabledToSpawn = false;
@@ -33,11 +35,11 @@ public class PathSpawner : MonoBehaviourPunCallbacks
     }
     private void Start()
     {
-        obstacleDelayTime = 8 * defaultDelayTime;
         if (paths != null && paths.Count > 0)
         {
             paths = paths.OrderBy(p => p.transform.position.x).ToList();
         }
+        obstacleDelayTime = defaultObstacleDelay;
     }
     private void OnTriggerExit(Collider other)
     {
@@ -56,13 +58,27 @@ public class PathSpawner : MonoBehaviourPunCallbacks
             if (obstacleDelayTime <= 0f && enabledToSpawn)
             {
                 Debug.Log("OBSTACLE DELAY TIME <= 0");
-                int randomIndex = Random.Range(0, obstacles.Count);
-                string obstacle = obstacles[randomIndex];
                 int yPosition = Random.Range(-5, 5);
-                Debug.Log("CALLING PLACE OBSTACLE RPC");
-                this.photonView.RPC("PlaceObstacle", RpcTarget.MasterClient, obstacle, yPosition);
+                float chance = Random.value;
+                float singleChance = FlappyRoyaleGameManager.Instance.actualDifficulty.singleObstacleChance;
+                float wallChance = FlappyRoyaleGameManager.Instance.actualDifficulty.wallObstacleChance;
+                float israChance = FlappyRoyaleGameManager.Instance.actualDifficulty.israObstacleChance;
+                if (chance < israChance)
+                {
+                    Debug.Log("CALLING PLACE OBSTACLE RPC");
+                    this.photonView.RPC("PlaceObstacle", RpcTarget.MasterClient, yPosition);
+                } else if (chance < israChance + wallChance)
+                {
+                    Debug.Log("CALLING PLACE OBSTACLE RPC");
+                    this.photonView.RPC("PlaceWallObstacle", RpcTarget.MasterClient);
+                } else if (chance < israChance + wallChance + singleChance)
+                {
 
-                obstacleDelayTime = 4 * defaultDelayTime;
+                    Debug.Log("CALLING PLACE OBSTACLE RPC");
+                    this.photonView.RPC("PlaceObstacle", RpcTarget.MasterClient, yPosition);
+                }
+
+                obstacleDelayTime = FlappyRoyaleGameManager.Instance.actualDifficulty.obstacleDelay;
             }
             obstacleDelayTime -= Time.deltaTime;
             obstacleDelayTime = Mathf.Clamp(obstacleDelayTime, 0f, Mathf.Infinity);
@@ -77,14 +93,38 @@ public class PathSpawner : MonoBehaviourPunCallbacks
         enabledToSpawn = true;
     }
     [PunRPC]
-    public void PlaceObstacle(string obstacle, int yPosition)
+    public void PlaceObstacle(int yPosition)
     {
         Debug.Log("CALLING PLACE OBSTACLE");
         Vector3 newSpawnPosition = spawnPosition.position + new Vector3(0, yPosition);
-        GameObject obstacleGo = PhotonNetwork.Instantiate(obstacle, newSpawnPosition, Quaternion.identity);
-        StartCoroutine(destroyObstacle(obstacleGo));
+        GameObject obstacleGo = ObjectPooler.Instance.SpawnFromPool("Single", newSpawnPosition, Quaternion.identity);
     }
 
+    [PunRPC]
+    private void PlaceWallObstacle()
+    {
+        GameObject obstacleGo = ObjectPooler.Instance.SpawnFromPool("Wall", wallSpawnPoint.position, wallSpawnPoint.rotation);
+        WallObstacle wallController = obstacleGo.GetComponent<WallObstacle>();
+        float chance = Random.value;
+        if (chance < 0.25)
+        {
+            wallController.EnableToClose();
+            wallController.CloseLeft();
+        } else if (chance < 0.5)
+        {
+            wallController.EnableToClose();
+            wallController.CloseRight();
+        } else if (chance < 0.75)
+        {
+            wallController.DisableToClose();
+            wallController.CloseLeft();
+        } else if (chance < 1)
+        {
+            wallController.DisableToClose();
+            wallController.CloseRight();
+        }
+
+    }
     private void TestPlaceObstacle(GameObject obstacle, int yPosition)
     {
         Debug.Log("CALLING PLACE OBSTACLE");
@@ -92,7 +132,12 @@ public class PathSpawner : MonoBehaviourPunCallbacks
         GameObject obstacleGo = GameObject.Instantiate(obstacle, newSpawnPosition, Quaternion.identity, transform);
         StartCoroutine(destroyObstacle(obstacleGo));
     }
-
+    private void TestPlaceWallObstacle(GameObject obstacle)
+    {
+        GameObject obstacleGo = GameObject.Instantiate(obstacle, wallSpawnPoint.position, wallSpawnPoint.rotation);
+        WallObstacle wallController = obstacleGo.GetComponent<WallObstacle>();
+        wallController.DisableToClose();
+    }
     public IEnumerator destroyObstacle(GameObject obstacle)
     {
         yield return new WaitForSeconds(5f);
