@@ -179,8 +179,8 @@ MonoBehaviour:
   cutPosition1: {fileID: 8131383821653498288}
   cutPosition2: {fileID: 9155180131695520290}
   cameraHighlighPosition: {fileID: 1985380715314564991}
-  bridgeRenderer: {fileID: 0}
-  animator: {fileID: 0}
+  bridgeRenderer: {fileID: 4203820431005501368}
+  animator: {fileID: 2179141006748146394}
   bridgeStats:
     energyCost: 0
     usable: 1
@@ -540,6 +540,11 @@ GameObject:
 --- !u!4 &3034815595314101463 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 08e6720aa55c45944ab4c18ff3f4a1ac, type: 3}
+  m_PrefabInstance: {fileID: 3285215163568773948}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4203820431005501368 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 08e6720aa55c45944ab4c18ff3f4a1ac, type: 3}
   m_PrefabInstance: {fileID: 3285215163568773948}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8823475496968953264

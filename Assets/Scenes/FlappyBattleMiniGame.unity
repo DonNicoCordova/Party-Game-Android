@@ -273,17 +273,17 @@ MonoBehaviour:
     wallObstacleChance: 0
     israObstacleChance: 0
   - difficulty: 1
-    obstacleDelay: 1
+    obstacleDelay: 1.4
     singleObstacleChance: 0.8
     wallObstacleChance: 0.2
     israObstacleChance: 0
   - difficulty: 2
-    obstacleDelay: 0.7
+    obstacleDelay: 1
     singleObstacleChance: 0.6
     wallObstacleChance: 0.4
     israObstacleChance: 0
   - difficulty: 3
-    obstacleDelay: 0.5
+    obstacleDelay: 0.7
     singleObstacleChance: 0.4
     wallObstacleChance: 0.6
     israObstacleChance: 0
