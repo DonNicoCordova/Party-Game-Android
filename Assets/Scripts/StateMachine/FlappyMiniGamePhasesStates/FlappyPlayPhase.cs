@@ -5,8 +5,8 @@ internal class FlappyPlayPhase : IState
 {
     private bool stateDone;
     private float defaultPreparationTime = 5f;
-    private float defaultFirstDifficultyTime = 5f;
-    private float defaultSecondDifficultyTime = 5f;
+    private float defaultFirstDifficultyTime = 10f;
+    private float defaultSecondDifficultyTime = 15f;
     private float difficultyUpgradeTime;
     private float preparationTime;
     private FlappyRoyaleGameManager gameManager;
