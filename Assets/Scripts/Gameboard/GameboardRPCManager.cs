@@ -23,7 +23,9 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
             {
                 if (GameManager.Instance.ActualPlayerIsMainPlayer())
                 {
+                    PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
                     SkillsUI.Instance.DisableSkillsButton();
+                    mainPlayer.enabledToMove = false;
                 }
             }
             PlayerController newActualPlayer = GameManager.Instance.GetPlayer(playerId);
@@ -31,7 +33,10 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
 
             if (GameManager.Instance.ActualPlayerIsMainPlayer())
             {
+                Debug.Log($"ACTUAL PLAYER {newActualPlayer.playerStats.nickName} IS MAIN PLAYER");
                 SkillsUI.Instance.EnableSkillsButton();
+                newActualPlayer.enabledToMove = true;
+                newActualPlayer.RunCheckingCoRoutine();
                 GameManager.Instance.ShowMessage("¡Te toca!");
             }
 

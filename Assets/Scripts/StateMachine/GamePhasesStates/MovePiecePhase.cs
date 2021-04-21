@@ -43,10 +43,6 @@ internal class MovePiecePhase : IState
                     turnTimerDone = true;
                     fetchingPlayer = true;
                 }
-                if (GameManager.Instance.ActualPlayerIsMainPlayer() && !GameManager.Instance.joystick.activeSelf && SkillsUI.Instance.playerUsingSkills == null && !turnTimerDone)
-                {
-                    GameManager.Instance.EnableJoystick();
-                }
                 if (turnTimerDone && SkillsUI.Instance.noAnimationsPlaying && PhotonNetwork.IsMasterClient)
                 {
                     GameManager.Instance.GetNextPlayer();

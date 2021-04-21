@@ -30,6 +30,7 @@ TagManager:
   - Fence
   - Obstacle
   - CloseDoorTrigger
+  - MoveButton
   layers:
   - Default
   - TransparentFX
@@ -70,9 +71,6 @@ TagManager:
   - name: BackGround
     uniqueID: 1381014465
     locked: 0
-  - name: Minimap
-    uniqueID: 532148421
-    locked: 0
   - name: Items
     uniqueID: 1927404679
     locked: 0
@@ -81,4 +79,7 @@ TagManager:
     locked: 0
   - name: GUI
     uniqueID: 2952084211
+    locked: 0
+  - name: Minimap
+    uniqueID: 532148421
     locked: 0

@@ -53,20 +53,23 @@ public class SkillsUI : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (playerUsingSkills != null)
         {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Debug.DrawRay(Input.mousePosition, Camera.main.transform.TransformDirection(Vector3.forward) * 1000f, Color.yellow, 3f);
-            if (Physics.Raycast(ray, out hit, 1 << 10))
+            if (Input.GetMouseButtonDown(0))
             {
-                if (hit.collider.gameObject.tag == "BridgeIcon")
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                Debug.DrawRay(Input.mousePosition, Camera.main.transform.TransformDirection(Vector3.forward) * 1000f, Color.yellow, 3f);
+                if (Physics.Raycast(ray, out hit, 1 << 10))
                 {
-                    Bridge bridgeSelected = hit.collider.gameObject.GetComponentInParent<Bridge>();
-                    Button minimapButton = hit.collider.gameObject.GetComponent<Button>();
-                    if (minimapButton.interactable)
+                    if (hit.collider.gameObject.tag == "BridgeIcon")
                     {
-                        bridgeSelected.ProcessClick();
+                        Bridge bridgeSelected = hit.collider.gameObject.GetComponentInParent<Bridge>();
+                        Button minimapButton = hit.collider.gameObject.GetComponent<Button>();
+                        if (minimapButton.interactable)
+                        {
+                            bridgeSelected.ProcessClick();
+                        }
                     }
                 }
             }

@@ -1117,7 +1117,7 @@ MonoBehaviour:
     turnDone: 0
   rig: {fileID: 4904780787545507650}
   IsGrounded: 0
-  enabledToMove: 0
+  enabledToPlay: 0
   animator: {fileID: 6057256821174708557}
   character: {fileID: 7593331883029681043}
   agent: {fileID: 6353114570316629663}

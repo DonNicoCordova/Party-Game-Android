@@ -4,26 +4,30 @@ using Photon.Realtime;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using UnityEngine.AI;
+using UnityStandardAssets.Characters.ThirdPerson;
+using System.Collections;
 
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
-    [SerializeField] private float _moveSpeed = 10f;
-    private CharacterController _characterController;
     [Header("Info")]
     public FloatingJoystick joystick = null;
     public PlayerStats playerStats = null;
     public Rigidbody rig;
     public Player photonPlayer;
     public bool IsGrounded;
+    public bool enabledToMove = false;
     public Animator animator;
-    private Queue<Command> _commands = new Queue<Command>();
-    private Command _currentCommand;
+    public ThirdPersonCharacter character;
+    public NavMeshAgent agent;
     [Header("UI")]
     public TextMeshProUGUI playerNameText;
     public TextMeshProUGUI energyText;
     [SerializeField]
     private GameObject energyContainer;
-    public bool enabledToPlay = false;
+    private Queue<Command> _commands = new Queue<Command>();
+    private Command _currentCommand;
+    private bool doneMoving;
     private void OnTriggerEnter(Collider other)
     {
 
@@ -41,6 +45,10 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             ResetPosition();
         }
 
+    }
+    private void Start()
+    {
+        agent.updateRotation = false;
     }
     public void ProcessCommands()
     {
@@ -67,86 +75,29 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             controller.RemovePlayer(this);
         }
     }
-    private void Awake() => _characterController = GetComponent<CharacterController>();
-    private void FixedUpdate()
-    {
-        if (photonView.IsMine && enabledToPlay)
-        {
-            if (joystick.gameObject.activeSelf && GameManager.Instance.ActualPlayerIsMainPlayer())
-            {
-                float vertical = joystick.Vertical;
-                float horizontal = joystick.Horizontal;
-                Vector3 direction = new Vector3(horizontal, 0, vertical);
-                Vector3 movement = transform.TransformDirection(direction) * _moveSpeed;
-                IsGrounded = _characterController.SimpleMove(movement);
-                animator.SetFloat("Horizontal", horizontal);
-                animator.SetFloat("Vertical", vertical);
-                animator.SetFloat("Speed", rig.velocity.magnitude);
-            }
-            else
-            {
-                animator.SetFloat("Horizontal", 0);
-                animator.SetFloat("Vertical", 0);
-                animator.SetFloat("Speed", 0);
-            }
-        }
-    }
-    private void Update()
+
+    private void LateUpdate()
     {
         ProcessCommands();
-
-    }
-    [PunRPC]
-    public void Initialize(Player newPhotonPlayer)
-    {
-        // create player stats
-        PlayerStats newPlayerStats = new PlayerStats();
-        newPlayerStats.id = newPhotonPlayer.ActorNumber;
-        newPlayerStats.nickName = newPhotonPlayer.NickName;
-        newPlayerStats.mainColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber - 1].mainColor;
-        newPlayerStats.orbColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber - 1].orbColor;
-        newPlayerStats.SetPlayerGameObject(this.gameObject);
-        // change player color
-        PlayerGraficsController gfxController = gameObject.GetComponentInChildren<PlayerGraficsController>();
-        gfxController.ChangeMaterial(newPlayerStats.mainColor);
-        energyText.text = "0";
-        playerNameText.text = newPhotonPlayer.NickName;
-        // set photon player
-        photonPlayer = newPhotonPlayer;
-
-        // add player to player list
-        playerStats = newPlayerStats;
-        GameManager.Instance.players.Add(this);
-
-        // Only main player should be affected by physics
-        if (!photonView.IsMine)
+        Debug.Log($"GameManager.Instance.ActualPlayerIsMainPlayer() ({GameManager.Instance.ActualPlayerIsMainPlayer()}) && photonView.IsMine ({photonView.IsMine}) && enabledToMove ({enabledToMove})");
+        if (GameManager.Instance.ActualPlayerIsMainPlayer() && photonView.IsMine && enabledToMove)
         {
-            rig.isKinematic = true;
+            if (Input.GetMouseButtonDown(0))
+            {
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                Debug.DrawRay(ray.origin, ray.direction * 50f, Color.red, 3f);
+                if (Physics.Raycast(ray, out hit, 50f,  1 << LayerMask.NameToLayer("UI")))
+                {
+                    if (hit.collider.gameObject.CompareTag("MoveButton"))
+                    {
+                        MoveButton moveButton = hit.collider.gameObject.GetComponent<MoveButton>();
+                        enabledToMove = false;
+                        photonView.RPC("MoveToTarget", RpcTarget.All, moveButton.destination.position);
+                    }
+                }
+            }
         }
-        else
-        {
-            // set player to main player and assign camera to follow plus enable joystick
-            GameManager.Instance.SetMainPlayer(this);
-            GameManager.Instance.virtualCamera.Follow = transform;
-            GameManager.Instance.virtualCamera.LookAt = transform;
-            joystick = GameManager.Instance.joystick.GetComponent<FloatingJoystick>();
-        }
-        playerStats.EnergyChanged += (sender, args) => UpdateEnergy();
-        HideEnergyContainer();
-        enabledToPlay = true;
-    }
-    [PunRPC]
-    public void Resume(Player newPhotonPlayer)
-    {
-        GameManager.Instance.players.Add(this);
-        GameManager.Instance.LoadPlayers();
-        ResumeCommand resumeCommand = new ResumeCommand(newPhotonPlayer, this);
-        _commands.Enqueue(resumeCommand);
-    }
-    [PunRPC]
-    public void SetPlayerPlace(int position)
-    {
-        playerStats.ladderPosition = position;
     }
     public void ResetPosition()
     {
@@ -208,5 +159,91 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private void HideEnergyContainer() 
     {
         energyContainer.SetActive(false);
+    }
+    public void RunCheckingCoRoutine()
+    {
+        StartCoroutine(CheckIfDoneMoving());
+    }
+    private IEnumerator CheckIfDoneMoving()
+    {
+        while (GameManager.Instance.ActualPlayerIsMainPlayer())
+        {
+            if (!agent.pathPending)
+            {
+                if (agent.remainingDistance <= agent.stoppingDistance)
+                {
+                    if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+                    {
+                        enabledToMove = true;
+                    }
+                }
+            }
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+    //RPC SECTION
+    [PunRPC]
+    public void Initialize(Player newPhotonPlayer)
+    {
+        // create player stats
+        PlayerStats newPlayerStats = new PlayerStats();
+        newPlayerStats.id = newPhotonPlayer.ActorNumber;
+        newPlayerStats.nickName = newPhotonPlayer.NickName;
+        newPlayerStats.mainColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber - 1].mainColor;
+        newPlayerStats.orbColor = GameManager.Instance.playerConfigs[newPhotonPlayer.ActorNumber - 1].orbColor;
+        newPlayerStats.SetPlayerGameObject(this.gameObject);
+        // change player color
+        PlayerGraficsController gfxController = gameObject.GetComponentInChildren<PlayerGraficsController>();
+        gfxController.ChangeMaterial(newPlayerStats.mainColor);
+        energyText.text = "0";
+        playerNameText.text = newPhotonPlayer.NickName;
+        // set photon player
+        photonPlayer = newPhotonPlayer;
+
+        // add player to player list
+        playerStats = newPlayerStats;
+        GameManager.Instance.players.Add(this);
+
+        // Only main player should be affected by physics
+        if (!photonView.IsMine)
+        {
+            rig.isKinematic = true;
+        }
+        else
+        {
+            // set player to main player and assign camera to follow plus enable joystick
+            GameManager.Instance.SetMainPlayer(this);
+            GameManager.Instance.virtualCamera.Follow = transform;
+            GameManager.Instance.virtualCamera.LookAt = transform;
+            joystick = GameManager.Instance.joystick.GetComponent<FloatingJoystick>();
+        }
+        playerStats.EnergyChanged += (sender, args) => UpdateEnergy();
+        HideEnergyContainer();
+    }
+    [PunRPC]
+    public void Resume(Player newPhotonPlayer)
+    {
+        GameManager.Instance.players.Add(this);
+        GameManager.Instance.LoadPlayers();
+        ResumeCommand resumeCommand = new ResumeCommand(newPhotonPlayer, this);
+        _commands.Enqueue(resumeCommand);
+    }
+    [PunRPC]
+    public void SetPlayerPlace(int position)
+    {
+        playerStats.ladderPosition = position;
+    }
+
+    [PunRPC]
+    public void MoveToTarget(Vector3 destination)
+    {
+        agent.SetDestination(destination);
+        if (agent.remainingDistance > agent.stoppingDistance)
+        {
+            character.Move(agent.desiredVelocity);
+        } else
+        {
+            character.Move(Vector3.zero);
+        }
     }
 }
