@@ -24,7 +24,6 @@ public class ResumeGUICommand : Command
             }
         }
         SkillsUI.Instance.Initialize();
-        GameManager.Instance.DisableJoystick();
         GameManager.Instance.playersLadder.gameObject.SetActive(true);
         GameManager.Instance.gameOverUI.gameObject.SetActive(false);
         GameManager.Instance.playersLadder.Initialize();

@@ -43,8 +43,8 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 0, g: 1, b: 0.21568629, a: 1}
-  m_Intensity: 1
-  m_Range: 0.71
+  m_Intensity: 3
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -136,8 +136,8 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 0, g: 1, b: 0.21568629, a: 1}
-  m_Intensity: 1
-  m_Range: 0.59
+  m_Intensity: 3
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -203,7 +203,7 @@ GameObject:
   - component: {fileID: -6515397727109673802}
   m_Layer: 6
   m_Name: WallObstacle
-  m_TagString: Obstacle
+  m_TagString: WallObstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -306,7 +306,8 @@ MonoBehaviour:
   observableSearch: 2
   Synchronization: 3
   OwnershipTransfer: 0
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: -6515397727109673802}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -417,8 +418,8 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 0, g: 1, b: 0.21568629, a: 1}
-  m_Intensity: 1
-  m_Range: 0.71
+  m_Intensity: 3
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10

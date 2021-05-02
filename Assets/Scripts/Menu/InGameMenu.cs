@@ -6,7 +6,6 @@ public class InGameMenu : MonoBehaviour
 {
     [SerializeField]
     private GameObject inGameMenu;
-    // Start is called before the first frame update
     
     public void onSettingsButtonClick()
     {

@@ -20,14 +20,19 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public Animator animator;
     public ThirdPersonCharacter character;
     public NavMeshAgent agent;
+    public ButtonChecker buttonChecker;
+
     [Header("UI")]
     public TextMeshProUGUI playerNameText;
     public TextMeshProUGUI energyText;
+    
+    
     [SerializeField]
     private GameObject energyContainer;
     private Queue<Command> _commands = new Queue<Command>();
     private Command _currentCommand;
     private bool doneMoving;
+
     private void OnTriggerEnter(Collider other)
     {
 
@@ -49,6 +54,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private void Start()
     {
         agent.updateRotation = false;
+        buttonChecker = gameObject.GetComponentInChildren<ButtonChecker>();
     }
     public void ProcessCommands()
     {
@@ -79,7 +85,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     private void LateUpdate()
     {
         ProcessCommands();
-        Debug.Log($"GameManager.Instance.ActualPlayerIsMainPlayer() ({GameManager.Instance.ActualPlayerIsMainPlayer()}) && photonView.IsMine ({photonView.IsMine}) && enabledToMove ({enabledToMove})");
         if (GameManager.Instance.ActualPlayerIsMainPlayer() && photonView.IsMine && enabledToMove)
         {
             if (Input.GetMouseButtonDown(0))
@@ -92,8 +97,10 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
                     if (hit.collider.gameObject.CompareTag("MoveButton"))
                     {
                         MoveButton moveButton = hit.collider.gameObject.GetComponent<MoveButton>();
+                        moveButton.AnimatePress();
                         enabledToMove = false;
                         photonView.RPC("MoveToTarget", RpcTarget.All, moveButton.destination.position);
+                        buttonChecker.HideButtons();
                     }
                 }
             }
@@ -174,7 +181,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
                 {
                     if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
                     {
+                        buttonChecker.CheckForButtonsNearby();
                         enabledToMove = true;
+                        buttonChecker.ShowButtons();
                     }
                 }
             }
@@ -215,7 +224,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             GameManager.Instance.SetMainPlayer(this);
             GameManager.Instance.virtualCamera.Follow = transform;
             GameManager.Instance.virtualCamera.LookAt = transform;
-            joystick = GameManager.Instance.joystick.GetComponent<FloatingJoystick>();
         }
         playerStats.EnergyChanged += (sender, args) => UpdateEnergy();
         HideEnergyContainer();

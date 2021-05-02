@@ -21,7 +21,6 @@ public class GameManager : GenericSingletonClass<GameManager>
     public GameObject phaseIndicator;
     public Color32 normalTextColor;
     public LadderController playersLadder;
-    public GameObject joystick;
     public TimerBar timerBar;
     public GameOverController gameOverUI;
     public GameObject miniMap;
@@ -184,20 +183,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     public bool ActualPlayerIsMainPlayer() => mainPlayer == actualPlayer;
     public bool DiceOnDisplay() => diceOnDisplay;
     public bool YourTurn() => diceOnDisplay && ActualPlayerIsMainPlayer();
-    public void DisableJoystick()
-    {
-        if (joystick.activeSelf)
-        {
-            joystick.SetActive(false);
-        }
-    }
-    public void EnableJoystick() 
-    {
-        if (!joystick.activeSelf)
-        {
-            joystick.SetActive(true);
-        }
-    } 
+   
     public float GetRound() => round;
     public bool PlayersSetAndOrdered()
     {
@@ -453,15 +439,7 @@ public class GameManager : GenericSingletonClass<GameManager>
             allReferencesReady = false;
             return;
         }
-        if (joystick == null && GameObject.FindGameObjectWithTag("Joystick") != null)
-        {
-            joystick = GameObject.FindGameObjectWithTag("Joystick");
-        }
-        else if (GameObject.FindGameObjectWithTag("Joystick") == null)
-        {
-            allReferencesReady = false;
-            return;
-        }
+        
         if (timerBar == null && GameObject.FindGameObjectWithTag("TimeBar") != null)
         {
             timerBar = GameObject.FindGameObjectWithTag("TimeBar").GetComponent<TimerBar>();
@@ -549,7 +527,6 @@ public class GameManager : GenericSingletonClass<GameManager>
     public void InitializeGUI()
     {
 
-        DisableJoystick();
         playersLadder.gameObject.SetActive(false);
         gameOverUI.gameObject.SetActive(false);
         SkillsUI.Instance.Initialize();

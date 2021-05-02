@@ -193,7 +193,7 @@ GameObject:
   - component: {fileID: 4969826507835039211}
   m_Layer: 0
   m_Name: Dado1
-  m_TagString: Untagged
+  m_TagString: Dice
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -308,19 +308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f600e9deedf7d9842aacccf5cf2ff98d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sides:
-  - sideCollider: {fileID: 4141110111756706461}
-    value: 1
-  - sideCollider: {fileID: 7965127270587307963}
-    value: 2
-  - sideCollider: {fileID: 5208894855112806799}
-    value: 3
-  - sideCollider: {fileID: 5145619321589553310}
-    value: 4
-  - sideCollider: {fileID: 7563631419674303172}
-    value: 5
-  - sideCollider: {fileID: 7807732586317946856}
-    value: 6
+  sides: []
 --- !u!95 &4969826507835039211
 Animator:
   serializedVersion: 3

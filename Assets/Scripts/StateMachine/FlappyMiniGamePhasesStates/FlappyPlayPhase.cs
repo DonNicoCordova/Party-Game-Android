@@ -34,10 +34,10 @@ internal class FlappyPlayPhase : IState
         {
             gameManager.DifficultyUp();
             difficultyUpgradeTime = defaultSecondDifficultyTime;
-            if (gameManager.actualDifficulty.difficulty == Difficulty.Easy)
+            if (gameManager.actualDifficulty.difficulty == Difficulty.Medium)
             {
                 FlappyRoyaleGameManager.Instance.RemoveBottomFences();
-            } else if (gameManager.actualDifficulty.difficulty == Difficulty.Medium)
+            } else if (gameManager.actualDifficulty.difficulty == Difficulty.Hard)
             {
                 FlappyRoyaleGameManager.Instance.RemoveTopFences();
             }

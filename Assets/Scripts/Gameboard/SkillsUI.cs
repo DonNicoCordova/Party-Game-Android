@@ -134,13 +134,15 @@ public class SkillsUI : MonoBehaviour
             cinemachineAnimator.ResetTrigger("MoveToPlace");
             cinemachineAnimator.SetTrigger("BackToOrigin");
             GameManager.Instance.ShowMinimap();
-            GameManager.Instance.EnableJoystick();
+            if (GameManager.Instance.ActualPlayerIsMainPlayer())
+            {
+                GameManager.Instance.GetMainPlayer().buttonChecker.ShowButtons();
+            }
         }
     }
     public void OnClickShowSkills()
     {
         playerUsingSkills = GameManager.Instance.GetMainPlayer().photonPlayer;
-        GameManager.Instance.DisableJoystick();
         GameManager.Instance.energyCounter.Show();
         if (!skillsPanel.activeSelf)
         {

@@ -7,19 +7,23 @@ using System;
 
 public class Bridge : MonoBehaviourPunCallbacks
 {
+    [Header("Configuration")]
     public Transform cutPosition1;
     public Transform cutPosition2;
+    public MoveButton moveButton1;
+    public MoveButton moveButton2;
     public Transform cameraHighlighPosition;
+    public Animator animator;
     public MeshRenderer bridgeRenderer;
-    [SerializeField]
-    private Animator animator;
+    public SkillToUse skillToUse;
     public BridgeStats bridgeStats;
+    
     [Header("Minimap")]
     public SpriteRenderer minimapIcon;
     public SpriteRenderer minimapSelectableIcon;
+    
     private Transform originalPosition;
     private Vector3 originalScale;
-    public SkillToUse skillToUse;
 
     private void Start()
     {

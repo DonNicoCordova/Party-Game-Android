@@ -57,7 +57,6 @@ public class PathSpawner : MonoBehaviourPunCallbacks
         {
             if (obstacleDelayTime <= 0f && enabledToSpawn)
             {
-                Debug.Log("OBSTACLE DELAY TIME <= 0");
                 int yPosition = Random.Range(-5, 5);
                 float chance = Random.value;
                 float singleChance = FlappyRoyaleGameManager.Instance.actualDifficulty.singleObstacleChance;
@@ -65,16 +64,12 @@ public class PathSpawner : MonoBehaviourPunCallbacks
                 float israChance = FlappyRoyaleGameManager.Instance.actualDifficulty.israObstacleChance;
                 if (chance < israChance)
                 {
-                    Debug.Log("CALLING PLACE OBSTACLE RPC");
                     this.photonView.RPC("PlaceObstacle", RpcTarget.MasterClient, yPosition);
                 } else if (chance < israChance + wallChance)
                 {
-                    Debug.Log("CALLING PLACE OBSTACLE RPC");
                     this.photonView.RPC("PlaceWallObstacle", RpcTarget.MasterClient);
                 } else if (chance < israChance + wallChance + singleChance)
                 {
-
-                    Debug.Log("CALLING PLACE OBSTACLE RPC");
                     this.photonView.RPC("PlaceObstacle", RpcTarget.MasterClient, yPosition);
                 }
 
@@ -95,15 +90,14 @@ public class PathSpawner : MonoBehaviourPunCallbacks
     [PunRPC]
     public void PlaceObstacle(int yPosition)
     {
-        Debug.Log("CALLING PLACE OBSTACLE");
         Vector3 newSpawnPosition = spawnPosition.position + new Vector3(0, yPosition);
-        GameObject obstacleGo = ObjectPooler.Instance.SpawnFromPool("Single", newSpawnPosition, Quaternion.identity);
+        GameObject obstacleGo = ObjectPooler.Instance.SpawnFromPool("SingleObstacle", newSpawnPosition, Quaternion.identity);
     }
 
     [PunRPC]
     private void PlaceWallObstacle()
     {
-        GameObject obstacleGo = ObjectPooler.Instance.SpawnFromPool("Wall", wallSpawnPoint.position, wallSpawnPoint.rotation);
+        GameObject obstacleGo = ObjectPooler.Instance.SpawnFromPool("WallObstacle", wallSpawnPoint.position, wallSpawnPoint.rotation);
         WallObstacle wallController = obstacleGo.GetComponent<WallObstacle>();
         float chance = Random.value;
         if (chance < 0.25)
@@ -127,7 +121,6 @@ public class PathSpawner : MonoBehaviourPunCallbacks
     }
     private void TestPlaceObstacle(GameObject obstacle, int yPosition)
     {
-        Debug.Log("CALLING PLACE OBSTACLE");
         Vector3 newSpawnPosition = spawnPosition.position + new Vector3(0, yPosition);
         GameObject obstacleGo = GameObject.Instantiate(obstacle, newSpawnPosition, Quaternion.identity, transform);
         StartCoroutine(destroyObstacle(obstacleGo));

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
 
 public class BridgeEvent : MonoBehaviour
 {
@@ -14,10 +15,15 @@ public class BridgeEvent : MonoBehaviour
         {
             parent.bridgeRenderer.enabled = false;
             parent.minimapIcon.enabled = false;
+            parent.moveButton1.EnableButton();
+            parent.moveButton2.EnableButton();
         }
         else
         {
             parent.minimapIcon.enabled = true;
+            parent.bridgeRenderer.enabled = true;
+            parent.moveButton1.DisableButton();
+            parent.moveButton2.DisableButton();
         }
         parent.RemoveClickable();
 
@@ -33,6 +39,7 @@ public class BridgeEvent : MonoBehaviour
             SkillsUI.Instance.MoveCameraBackToPlayer();
             SkillsUI.Instance.backButton.onClick.Invoke();
         }
+        //GameboardRPCManager.Instance.surface.BuildNavMesh();
         parent.photonView.RPC("SetNoAnimationIsPlaying", RpcTarget.All, true);
     }
 }

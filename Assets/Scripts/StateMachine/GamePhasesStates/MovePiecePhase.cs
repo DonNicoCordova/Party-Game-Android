@@ -85,7 +85,6 @@ internal class MovePiecePhase : IState
 
     public void OnExit()
     {
-        Debug.Log($"RoundDone {GameManager.Instance.RoundDone()} && AllPlayersStateDone{GameManager.Instance.AllPlayersStateDone()}");
         stayTime = defaultStayTime;
         if (GameSystem.Instance.movePiecePhaseTimerDone)
             GameSystem.Instance.movePiecePhaseTimerDone = false;

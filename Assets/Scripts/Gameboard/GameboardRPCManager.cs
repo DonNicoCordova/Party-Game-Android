@@ -2,11 +2,17 @@
 using System.Linq;
 using Photon.Pun;
 using System.Collections;
+using UnityEngine.AI;
 
 public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
 {
+    public NavMeshSurface surface;
     private void Start()
     {
+        if (surface == null)
+        {
+            surface = GetComponent<NavMeshSurface>();
+        }
         GameManager.Instance.numberOfPlayers = 0;
         StartCoroutine(processImInGame());
     }
@@ -33,10 +39,10 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
 
             if (GameManager.Instance.ActualPlayerIsMainPlayer())
             {
-                Debug.Log($"ACTUAL PLAYER {newActualPlayer.playerStats.nickName} IS MAIN PLAYER");
                 SkillsUI.Instance.EnableSkillsButton();
                 newActualPlayer.enabledToMove = true;
                 newActualPlayer.RunCheckingCoRoutine();
+                newActualPlayer.buttonChecker.ShowButtons();
                 GameManager.Instance.ShowMessage("¡Te toca!");
             }
 
@@ -104,7 +110,6 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
             PlayerController player = GameManager.Instance.GetPlayer(playerId);
             if (player != null)
             {
-                Debug.Log($"UPDATING ENERGY OF {player.playerStats.nickName} WITH ({newEnergy})");
                 player.playerStats.SetEnergyLeft(newEnergy);
                 player.UpdateEnergy();
             }

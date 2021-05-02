@@ -21,9 +21,14 @@ public class ObjectPooler : GenericDestroyableSingletonClass<ObjectPooler>
         foreach (Pool pool in pools)
         {
             Queue<GameObject> objectPool = new Queue<GameObject>();
-            for (int i= 0; i< pool.size; i++)
+            GameObject[] obstacles = GameObject.FindGameObjectsWithTag(pool.tag);
+            foreach(GameObject obstacle in obstacles)
             {
-                GameObject obstacleGo = PhotonNetwork.Instantiate(pool.prefab.name, transform.position, Quaternion.identity);
+                objectPool.Enqueue(obstacle);
+            }
+            for (int i= objectPool.Count; i< pool.size; i++)
+            {
+                GameObject obstacleGo = PhotonNetwork.Instantiate(pool.prefab.name, transform.position + new Vector3(0, -20, 0), Quaternion.identity);
 
                 obstacleGo.SetActive(false);
                 objectPool.Enqueue(obstacleGo);

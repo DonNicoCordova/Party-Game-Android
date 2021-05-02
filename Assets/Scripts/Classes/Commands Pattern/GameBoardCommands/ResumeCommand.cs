@@ -63,11 +63,6 @@ public class ResumeCommand : Command
             }
             GameManager.Instance.virtualCamera.Follow = _playerController.transform;
             GameManager.Instance.virtualCamera.LookAt = _playerController.transform;
-            if (GameManager.Instance.joystick == null && GameObject.FindGameObjectWithTag("Joystick") != null)
-            {
-                GameManager.Instance.joystick = GameObject.FindGameObjectWithTag("Joystick");
-            }
-            _playerController.joystick = GameManager.Instance.joystick.GetComponent<FloatingJoystick>();
         }
         _playerController.playerNameText.text = oldPlayerStats.nickName;
         _playerController.energyText.text = "0";
