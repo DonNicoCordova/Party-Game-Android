@@ -246,6 +246,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c05fafccd08e45c41b7cd6339b2bc35a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacle1: {fileID: 42331369145875507}
+  obstacle2: {fileID: 6869694008432956733}
 --- !u!1 &3062492056798068300
 GameObject:
   m_ObjectHideFlags: 0
@@ -739,7 +741,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7851993443572156926}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1

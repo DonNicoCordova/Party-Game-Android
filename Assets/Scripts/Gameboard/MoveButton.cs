@@ -5,7 +5,6 @@ using UnityEngine;
 public class MoveButton : MonoBehaviour
 {
     public Transform destination;
-    public SpriteRenderer shadowRenderer;
 
     private SpriteRenderer spriteRenderer;
     private BoxCollider boxCollider;
@@ -16,17 +15,16 @@ public class MoveButton : MonoBehaviour
         animator = gameObject.GetComponent<Animator>();
         boxCollider = gameObject.GetComponent<BoxCollider>();
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        shadowRenderer = gameObject.GetComponentInChildren<SpriteRenderer>();
     }
     public void ShowButton()
     {
         spriteRenderer.enabled = true;
-        shadowRenderer.enabled = true;
     }
     public void HideButton()
     {
+        if (gameObject.name == "Bridge (9)")
+            Debug.Log("BRIDGE 9 IS HIDING BUTTONS");
         spriteRenderer.enabled = false;
-        shadowRenderer.enabled = false;
     }
     public void EnableButton()
     {

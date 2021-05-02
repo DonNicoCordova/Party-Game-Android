@@ -46,18 +46,19 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			m_TurnAmount = Mathf.Atan2(move.x, move.z);
 			m_ForwardAmount = move.z;
 
-			ApplyExtraTurnRotation();
-
 			UpdateAnimator(move);
 		}
 
 		void UpdateAnimator(Vector3 move)
 		{
 			// update the animator parameters
-
-			
+			Debug.Log($"m_IsGrounded {m_IsGrounded} && move.magnitude {move.magnitude} > 0: {m_IsGrounded && move.magnitude > 0}");
 			if (m_IsGrounded && move.magnitude > 0)
 			{
+				Debug.Log($"UPDATING ANIMATOR PARAMETERS: ");
+				Debug.Log($"Horizontal: {move.x}");
+				Debug.Log($"Vertical: {move.y}");
+				Debug.Log($"Speed: {m_Rigidbody.velocity.magnitude}");
 				m_Animator.SetFloat("Horizontal", move.x);
 				m_Animator.SetFloat("Vertical", move.y);
 				m_Animator.SetFloat("Speed", m_Rigidbody.velocity.magnitude);
@@ -72,15 +73,6 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 				m_Animator.speed = 1;
 			}
 		}
-
-
-		void ApplyExtraTurnRotation()
-		{
-			// help the character turn faster (this is in addition to root rotation in the animation)
-			float turnSpeed = Mathf.Lerp(m_StationaryTurnSpeed, m_MovingTurnSpeed, m_ForwardAmount);
-			transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
-		}
-
 
 		public void OnAnimatorMove()
 		{

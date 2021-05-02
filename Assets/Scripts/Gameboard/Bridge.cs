@@ -33,10 +33,7 @@ public class Bridge : MonoBehaviourPunCallbacks
         {
             bridgeRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
         }
-        if (!bridgeRenderer.enabled)
-        {
-            newBridgeStats.usable = false;
-        }
+        
         originalPosition = transform;
         if (minimapIcon != null)
         {
@@ -45,16 +42,27 @@ public class Bridge : MonoBehaviourPunCallbacks
         newBridgeStats.name = gameObject.name;
         bridgeStats = newBridgeStats;
     }
+    public bool Usable()
+    {
+        if (bridgeRenderer.enabled)
+        {
+            bridgeStats.usable = true;
+            return bridgeStats.usable;
+        } else
+        {
+            bridgeStats.usable = false;
+            return bridgeStats.usable;
+        }
+    }
     [PunRPC]
     public void CutOut(PhotonMessageInfo info)
     {
-        if (bridgeStats.usable)
+        if (Usable())
         {
             Vector3 position1 = cutPosition1.position;
             Vector3 position2 = cutPosition2.position;
             SkillsUI.Instance.playerUsingSkills = info.Sender;
             AnimateCut();
-            bridgeStats.usable = false;
         }
     }
     public void AnimateCut()
@@ -67,7 +75,7 @@ public class Bridge : MonoBehaviourPunCallbacks
     [PunRPC]
     public void Spawn(PhotonMessageInfo info)
     {
-        if (!bridgeStats.usable)
+        if (!Usable())
         {
             SkillsUI.Instance.playerUsingSkills = info.Sender;
             AnimateSpawn();
@@ -161,6 +169,27 @@ public class Bridge : MonoBehaviourPunCallbacks
         photonView.RPC("SetNoAnimationIsPlaying", RpcTarget.All, false);
         yield return new WaitForSeconds(1.6f);
         photonView.RPC(call, RpcTarget.All);
+    }
+    public void HideButtons()
+    {
+        Debug.Log("HIDING BUTTONS");
+        moveButton1.HideButton();
+        moveButton2.HideButton();
+    }
+    public void ShowButtons()
+    {
+        moveButton1.ShowButton();
+        moveButton2.ShowButton();
+    }
+    public void EnableButtons()
+    {
+        moveButton1.EnableButton();
+        moveButton2.EnableButton();
+    }
+    public void DisableButtons()
+    {
+        moveButton1.DisableButton();
+        moveButton2.DisableButton();
     }
 }
 

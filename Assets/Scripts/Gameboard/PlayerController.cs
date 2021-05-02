@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine.AI;
 using UnityStandardAssets.Characters.ThirdPerson;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -89,6 +90,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (Input.GetMouseButtonDown(0))
             {
+                if (SkillsUI.Instance.playerUsingSkills != null)
+                    return;
                 RaycastHit hit;
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 Debug.DrawRay(ray.origin, ray.direction * 50f, Color.red, 3f);
