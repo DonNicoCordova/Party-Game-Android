@@ -9,6 +9,7 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
     public float velocity = 1;
     public GameObject propulsorParticle;
     public ForceShield forceShield;
+    public FlappyRoyaleStats playerStats;
     [SerializeField]
     private SpriteRenderer colorRenderer;
     [SerializeField]
@@ -20,7 +21,6 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
     private Animator anim;
     private float vertical;
     private Player photonPlayer;
-    private FlappyRoyaleStats playerStats;
     private float timeAlive;
     private bool enabledToDie = false;
 
@@ -80,7 +80,6 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
     {
         GameObject explosion = Instantiate(FlappyRoyaleGameManager.Instance.explosion, transform.position, Quaternion.identity);
         explosion.GetComponentInChildren<ParticleSystem>().Play();
-        StartCoroutine(GarbageCollect(explosion));
         gameObject.SetActive(false);
         playerStats.alive = false;
         if (info.Sender.ActorNumber != GameManager.Instance.GetMainPlayer().photonPlayer.ActorNumber)
@@ -88,11 +87,6 @@ public class SpaceShipController : MonoBehaviourPunCallbacks
             FlappyRoyaleStats playerToUpdate = FlappyRoyaleGameManager.Instance.GetStats(info.Sender.ActorNumber);
             playerToUpdate.timeAlive = timeAlive;
         }
-    }
-    private IEnumerator GarbageCollect(GameObject explosion)
-    {
-        yield return new WaitForSeconds(3f);
-        Destroy(explosion);
     }
     public void EnableFalling()
     {

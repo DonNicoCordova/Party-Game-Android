@@ -117,6 +117,7 @@ public class SkillsUI : MonoBehaviour
     }
     public void OnClickHideSkills()
     {
+        playerUsingSkills = null;
         if (skillsPanel.activeSelf)
         {
             skillsPanel.SetActive(false);

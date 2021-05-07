@@ -92,6 +92,8 @@ public class PathSpawner : MonoBehaviourPunCallbacks
     {
         Vector3 newSpawnPosition = spawnPosition.position + new Vector3(0, yPosition);
         GameObject obstacleGo = ObjectPooler.Instance.SpawnFromPool("SingleObstacle", newSpawnPosition, Quaternion.identity);
+        Obstacle obstacleController = obstacleGo.GetComponent<Obstacle>();
+        obstacleController.Show();
     }
 
     [PunRPC]
@@ -99,6 +101,7 @@ public class PathSpawner : MonoBehaviourPunCallbacks
     {
         GameObject obstacleGo = ObjectPooler.Instance.SpawnFromPool("WallObstacle", wallSpawnPoint.position, wallSpawnPoint.rotation);
         WallObstacle wallController = obstacleGo.GetComponent<WallObstacle>();
+        wallController.Show();
         float chance = Random.value;
         if (chance < 0.25)
         {

@@ -30,7 +30,7 @@ public class ObjectPooler : GenericDestroyableSingletonClass<ObjectPooler>
             {
                 GameObject obstacleGo = PhotonNetwork.Instantiate(pool.prefab.name, transform.position + new Vector3(0, -20, 0), Quaternion.identity);
 
-                obstacleGo.SetActive(false);
+                
                 objectPool.Enqueue(obstacleGo);
             }
             poolDictionary.Add(pool.tag, objectPool);
@@ -46,7 +46,6 @@ public class ObjectPooler : GenericDestroyableSingletonClass<ObjectPooler>
 
         GameObject objectToSpawn = poolDictionary[tag].Dequeue();
 
-        objectToSpawn.SetActive(true);
         objectToSpawn.transform.position = position;
         objectToSpawn.transform.rotation = rotation;
 

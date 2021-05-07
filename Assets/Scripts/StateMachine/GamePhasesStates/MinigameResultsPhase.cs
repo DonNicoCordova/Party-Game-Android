@@ -71,7 +71,6 @@ internal class MinigameResultsPhase : IState
         GameManager.Instance.timerBar.SetTimeLeft(0);
         GameManager.Instance.actionTakenPlayers.Clear();
         GameManager.Instance.LoadBridges();
-
     }
     public void OnExit()
     {

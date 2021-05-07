@@ -104,9 +104,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fallingItem:
-    name: Lima
-    id: LIME
-    sprite: {fileID: 21300000, guid: e6ace71c94f3dc04b94bd4f4d2f38cc1, type: 3}
+    name: 
+    id: 
+    sprite: {fileID: 0}
+    isAttackItem: 0
 --- !u!58 &854556611500448223
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -197,7 +198,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1927404679
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: e6ace71c94f3dc04b94bd4f4d2f38cc1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

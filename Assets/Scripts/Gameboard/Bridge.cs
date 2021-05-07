@@ -44,14 +44,20 @@ public class Bridge : MonoBehaviourPunCallbacks
     }
     public bool Usable()
     {
-        if (bridgeRenderer.enabled)
+        if (bridgeRenderer != null && bridgeStats != null)
         {
-            bridgeStats.usable = true;
-            return bridgeStats.usable;
+            if (bridgeRenderer.enabled)
+            {
+                bridgeStats.usable = true;
+                return bridgeStats.usable;
+            } else
+            {
+                bridgeStats.usable = false;
+                return bridgeStats.usable;
+            }
         } else
         {
-            bridgeStats.usable = false;
-            return bridgeStats.usable;
+            return false;
         }
     }
     [PunRPC]
@@ -169,17 +175,6 @@ public class Bridge : MonoBehaviourPunCallbacks
         photonView.RPC("SetNoAnimationIsPlaying", RpcTarget.All, false);
         yield return new WaitForSeconds(1.6f);
         photonView.RPC(call, RpcTarget.All);
-    }
-    public void HideButtons()
-    {
-        Debug.Log("HIDING BUTTONS");
-        moveButton1.HideButton();
-        moveButton2.HideButton();
-    }
-    public void ShowButtons()
-    {
-        moveButton1.ShowButton();
-        moveButton2.ShowButton();
     }
     public void EnableButtons()
     {

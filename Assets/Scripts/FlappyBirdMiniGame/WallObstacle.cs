@@ -13,6 +13,12 @@ public class WallObstacle : MonoBehaviour
     public Collider colliderToClose;
     public Animator anim;
 
+    [SerializeField]
+    public MeshRenderer[] meshRenderers;
+
+    [SerializeField]
+    public MeshCollider[] meshColliders;
+    private bool enabledToClose;
     private void Start()
     {
         if (anim == null)
@@ -26,16 +32,39 @@ public class WallObstacle : MonoBehaviour
         if (colliderToClose == null)
         {
             colliderToClose = gameObject.GetComponent<Collider>();
+            colliderToClose.enabled = true;
+        }
+
+    }
+    public void Hide()
+    {
+        foreach (MeshCollider mesh in meshColliders)
+        {
+            mesh.enabled = false;
+        }
+        foreach (MeshRenderer mesh in meshRenderers)
+        {
+            mesh.enabled = false;
         }
     }
-
+    public void Show()
+    {
+        foreach (MeshCollider mesh in meshColliders)
+        {
+            mesh.enabled = true;
+        }
+        foreach (MeshRenderer mesh in meshRenderers)
+        {
+            mesh.enabled = true;
+        }
+    }
     public void EnableToClose()
     {
         foreach (Light light in lights)
         {
             light.color = closingColor;
         }
-        colliderToClose.enabled = true;
+        enabledToClose = true;
     }
 
     public void DisableToClose()
@@ -44,19 +73,26 @@ public class WallObstacle : MonoBehaviour
         {
             light.color = defaultColor;
         }
-        colliderToClose.enabled = false;
+        enabledToClose = false;
     }
     public void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("CloseDoorTrigger"))
+        if (FlappyRoyaleGameManager.Instance.mainPlayer.playerStats.alive)
         {
-            if (anim.GetCurrentAnimatorClipInfo(0)[0].clip.name == "CloseLeft")
+            if (other.CompareTag("CloseDoorTrigger") && enabledToClose)
             {
-                CloseRight();
-            } else if (anim.GetCurrentAnimatorClipInfo(0)[0].clip.name == "CloseRight")
-            {
-                CloseLeft();
+                if (anim.GetCurrentAnimatorClipInfo(0)[0].clip.name == "CloseLeft")
+                {
+                    CloseRight();
+                } else if (anim.GetCurrentAnimatorClipInfo(0)[0].clip.name == "CloseRight")
+                {
+                    CloseLeft();
+                }
             }
+        }
+        if (other.CompareTag("HideTrigger"))
+        {
+            Hide();
         }
     }
     public void CloseLeft()

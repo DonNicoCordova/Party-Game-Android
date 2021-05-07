@@ -247,7 +247,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.0005187988}
+  m_AnchoredPosition: {x: 0, y: -0.00048828125}
   m_SizeDelta: {x: 0, y: -0.001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1682186294100241408
@@ -280,8 +280,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 15 seg.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: da7be23d4ade1a9408cdf6df2227f1ef, type: 2}
-  m_sharedMaterial: {fileID: -575596145920150373, guid: da7be23d4ade1a9408cdf6df2227f1ef, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
+  m_sharedMaterial: {fileID: -2683147626412317823, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100.6
+  m_fontSize: 186.5
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -518,8 +518,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\xA1Felicidades!"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
-  m_sharedMaterial: {fileID: -1434338537368533310, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
+  m_sharedMaterial: {fileID: -2683147626412317823, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -543,13 +543,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 68.75
+  m_fontSize: 72.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 35.7
   m_fontSizeMax: 180
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -652,8 +652,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Celulito
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
-  m_sharedMaterial: {fileID: -1434338537368533310, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
+  m_sharedMaterial: {fileID: -2683147626412317823, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -677,13 +677,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 112.7
+  m_fontSize: 118.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 180
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535

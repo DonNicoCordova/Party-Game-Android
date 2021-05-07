@@ -7,8 +7,6 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 	[RequireComponent(typeof(Animator))]
 	public class ThirdPersonCharacter : MonoBehaviour
 	{
-		[SerializeField] float m_MovingTurnSpeed = 360;
-		[SerializeField] float m_StationaryTurnSpeed = 180;
 		[SerializeField] float m_MoveSpeedMultiplier = 1f;
 		[SerializeField] float m_AnimSpeedMultiplier = 1f;
 		[SerializeField] float m_GroundCheckDistance = 0.2f;
@@ -45,23 +43,18 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			move = Vector3.ProjectOnPlane(move, m_GroundNormal);
 			m_TurnAmount = Mathf.Atan2(move.x, move.z);
 			m_ForwardAmount = move.z;
-
-			UpdateAnimator(move);
+			UpdateAnimator(m_Rigidbody.velocity.normalized);
 		}
 
 		void UpdateAnimator(Vector3 move)
 		{
 			// update the animator parameters
-			Debug.Log($"m_IsGrounded {m_IsGrounded} && move.magnitude {move.magnitude} > 0: {m_IsGrounded && move.magnitude > 0}");
-			if (m_IsGrounded && move.magnitude > 0)
+			Debug.Log($"PLAYER MOVING {move} Magnitude: {move.magnitude}");
+			if ( move.magnitude > 0)
 			{
-				Debug.Log($"UPDATING ANIMATOR PARAMETERS: ");
-				Debug.Log($"Horizontal: {move.x}");
-				Debug.Log($"Vertical: {move.y}");
-				Debug.Log($"Speed: {m_Rigidbody.velocity.magnitude}");
 				m_Animator.SetFloat("Horizontal", move.x);
 				m_Animator.SetFloat("Vertical", move.y);
-				m_Animator.SetFloat("Speed", m_Rigidbody.velocity.magnitude);
+				m_Animator.SetFloat("Speed", move.magnitude);
 				m_Animator.speed = m_AnimSpeedMultiplier;
 			}
 			else

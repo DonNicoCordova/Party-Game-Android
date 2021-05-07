@@ -9,9 +9,22 @@ public class MoveButton : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private BoxCollider boxCollider;
     private Animator animator;
+    public Transform farEnd;
+    private Vector3 frometh;
+    private Vector3 untoeth;
+    private float secondsForOneLength = 1f;
 
+    void Update()
+    {
+        transform.position = Vector3.Lerp(frometh, untoeth,
+         Mathf.SmoothStep(0f, 1f,
+          Mathf.PingPong(Time.time / secondsForOneLength, 1f)
+        ));
+    }
     private void Start()
     {
+        untoeth = transform.position + new Vector3(0,1,0);
+        frometh = transform.position + new Vector3(0,2,0);
         animator = gameObject.GetComponent<Animator>();
         boxCollider = gameObject.GetComponent<BoxCollider>();
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
@@ -22,8 +35,6 @@ public class MoveButton : MonoBehaviour
     }
     public void HideButton()
     {
-        if (gameObject.name == "Bridge (9)")
-            Debug.Log("BRIDGE 9 IS HIDING BUTTONS");
         spriteRenderer.enabled = false;
     }
     public void EnableButton()

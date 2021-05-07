@@ -233,10 +233,19 @@ public class GameManager : GenericSingletonClass<GameManager>
                 phaseAnimator.gameObject.SetActive(true);
                 phaseAnimator.Play("PhaseInAnimation");
                 yield return new WaitForSeconds(1.5f);
-                phaseAnimator.SetTrigger("SlideOut");
+                if (phaseAnimator != null)
+                {
+                    phaseAnimator.SetTrigger("SlideOut");
+                }
                 yield return new WaitForSeconds(1);
-                phaseText.text = "";
-                phaseAnimator.gameObject.SetActive(false);
+                if (phaseText != null)
+                {
+                    phaseText.text = "";
+                }
+                if (phaseAnimator != null)
+                {
+                    phaseAnimator.gameObject.SetActive(false);
+                }
             }
             else
             {
@@ -390,6 +399,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("VirtualCamera") == null)
         {
+            Debug.Log("No Virtual Camera Found");
             allReferencesReady = false;
             return;
         }
@@ -408,6 +418,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("Dice") == null)
         {
+            Debug.Log("No Dice Found");
             allReferencesReady = false;
             return;
         }
@@ -417,6 +428,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("ThrowPlatform") == null)
         {
+            Debug.Log("No Throw  Found");
             allReferencesReady = false;
             return;
         }
@@ -426,6 +438,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("PhaseIndicator") == null)
         {
+            Debug.Log("No phase indicator Found");
             allReferencesReady = false;
             return;
         }
@@ -435,6 +448,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("PlayersLadder") == null)
         {
+            Debug.Log("No Ladder Found");
 
             allReferencesReady = false;
             return;
@@ -446,6 +460,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("TimeBar") == null)
         {
+            Debug.Log("No Timebar Found");
             allReferencesReady = false;
             return;
         }
@@ -455,6 +470,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("GameOverUI") == null)
         {
+            Debug.Log("No GameOverUI Found");
             allReferencesReady = false;
             return;
         }
@@ -464,6 +480,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("DiceDisplayOne") == null)
         {
+            Debug.Log("No DiceDisplay Found");
             allReferencesReady = false;
             return;
         }
@@ -473,6 +490,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("DiceDisplayTwo") == null)
         {
+            Debug.Log("No DiceDisplay2 Found");
             allReferencesReady = false;
             return;
         }
@@ -487,6 +505,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("MiniMap") == null)
         {
+            Debug.Log("No MiniMap Found");
             allReferencesReady = false;
             return;
         }
@@ -497,6 +516,7 @@ public class GameManager : GenericSingletonClass<GameManager>
         }
         else if (GameObject.FindGameObjectWithTag("EnergyCounter") == null)
         {
+            Debug.Log("No EnergyCounter Found");
             allReferencesReady = false;
             return;
         }

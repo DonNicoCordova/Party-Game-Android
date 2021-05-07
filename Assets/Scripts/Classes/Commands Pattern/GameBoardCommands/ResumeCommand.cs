@@ -22,6 +22,7 @@ public class ResumeCommand : Command
     }
     public override void Execute()
     {
+        GameManager.Instance.LoadPlayers();
         CapturedLocation oldCapturedLocations = GameManager.Instance.GetSavedCapturedLocation(_newPhotonPlayer.ActorNumber);
         PlayerStats oldPlayerStats = GameManager.Instance.GetSavedPlayerStats(_newPhotonPlayer.ActorNumber);
         oldPlayerStats.mainColor = GameManager.Instance.playerConfigs[_newPhotonPlayer.ActorNumber - 1].mainColor;

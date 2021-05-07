@@ -9,7 +9,7 @@ public class LoginMenu : MonoBehaviourPunCallbacks
 {
     [Header("Main Screen")]
     public Button startGameButton;
-
+    public GameObject message;
     private void Start()
     {
         if (LevelLoader.Instance != null && LevelLoader.Instance.visible)
@@ -19,19 +19,21 @@ public class LoginMenu : MonoBehaviourPunCallbacks
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Screen.autorotateToLandscapeLeft = false;
         Screen.autorotateToLandscapeRight = false;
-        if (PhotonNetwork.IsConnected)
-        {
-            startGameButton.interactable = true;
-        }
-    }
-    public override void OnConnectedToMaster()
-    {
-        startGameButton.interactable = true;
+
     }
     public void OnPlayerNameUpdate(TMP_InputField playerNameInput)
     {
-        PhotonNetwork.NickName = playerNameInput.text;
-        PlayerPrefs.SetString("PlayerName", playerNameInput.text);
+        if (playerNameInput.text.Length >= 4 && playerNameInput.text.Length <= 40)
+        {
+            PhotonNetwork.NickName = playerNameInput.text;
+            PlayerPrefs.SetString("PlayerName", playerNameInput.text);
+            startGameButton.interactable = true;
+            message.SetActive(false);
+        } else
+        {
+            message.SetActive(true);
+            startGameButton.interactable = false;
+        }
     }
     public void OnStartGameButton()
     {

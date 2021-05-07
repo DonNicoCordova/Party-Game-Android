@@ -12,7 +12,6 @@ using UnityEngine.EventSystems;
 public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
     [Header("Info")]
-    public FloatingJoystick joystick = null;
     public PlayerStats playerStats = null;
     public Rigidbody rig;
     public Player photonPlayer;
@@ -235,7 +234,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     public void Resume(Player newPhotonPlayer)
     {
         GameManager.Instance.players.Add(this);
-        GameManager.Instance.LoadPlayers();
         ResumeCommand resumeCommand = new ResumeCommand(newPhotonPlayer, this);
         _commands.Enqueue(resumeCommand);
     }

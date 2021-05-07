@@ -16,11 +16,17 @@ public class ClickTextFix : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     }
     public void OnPointerDown(PointerEventData eventData)
     {
-        text.transform.localPosition -= new Vector3(0, moveAmount, 0);
+        if (button.IsInteractable())
+        {
+            text.transform.localPosition -= new Vector3(0, moveAmount, 0);
+        }
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        text.transform.localPosition -= new Vector3(0, -moveAmount, 0);
+        if (button.IsInteractable())
+        {
+            text.transform.localPosition -= new Vector3(0, -moveAmount, 0);
+        }
     }
 }

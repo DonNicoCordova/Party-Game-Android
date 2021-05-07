@@ -69,11 +69,6 @@ public class BoxAccelController : MonoBehaviour, IPointerDownHandler, IDragHandl
     {
         if (!throwFinished && DicesReadyToPlay())
         {
-            if (Input.acceleration.sqrMagnitude >= sqrShakeDetectionThreshold && Time.unscaledTime >= timeSinceLastShake + minShakeInterval && shakesLeft > 0)
-            {
-                ShakeRigidBodies();
-                timeSinceLastShake = Time.unscaledTime;
-            }
             if ( Input.GetKeyDown("p") || Input.touchCount > 0 && EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId) && !throwDetected)
             {
                 DisableDicesAnimations();

@@ -200,10 +200,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Sala
+  m_text: Fiesta
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 88a762e05c87b9a4a8887cbc8a4a9581, type: 2}
-  m_sharedMaterial: {fileID: 4739121825726484949, guid: 88a762e05c87b9a4a8887cbc8a4a9581, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
+  m_sharedMaterial: {fileID: -2683147626412317823, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -227,11 +227,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 21.55
+  m_fontSize: 14.55
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 18
+  m_fontSizeMin: 3
   m_fontSizeMax: 100
   m_fontStyle: 2
   m_HorizontalAlignment: 2
@@ -263,7 +263,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 1
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 5.80249, z: 0, w: 4.843176}
+  m_margin: {x: 3.3411446, y: 5.80249, z: 4.3023148, w: 4.843176}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -446,8 +446,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\xBFEs una fiesta privada?"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
-  m_sharedMaterial: {fileID: -1434338537368533310, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
+  m_sharedMaterial: {fileID: -2683147626412317823, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -471,13 +471,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 75.9
+  m_fontSize: 53.05
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 130
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -507,7 +507,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 1
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 8.914368, z: 0, w: 11.12384}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -599,7 +599,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00012207031}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2968587677077080208
@@ -907,8 +907,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\xA1Elige tu fiesta!"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
-  m_sharedMaterial: {fileID: -1434338537368533310, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
+  m_sharedMaterial: {fileID: -2683147626412317823, guid: 8fc995f406a71bc45a97b31897b14598, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -932,7 +932,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 120.1
+  m_fontSize: 90.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1194,8 +1194,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -18.2, y: -44.8}
-  m_SizeDelta: {x: 104.5441, y: 47.2441}
+  m_AnchoredPosition: {x: -17.53014, y: -43.765}
+  m_SizeDelta: {x: 107.56668, y: 42.573}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6988333549011052238
 CanvasRenderer:
@@ -1669,7 +1669,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_fontSize
-      value: 7.55
+      value: 3.9
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_margin.w
@@ -1690,15 +1690,19 @@ PrefabInstance:
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
+      objectReference: {fileID: 11400000, guid: 731579b750079274eac39e7ba5fa3838, type: 2}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_fontStyle
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -1434338537368533310, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
+      objectReference: {fileID: 4816491920572456281, guid: 731579b750079274eac39e7ba5fa3838, type: 2}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_VerticalAlignment
       value: 512
@@ -1839,40 +1843,52 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_text
-      value: Entrar
+      value: ir
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_fontSize
-      value: 7.1
+      value: 7.2
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_margin.w
-      value: 7.4724536
+      value: 8.816015
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_margin.x
-      value: 3.7426052
+      value: 4.6292934
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_margin.y
-      value: 8.204263
+      value: 9.047854
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_margin.z
-      value: 3.987547
+      value: 5.1501865
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
+      objectReference: {fileID: 11400000, guid: 731579b750079274eac39e7ba5fa3838, type: 2}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_fontStyle
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -1434338537368533310, guid: 0371a4cad83fb794e8553b3b07d24046, type: 2}
+      objectReference: {fileID: 4816491920572456281, guid: 731579b750079274eac39e7ba5fa3838, type: 2}
+    - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 6664800930978815286, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fee35c99fc033ba43a575a0afe03fdf5, type: 3}
 --- !u!224 &723550692339149081 stripped

@@ -51,6 +51,7 @@ internal class MovePiecePhase : IState
             // IF ACTUAL PLAYER IS IN SYNC AND PLAYER IS DONE PLAYING
             else if (actualPlayer != null && actualPlayer.playerStats.PlayerDone() && lastPlayer == actualPlayer)
             {
+                Debug.Log($"PLAYER {actualPlayer.playerStats.nickName} WAS DONE: actualPlayer.playerStats.PlayerDone() ({actualPlayer.playerStats.PlayerDone()}) && lastPlayer == actualPlayer ({lastPlayer == actualPlayer})");
                 fetchingPlayer = true;
                 if (PhotonNetwork.IsMasterClient)
                 {

@@ -33,6 +33,7 @@ TagManager:
   - MoveButton
   - WallObstacle
   - SingleObstacle
+  - HideTrigger
   layers:
   - Default
   - TransparentFX

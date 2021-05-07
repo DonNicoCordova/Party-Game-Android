@@ -4,15 +4,51 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    [Header("Configurations")]
+    public Collider colliderToHide;
+
+    [SerializeField]
+    public MeshRenderer[] meshRenderers;
+
+    [SerializeField]
+    public Collider[] meshColliders;
+    private void Start()
     {
-        
+        if (colliderToHide == null)
+        {
+            colliderToHide = gameObject.GetComponent<Collider>();
+            colliderToHide.enabled = true;
+        }
+
+    }
+    public void Hide()
+    {
+        foreach (Collider collider in meshColliders)
+        {
+            collider.enabled = false;
+        }
+        foreach (MeshRenderer mesh in meshRenderers)
+        {
+            mesh.enabled = false;
+        }
+    }
+    public void Show()
+    {
+        foreach (Collider collider in meshColliders)
+        {
+            collider.enabled = true;
+        }
+        foreach (MeshRenderer mesh in meshRenderers)
+        {
+            mesh.enabled = true;
+        }
+    }
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("HideTrigger"))
+        {
+            Hide();
+        }
     }
 }

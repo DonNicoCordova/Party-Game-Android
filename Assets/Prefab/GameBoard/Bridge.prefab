@@ -168,7 +168,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destination: {fileID: 0}
-  shadowRenderer: {fileID: 0}
 --- !u!65 &8969286359930108272
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -190,7 +189,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1343838735464953062}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 6ce6d4378fc22684b9da724025434b49, type: 2}
   m_CullingMode: 0
@@ -476,7 +475,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destination: {fileID: 0}
-  shadowRenderer: {fileID: 0}
 --- !u!65 &3079360764893068948
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -498,7 +496,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5993935883045543857}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 8b140dc080666c84c95b313430ba762e, type: 2}
   m_CullingMode: 0
@@ -967,6 +965,10 @@ PrefabInstance:
     - target: {fileID: 4808340464470534223, guid: 02b0869c6eceeee409a4b27039c20812, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4808340464470534223, guid: 02b0869c6eceeee409a4b27039c20812, type: 3}
+      propertyPath: m_SortingOrder
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5893990498795714393, guid: 02b0869c6eceeee409a4b27039c20812, type: 3}
       propertyPath: m_RootOrder

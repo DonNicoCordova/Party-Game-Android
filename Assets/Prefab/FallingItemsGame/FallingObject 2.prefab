@@ -74,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1927404679
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: fb77d865fe00f99488724eddc2f1b910, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -191,9 +191,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fallingItem:
-    name: PelotaRoja
+    name: Pelota Roja
     id: REDBALL
     sprite: {fileID: 21300000, guid: fb77d865fe00f99488724eddc2f1b910, type: 3}
+    isAttackItem: 0
 --- !u!58 &3643163020954144027
 CircleCollider2D:
   m_ObjectHideFlags: 0

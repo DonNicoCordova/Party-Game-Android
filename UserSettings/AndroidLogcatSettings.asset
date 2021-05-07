@@ -1,0 +1,137 @@
+{
+    "m_SelectedDeviceId": "be44cabb0407",
+    "m_SelectedPackage": {
+        "deviceId": "be44cabb0407",
+        "name": "com.DefaultCompany.LaFiestita",
+        "processId": 6955,
+        "exited": false
+    },
+    "m_SelectedPriority": 0,
+    "m_KnownPackagesForSerialization": [
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 6837,
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 8017,
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 9657,
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.microsoft.launcher",
+            "processId": 11520,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 14196,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 19250,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 23047,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 24349,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 25773,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 27511,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 25088,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 6955,
+            "exited": false
+        }
+    ],
+    "m_Tags": {
+        "m_Entries": [
+            {
+                "m_Name": "Filter by all listed tags",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "No Filter",
+                "m_Selected": true
+            },
+            {
+                "m_Name": "",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "Tag Control...",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "Unity",
+                "m_Selected": false
+            },
+            {
+                "m_Name": "CRASH",
+                "m_Selected": false
+            }
+        ]
+    },
+    "m_MemoryViewerState": {
+        "MemoryWindowHeight": 300.0,
+        "MemoryWindowWidth": 170.0,
+        "MemoryTypeEnabled": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+        ],
+        "MemoryGroup": 2,
+        "Behavior": 0
+    },
+    "m_Filter": "",
+    "m_FilterIsRegularExpression": false,
+    "m_SymbolPaths": []
+}

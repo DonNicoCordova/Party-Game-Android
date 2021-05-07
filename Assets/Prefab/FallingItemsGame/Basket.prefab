@@ -74,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1927404679
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 3
   m_Sprite: {fileID: 664258192420276927, guid: 52be86956364850459aaad435eaadb7a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -245,6 +245,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detectionCollider: {fileID: 0}
+  itemToCatch:
+    name: 
+    id: 
+    sprite: {fileID: 0}
+    isAttackItem: 0
+  itemSpriteRenderer: {fileID: 0}
+  cannonToTrigger: 1
 --- !u!1 &7826305906652044937
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,7 +326,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1927404679
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: -4594147657945846558, guid: 52be86956364850459aaad435eaadb7a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -444,7 +451,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1927404679
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 6e946b178f6d4a04dbfc39bc6cbc8f50, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

@@ -22,6 +22,7 @@ public class BasketController : MonoBehaviour
     {
         if (collision.CompareTag("FallingItem") && !collision.isTrigger)
         {
+
             FallingItemController catchedItem = collision.GetComponent<FallingItemController>();
             if (CheckIfItemIsCorrect(catchedItem))
             {
