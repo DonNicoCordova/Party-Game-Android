@@ -1,9 +1,9 @@
 {
-    "m_SelectedDeviceId": "be44cabb0407",
+    "m_SelectedDeviceId": "20a1cfa2dee1",
     "m_SelectedPackage": {
-        "deviceId": "be44cabb0407",
+        "deviceId": "20a1cfa2dee1",
         "name": "com.DefaultCompany.LaFiestita",
-        "processId": 6955,
+        "processId": 14801,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -78,6 +78,12 @@
             "deviceId": "be44cabb0407",
             "name": "com.DefaultCompany.LaFiestita",
             "processId": 6955,
+            "exited": false
+        },
+        {
+            "deviceId": "20a1cfa2dee1",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 14801,
             "exited": false
         }
     ],

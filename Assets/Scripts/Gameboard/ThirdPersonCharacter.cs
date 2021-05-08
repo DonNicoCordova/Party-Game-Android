@@ -43,13 +43,12 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			move = Vector3.ProjectOnPlane(move, m_GroundNormal);
 			m_TurnAmount = Mathf.Atan2(move.x, move.z);
 			m_ForwardAmount = move.z;
-			UpdateAnimator(m_Rigidbody.velocity.normalized);
+			UpdateAnimator(m_Rigidbody.velocity);
 		}
 
 		void UpdateAnimator(Vector3 move)
 		{
 			// update the animator parameters
-			Debug.Log($"PLAYER MOVING {move} Magnitude: {move.magnitude}");
 			if ( move.magnitude > 0)
 			{
 				m_Animator.SetFloat("Horizontal", move.x);

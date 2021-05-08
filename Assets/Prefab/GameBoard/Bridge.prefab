@@ -168,6 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destination: {fileID: 0}
+  farEnd: {fileID: 0}
 --- !u!65 &8969286359930108272
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -475,6 +476,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destination: {fileID: 0}
+  farEnd: {fileID: 0}
 --- !u!65 &3079360764893068948
 BoxCollider:
   m_ObjectHideFlags: 0
