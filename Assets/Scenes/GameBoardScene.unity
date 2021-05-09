@@ -2143,7 +2143,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.033333335
+  m_VoxelSize: 0.1
   m_BuildHeightMesh: 0
   m_NavMeshData: {fileID: 23800000, guid: c4a7a663b595b6c47bae6c97588fecc4, type: 2}
 --- !u!4 &1802570043
@@ -6384,6 +6384,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 834777607483402321, guid: 4a83172d604bacc4ca7e6400e1ee1dee, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 836303881529033122, guid: 4a83172d604bacc4ca7e6400e1ee1dee, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
@@ -6759,6 +6763,14 @@ PrefabInstance:
     - target: {fileID: 1725817519461858279, guid: 4a83172d604bacc4ca7e6400e1ee1dee, type: 3}
       propertyPath: viewIdField
       value: 37
+      objectReference: {fileID: 0}
+    - target: {fileID: 1726627108239587039, guid: 4a83172d604bacc4ca7e6400e1ee1dee, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1726627108239587039, guid: 4a83172d604bacc4ca7e6400e1ee1dee, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1748066331646805179, guid: 4a83172d604bacc4ca7e6400e1ee1dee, type: 3}
       propertyPath: m_StaticEditorFlags

@@ -39,9 +39,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         if (other.CompareTag("CapturePoint") && playerStats.EnergyLeft() > 0)
         {
             LocationController controller = other.GetComponentInParent<LocationController>();
+            Debug.Log($"CHECKING LOCATIONCONTROLLER {controller.gameObject.name}");
             if (!controller.CheckIfPlayerOnTop(this))
             {
                 controller.AddPlayer(this);
+                Debug.Log("CAPTURING ZONE IN ON TRIGGER");
                 playerStats.CaptureZone(controller);
             }
         }
@@ -185,6 +187,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
                     {
                         buttonChecker.CheckForButtonsNearby();
                         enabledToMove = true;
+                        agent.isStopped = true;
+                        agent.ResetPath();
+                        rig.velocity = new Vector3(0f, 0f, 0f);
                         buttonChecker.ShowButtons();
                     }
                 }
