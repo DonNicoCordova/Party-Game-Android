@@ -53,22 +53,17 @@ public class LocationController : MonoBehaviourPunCallbacks
     }
     public void AddPlayer(PlayerController newPlayer)
     {
-        Debug.Log($"ADDING NEW PLAYER TO LOCATION: {newPlayer.playerStats.nickName}");
-        Debug.Log($"PLAYERS ON TOP BEFORE: {playersOnTop.Count}");
         playersOnTop.Add(newPlayer);
-        Debug.Log($"PLAYERS ON TOP AFTER: {playersOnTop.Count}");
     }
     public void RemovePlayer(PlayerController newPlayer)
     {
         if (playersOnTop.Contains(newPlayer))
         {
-            Debug.Log($"REMOVING PLAYER {newPlayer.playerStats.nickName} {playersOnTop.Contains(newPlayer)}");
             playersOnTop.Remove(newPlayer);
         }
     }
     public bool CheckIfPlayerOnTop(PlayerController newPlayer)
     {
-        Debug.Log($"PLAYERS ON TOP {playersOnTop.Count}: {playersOnTop.Contains(newPlayer)}");
         return playersOnTop.Contains(newPlayer);
     }
 }

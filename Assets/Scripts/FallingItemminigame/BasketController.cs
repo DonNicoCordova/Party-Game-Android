@@ -7,6 +7,7 @@ public class BasketController : MonoBehaviour
     public Collider2D detectionCollider;
     public FallingItem itemToCatch;
     public SpriteRenderer itemSpriteRenderer;
+    public Animator animator;
     public enum Cannon
     {
         right,
@@ -49,6 +50,12 @@ public class BasketController : MonoBehaviour
     public void UpdateSprite()
     {
         itemSpriteRenderer.sprite = itemToCatch.sprite;
+    }
+    public void SetItemToCatch(FallingItem newItem) 
+    {
+        itemToCatch = newItem;
+        UpdateSprite();
+        animator.Play("NewItemToCatch");
     }
     private bool CheckIfItemIsCorrect(FallingItemController catchedItem) => catchedItem.fallingItem.id == itemToCatch.id;
 

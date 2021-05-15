@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "be44cabb0407",
         "name": "com.DefaultCompany.LaFiestita",
-        "processId": 2231,
+        "processId": 5221,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -11,49 +11,43 @@
         {
             "deviceId": "be44cabb0407",
             "name": "com.DefaultCompany.LaFiestita",
-            "processId": 31352,
+            "processId": 22449,
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 29508,
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 30952,
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 31923,
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 977,
             "exited": true
         },
         {
             "deviceId": "be44cabb0407",
             "name": "com.microsoft.launcher",
-            "processId": 16936,
-            "exited": false
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.android.settings",
-            "processId": 25274,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 4579,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 6799,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 17695,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 19488,
+            "processId": 32199,
             "exited": false
         },
         {
             "deviceId": "be44cabb0407",
             "name": "com.DefaultCompany.LaFiestita",
-            "processId": 2231,
+            "processId": 5221,
             "exited": false
         },
         {

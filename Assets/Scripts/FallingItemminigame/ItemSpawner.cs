@@ -12,8 +12,8 @@ public class ItemSpawner : MonoBehaviour
     public Canvas canvas;
     
     [Header("Attacking Cannons Configuration")]
-    public RectTransform leftCannon;
-    public RectTransform rightCannon;
+    public Cannon leftCannon;
+    public Cannon rightCannon;
     public float defaultRightCannonAttackCooldown = 1f;
     public float defaultLeftCannonAttackCooldown = 1f;
     public float fireForce = 1000f;
@@ -31,6 +31,8 @@ public class ItemSpawner : MonoBehaviour
         delayTime = defaultDelayTime;
         leftCannonAttackCooldown = defaultLeftCannonAttackCooldown;
         rightCannonAttackCooldown = defaultRightCannonAttackCooldown;
+        leftCannon.Setup(itemsToThrow, canvas);
+        rightCannon.Setup(itemsToThrow, canvas);
     }
     public void Awake()
     {
@@ -155,19 +157,7 @@ public class ItemSpawner : MonoBehaviour
     {
         if (leftCannonAttackCooldown <= 0)
         {
-            foreach (GameObject item in itemsToThrow)
-            {
-                FallingItemController itemStats = item.GetComponent<FallingItemController>();
-                if (!itemStats.fallingItem.isAttackItem)
-                {
-                    GameObject newItem = Instantiate<GameObject>(item, leftCannon.position, Quaternion.identity, transform);
-                    DragController dragController = newItem.GetComponent<DragController>();
-                    dragController.SetCanvas(canvas);
-                    Destroy(newItem, 20);
-                    Rigidbody2D rigidbody = newItem.GetComponent<Rigidbody2D>();
-                    rigidbody.AddForce(new Vector2(1,1) * fireForce);
-                }
-            }
+            leftCannon.AnimateFire();
             leftCannonAttackCooldown = defaultLeftCannonAttackCooldown;
             return true;
         } else
@@ -175,29 +165,28 @@ public class ItemSpawner : MonoBehaviour
             return false;
         }
     }
+    public void TestFireLeftCannon()
+    {
+        leftCannon.AnimateFire();
+        leftCannonAttackCooldown = defaultLeftCannonAttackCooldown;
+    }
     public bool FireRightCannon()
     {
         if (rightCannonAttackCooldown <= 0)
         {
-            foreach (GameObject item in itemsToThrow)
-            {
-                FallingItemController itemStats = item.GetComponent<FallingItemController>();
-                if (!itemStats.fallingItem.isAttackItem)
-                {
-                    GameObject newItem = Instantiate<GameObject>(item, rightCannon.position, Quaternion.identity, transform);
-                    DragController dragController = newItem.GetComponent<DragController>();
-                    dragController.SetCanvas(canvas);
-                    Destroy(newItem, 20);
-                    Rigidbody2D rigidbody = newItem.GetComponent<Rigidbody2D>();
-                    rigidbody.AddForce(new Vector2(-1, 1) * fireForce);
-                }
-            }
+            rightCannon.AnimateFire();
             rightCannonAttackCooldown = defaultRightCannonAttackCooldown;
             return true;
         } else
         {
             return false;
         }
+    }
+    public void TestFireRightCannon()
+    {
+
+        rightCannon.AnimateFire();
+        rightCannonAttackCooldown = defaultRightCannonAttackCooldown;
     }
     public void Activate()
     {

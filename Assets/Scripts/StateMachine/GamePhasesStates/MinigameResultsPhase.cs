@@ -66,14 +66,14 @@ internal class MinigameResultsPhase : IState
             GameManager.Instance.ShowMessage("¡Que penita! Mejor suerte para la proxima...");
         }
         setupComplete = false;
+        GameManager.Instance.LoadBridges();
+        GameManager.Instance.notActionTakenPlayers.Clear();
+        GameManager.Instance.actionTakenPlayers.Clear();
     }
     public void OnExit()
     {
         GameManager.Instance.ResetStateOnPlayers();
-        GameManager.Instance.notActionTakenPlayers.Clear();
         GameManager.Instance.timerBar.SetTimeLeft(0);
-        GameManager.Instance.actionTakenPlayers.Clear();
-        GameManager.Instance.LoadBridges();
         stayTime = defaultStayTime;
     }
 }

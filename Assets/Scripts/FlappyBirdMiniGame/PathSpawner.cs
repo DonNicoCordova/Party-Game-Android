@@ -64,13 +64,13 @@ public class PathSpawner : MonoBehaviourPunCallbacks
                 float israChance = FlappyRoyaleGameManager.Instance.actualDifficulty.israObstacleChance;
                 if (chance < israChance)
                 {
-                    this.photonView.RPC("PlaceObstacle", RpcTarget.MasterClient, yPosition);
+                    this.photonView.RPC("PlaceObstacle", RpcTarget.All, yPosition);
                 } else if (chance < israChance + wallChance)
                 {
-                    this.photonView.RPC("PlaceWallObstacle", RpcTarget.MasterClient);
+                    this.photonView.RPC("PlaceWallObstacle", RpcTarget.All);
                 } else if (chance < israChance + wallChance + singleChance)
                 {
-                    this.photonView.RPC("PlaceObstacle", RpcTarget.MasterClient, yPosition);
+                    this.photonView.RPC("PlaceObstacle", RpcTarget.All, yPosition);
                 }
 
                 obstacleDelayTime = FlappyRoyaleGameManager.Instance.actualDifficulty.obstacleDelay;
