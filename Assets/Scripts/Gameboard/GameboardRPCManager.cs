@@ -107,12 +107,7 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
     {
         if (GameManager.Instance.GetMainPlayer().playerStats.id != playerId)
         {
-            PlayerController player = GameManager.Instance.GetPlayer(playerId);
-            if (player != null)
-            {
-                player.playerStats.SetEnergyLeft(newEnergy);
-                player.UpdateEnergy();
-            }
+            GameManager.Instance.UpdatePlayerEnergy(playerId, newEnergy);
         }
     }
     public IEnumerator processImInGame()
