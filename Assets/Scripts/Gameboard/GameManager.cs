@@ -218,9 +218,14 @@ public class GameManager : GenericSingletonClass<GameManager>
             actualPlayer.playerStats.passed = true;
         }
     }
+    public void UpdatePlayerEnergy(int playerId, int newEnergy)
+    {
+        UpdateEnergyCommand updateEnergyCommand = new UpdateEnergyCommand(playerId, newEnergy);
+        _commands.Enqueue(updateEnergyCommand);
+    }
     public void SetMainPlayerEnergy(int energy)
     {
-        GameboardRPCManager.Instance.photonView.RPC("UpdateEnergy", RpcTarget.Others, mainPlayer.playerStats.id, energy);
+        GameboardRPCManager.Instance.photonView.RPC("UpdateEnergy", RpcTarget.OthersBuffered, mainPlayer.playerStats.id, energy);
         mainPlayer.playerStats.SetEnergyLeft(energy);
     }
     private IEnumerator processShowMessage(string message)
@@ -532,7 +537,8 @@ public class GameManager : GenericSingletonClass<GameManager>
         {
             if (GetActualPlayer() != null)
             {
-                actionTakenPlayers.Enqueue(GetActualPlayer());
+                PlayerController actualPlayer = GetActualPlayer();
+                actionTakenPlayers.Enqueue(actualPlayer);
             }
             if (notActionTakenPlayers.Count != 0)
             {

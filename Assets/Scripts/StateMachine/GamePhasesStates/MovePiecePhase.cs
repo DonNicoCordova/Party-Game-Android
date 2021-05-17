@@ -45,7 +45,6 @@ internal class MovePiecePhase : IState
                 }
                 if (turnTimerDone && SkillsUI.Instance.noAnimationsPlaying && PhotonNetwork.IsMasterClient)
                 {
-                    Debug.Log($"PLAYER {actualPlayer.playerStats.nickName} TIMER WAS DONE: GETTING NEXT PLAYER");
 
                     GameManager.Instance.GetNextPlayer();
                 }
@@ -53,7 +52,6 @@ internal class MovePiecePhase : IState
             // IF ACTUAL PLAYER IS IN SYNC AND PLAYER IS DONE PLAYING
             else if (actualPlayer != null && actualPlayer.playerStats.PlayerDone() && lastPlayer == actualPlayer)
             {
-                Debug.Log($"PLAYER {actualPlayer.playerStats.nickName} ON ROUND {GameManager.Instance.GetRound()} WAS DONE: actualPlayer.playerStats.PlayerDone() ({actualPlayer.playerStats.PlayerDone()}) && lastPlayer == actualPlayer ({lastPlayer == actualPlayer})");
                 fetchingPlayer = true;
                 if (PhotonNetwork.IsMasterClient)
                 {
@@ -67,6 +65,7 @@ internal class MovePiecePhase : IState
     }
     public void OnEnter()
     {
+        lastPlayer = null;
         GameManager.Instance.ActualPlayerChanged += (sender, args) => OnActualPlayerChange();
         //reset state done
         if (PhotonNetwork.IsMasterClient)
@@ -98,10 +97,6 @@ internal class MovePiecePhase : IState
     {
         turnTime = defaultTurnTime;
         turnTimerDone = false;
-        if (lastPlayer != null)
-        {
-            GameboardRPCManager.Instance.photonView.RPC("UpdateEnergy", RpcTarget.Others, lastPlayer.photonPlayer.ActorNumber, 0);
-        }
         PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
         if (lastPlayer == mainPlayer)
         {
