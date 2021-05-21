@@ -152,7 +152,7 @@ public class SkillsUI : MonoBehaviour
                 Button button = skillButton.obj.GetComponent<Button>();
                 if (skillButton.CanAfford())
                 {
-                    if (skillButton.associatedSkill.skill != SkillToUse.Paint && skillButton.associatedSkill.skill != SkillToUse.Sticky )
+                    if (skillButton.associatedSkill.skill != Skill.Paint && skillButton.associatedSkill.skill != Skill.Sticky )
                     {
                         button.interactable = true;
                     }
@@ -166,19 +166,19 @@ public class SkillsUI : MonoBehaviour
     }
     public void OnClickCutBridge()
     {
-        ShowMap(SkillToUse.Cut);
+        ShowMap(Skill.Cut);
     }
     public void OnClickSpawnBridge()
     {
-        ShowMap(SkillToUse.Spawn);
+        ShowMap(Skill.Spawn);
     }
     public void OnClickUseBombs()
     {
-        ShowMap(SkillToUse.Paint);
+        ShowMap(Skill.Paint);
     }
     public void OnClickStickyBridge()
     {
-        ShowMap(SkillToUse.Sticky);
+        ShowMap(Skill.Sticky);
     }
     public void MoveCameraToHighlight()
     {
@@ -187,7 +187,7 @@ public class SkillsUI : MonoBehaviour
         cinemachineAnimator.ResetTrigger("BackToOrigin");
         cinemachineAnimator.SetTrigger("MoveToPlace");
     }
-    public SkillInfo GetSkillInfo(SkillToUse skill)
+    public SkillInfo GetSkillInfo(Skill skill)
     {
         bool skillExists = skills.Any(info => info.skill == skill);
         if (skillExists)
@@ -199,7 +199,7 @@ public class SkillsUI : MonoBehaviour
             return null;
         }
     }
-    public void ShowMap(SkillToUse skill)
+    public void ShowMap(Skill skill)
     {
         HideSkills();
         GameManager.Instance.HideMinimap();
@@ -213,23 +213,23 @@ public class SkillsUI : MonoBehaviour
         
         switch (skill)
         {
-            case SkillToUse.Cut:
+            case Skill.Cut:
                 bridges.ForEach(o => CanCut(o));
                 break;
-            case SkillToUse.Spawn:
+            case Skill.Spawn:
                 bridges.ForEach(o => CanSpawn(o));
                 break;
-            case SkillToUse.Sticky:
+            case Skill.Sticky:
                 bridges.ForEach(o => CanGetSticky(o));
                 break;
-            case SkillToUse.Paint:
+            case Skill.Paint:
                 break;
         }
     }
     private void CanSpawn(Bridge bridge)
     {
         if (!bridge.bridgeRenderer.enabled) { 
-            bridge.BecomeClickable(SkillToUse.Spawn);
+            bridge.BecomeClickable(Skill.Spawn);
         } else
         {
             bridge.RemoveClickable();
@@ -240,7 +240,7 @@ public class SkillsUI : MonoBehaviour
         if (bridge.bridgeRenderer.enabled)
         {
 
-            bridge.BecomeClickable(SkillToUse.Cut);
+            bridge.BecomeClickable(Skill.Cut);
         } else
         {
             bridge.RemoveClickable();
@@ -250,7 +250,7 @@ public class SkillsUI : MonoBehaviour
     {
         if (bridge.bridgeRenderer.enabled)
         {
-            bridge.BecomeClickable(SkillToUse.Sticky);
+            bridge.BecomeClickable(Skill.Sticky);
         } else
         {
             bridge.RemoveClickable();
@@ -274,9 +274,9 @@ public class SkillsUI : MonoBehaviour
     }
 }
 
-public enum SkillToUse
+public enum Skill
 {
-    None, Sticky, Cut, Spawn, Paint,
+    None, Sticky, Cut, Spawn, Paint, AddEnergy, StealEnergy, Teleport
 }
 
 [System.Serializable]
@@ -287,13 +287,15 @@ public class SkillInfo
     [SerializeField]
     public string verboseName;
     [SerializeField]
-    public SkillToUse skill;
+    public Skill skill;
     [SerializeField]
     public string description;
     [SerializeField]
     public int energyCost;
     [SerializeField]
     public Sprite icon;
+    [SerializeField]
+    public Sprite tokenIcon;
 }
 
 [System.Serializable]
@@ -314,21 +316,21 @@ public class SkillButton
         button.onClick.RemoveAllListeners();
         switch (skill.skill)
         {
-            case SkillToUse.Cut:
+            case Skill.Cut:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickCutBridge);
                 break;
-            case SkillToUse.Paint:
+            case Skill.Paint:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickUseBombs);
                 button.interactable = false;
                 break;
-            case SkillToUse.Spawn:
+            case Skill.Spawn:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickSpawnBridge);
                 break;
-            case SkillToUse.Sticky:
+            case Skill.Sticky:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickStickyBridge);
                 button.interactable = false;
                 break;
-            case SkillToUse.None:
+            case Skill.None:
                 break;
         }
     }
