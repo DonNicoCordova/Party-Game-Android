@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: 8d4e0fc16b3ec5442aae6def29670db8
+guid: 227faac3fd86bd145a8bc2610eafbd37
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3621805446951239382
-    second: SuccessButton_0
+      213: -2672083563233753690
+    second: ErrorButton_0
   - first:
-      213: -8492721630047135407
-    second: SuccessButton_1
+      213: 6800339083720931532
+    second: ErrorButton_1
   - first:
-      213: 2896521752590928429
-    second: SuccessButton_2
+      213: -258131042719600712
+    second: ErrorButton_2
   - first:
-      213: 6503019040004752375
-    second: SuccessButton_3
+      213: 5179129014285323639
+    second: ErrorButton_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -45,11 +45,11 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -58,7 +58,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 200
+  spritePixelsToUnits: 150
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -127,85 +127,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SuccessButton_0
+      name: ErrorButton_0
       rect:
         serializedVersion: 2
         x: 0
         y: 10
         width: 64
         height: 44
-      alignment: 9
-      pivot: {x: 0.5, y: 0}
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 6, y: 16, z: 7, w: 5}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a2185e89223ccbdc0800000000000000
-      internalID: -3621805446951239382
+      spriteID: 6a5ca43182adaead0800000000000000
+      internalID: -2672083563233753690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SuccessButton_1
+      name: ErrorButton_1
       rect:
         serializedVersion: 2
         x: 64
         y: 10
         width: 64
         height: 44
-      alignment: 9
-      pivot: {x: 0.5, y: 0}
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 6, y: 13, z: 7, w: 8}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 15993c08caac32a80800000000000000
-      internalID: -8492721630047135407
+      spriteID: cc8346ded58af5e50800000000000000
+      internalID: 6800339083720931532
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SuccessButton_2
+      name: ErrorButton_2
       rect:
         serializedVersion: 2
         x: 128
         y: 10
         width: 64
         height: 44
-      alignment: 9
-      pivot: {x: 0.5, y: 0}
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 6, y: 10, z: 7, w: 11}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d2acf530033823820800000000000000
-      internalID: 2896521752590928429
+      spriteID: 8bf623d2f2fea6cf0800000000000000
+      internalID: -258131042719600712
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SuccessButton_3
+      name: ErrorButton_3
       rect:
         serializedVersion: 2
         x: 192
         y: 10
         width: 64
         height: 44
-      alignment: 9
-      pivot: {x: 0.5, y: 0}
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 6, y: 8, z: 7, w: 13}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7f3c517cc5d5f3a50800000000000000
-      internalID: 6503019040004752375
+      spriteID: 77d4566f566ffd740800000000000000
+      internalID: 5179129014285323639
       vertices: []
       indices: 
       edges: []
@@ -213,7 +213,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 19bda92b5dc2c9442a920b5b7a2c92bb
+    spriteID: c3084c4f5af245c439e0ee9e11781f82
     internalID: 0
     vertices: []
     indices: 

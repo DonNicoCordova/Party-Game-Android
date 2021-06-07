@@ -42,7 +42,9 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         phases.Add(moveResultsPhase);
         var minigamePhase = new MinigamePhase(90f);
         phases.Add(minigamePhase);
-        var minigameResultsPhase = new MinigameResultsPhase(5f);
+        var resumePhase = new ResumePhase(2f);
+        phases.Add(resumePhase);
+        var minigameResultsPhase = new MinigameResultsPhase(10f);
         phases.Add(minigameResultsPhase);
         var finalResultsPhase = new FinalResultsPhase(2f);
         phases.Add(finalResultsPhase);
@@ -57,7 +59,8 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         At(throwResultsPhase, movePiecePhase, resultsDone());
         At(movePiecePhase, moveResultsPhase, nothingElseToDo());
         At(moveResultsPhase, minigamePhase, gameboardPhaseDone());
-        At(minigamePhase, minigameResultsPhase, minigameOver());
+        At(minigamePhase, resumePhase, minigameOver());
+        At(resumePhase, minigameResultsPhase, timerDone());
         At(minigameResultsPhase, gameOverPhase, finalRoundFinished());
         At(minigameResultsPhase, initialize, nextRoundReady());
 
@@ -105,6 +108,15 @@ public class GameSystem : GenericSingletonClass<GameSystem>
             else
                 return false;
         };
+        Func<bool> timerDone() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                return GameManager.Instance.AllPlayersStateDone();
+            }
+            else
+                return false;
+        };
         Func<bool> nothingElseToDo() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
@@ -128,6 +140,7 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         {
             if (PhotonNetwork.IsMasterClient)
             {
+                Debug.Log($"GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && GameManager.Instance.AllPlayersCharacterSpawned() && GameManager.Instance.miniGamesQueue.Count > 0 => {GameManager.Instance.NextRoundReady()} && {GameManager.Instance.AllPlayersStateDone()} && {GameManager.Instance.AllPlayersCharacterSpawned()} && {GameManager.Instance.miniGamesQueue.Count} > 0");
                 return GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && GameManager.Instance.AllPlayersCharacterSpawned() && GameManager.Instance.miniGamesQueue.Count > 0;
             }
             else

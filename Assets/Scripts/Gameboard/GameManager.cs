@@ -91,14 +91,6 @@ public class GameManager : GenericSingletonClass<GameManager>
             string state = statesQueue.Dequeue();
             StartCoroutine(processChangeState(state));
         }
-        if (Input.GetKeyDown("s"))
-        {
-            SaveBridges();
-        }
-        if (Input.GetKeyDown("l"))
-        {
-            LoadBridges();
-        }
         ProcessCommands();
     }
     public void ProcessCommands()
@@ -196,6 +188,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     }
     public bool NextRoundReady()
     {
+        Debug.Log($"NEXT ROUND READY: notActionTakenPlayers.Count == numberOfPlayers && actionTakenPlayers.Count == 0 => {notActionTakenPlayers.Count} == {numberOfPlayers} && {actionTakenPlayers.Count} == 0");
         return notActionTakenPlayers.Count == numberOfPlayers && actionTakenPlayers.Count == 0;
     }
     public bool GameBoardDone()

@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
     [Header("Info")]
     public PlayerStats playerStats = null;
+    public Inventory inventory;
     public Rigidbody rig;
     public Player photonPlayer;
     public bool IsGrounded;
@@ -39,11 +40,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         if (other.CompareTag("CapturePoint") && playerStats.EnergyLeft() > 0)
         {
             LocationController controller = other.GetComponentInParent<LocationController>();
-            Debug.Log($"CHECKING LOCATIONCONTROLLER {controller.gameObject.name}");
             if (!controller.CheckIfPlayerOnTop(this))
             {
                 controller.AddPlayer(this);
-                Debug.Log("CAPTURING ZONE IN ON TRIGGER");
                 playerStats.CaptureZone(controller);
             }
         }
@@ -55,6 +54,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     }
     private void Start()
     {
+        inventory = gameObject.GetComponent<Inventory>();
         agent.updateRotation = false;
         buttonChecker = gameObject.GetComponentInChildren<ButtonChecker>();
     }

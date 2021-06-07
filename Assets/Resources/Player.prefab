@@ -1160,6 +1160,7 @@ MonoBehaviour:
     playableCharacter: {fileID: 0}
     energy: 0
     turnDone: 0
+  inventory: {fileID: 0}
   rig: {fileID: 4904780787545507650}
   IsGrounded: 0
   enabledToMove: 0

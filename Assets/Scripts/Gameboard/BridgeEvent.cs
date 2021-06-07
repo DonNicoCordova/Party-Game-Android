@@ -61,13 +61,13 @@ public class BridgeEvent : MonoBehaviour
             GameManager.Instance.GetMainPlayer().buttonChecker.HideButtons();
             GameManager.Instance.GetMainPlayer().buttonChecker.CheckForButtonsNearby();
         }
-        SkillInfo skillInfo = SkillsUI.Instance.GetSkillInfo(parent.Skill);
+        SkillInfo skillInfo = SkillsUI.Instance.GetSkillInfo(parent.skill);
         if (GameManager.Instance.GetMainPlayer().photonPlayer != SkillsUI.Instance.playerUsingSkills) 
         {
             SkillsUI.Instance.MoveCameraBackToPlayer();
         } else if (GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft() >= skillInfo.energyCost)
         {
-            SkillsUI.Instance.ShowMap(parent.Skill);
+            SkillsUI.Instance.ShowMap(parent.skill);
         } else
         {
             SkillsUI.Instance.MoveCameraBackToPlayer();

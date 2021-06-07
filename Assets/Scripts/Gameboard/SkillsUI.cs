@@ -14,9 +14,16 @@ public class SkillsUI : MonoBehaviour
     [SerializeField]
     private GameObject skillsPanel;
 
+    public PayingMethod payingMethod = PayingMethod.Energy;
+
     [Header("Skills")]
     public List<SkillInfo> skills = new List<SkillInfo>();
     public List<SkillButton> skillButtons = new List<SkillButton>();
+
+    [Header("Tokens")]
+    public List<Token> tokens = new List<Token>();
+    public List<TokenButton> tokenButtons = new List<TokenButton>();
+
     [SerializeField]
     private GameObject skillsButton;
     public Button backButton;
@@ -90,6 +97,19 @@ public class SkillsUI : MonoBehaviour
                 skillButton.obj.SetActive(false);
             }
         }
+        for (int i = 0; i < tokenButtons.Count; ++i)
+        {
+            TokenButton tokenButton = tokenButtons[i];
+            if (i < tokens.Count)
+            {
+                tokenButton.InitializeFromToken(tokens[i]);
+                tokenButton.obj.SetActive(true);
+            }
+            else
+            {
+                tokenButton.obj.SetActive(false);
+            }
+        }
         DisableSkillsButton();
     }
     public virtual void Awake()
@@ -161,25 +181,87 @@ public class SkillsUI : MonoBehaviour
                     button.interactable = false;
                 }
             }
+            foreach (TokenButton tokenButton in tokenButtons)
+            {
+                Button button = tokenButton.obj.GetComponent<Button>();
+                if (tokenButton.CanAfford())
+                {
+                    if (tokenButton.associatedToken.skillToUse != Skill.Paint && tokenButton.associatedToken.skillToUse != Skill.Teleport)
+                    {
+                        button.interactable = true;
+                    }
+                }
+                else
+                {
+                    button.interactable = false;
+                }
+            }
             skillsPanel.SetActive(true);
         }
     }
+
+    //SKILLS BUTTONS
     public void OnClickCutBridge()
     {
+        payingMethod = PayingMethod.Energy;
         ShowMap(Skill.Cut);
     }
     public void OnClickSpawnBridge()
     {
+        payingMethod = PayingMethod.Energy;
         ShowMap(Skill.Spawn);
     }
     public void OnClickUseBombs()
     {
+        payingMethod = PayingMethod.Energy;
         ShowMap(Skill.Paint);
     }
     public void OnClickStickyBridge()
     {
+        payingMethod = PayingMethod.Energy;
         ShowMap(Skill.Sticky);
     }
+
+    //INVENTORY BUTTONS
+    public void SpendTokenOnMainPlayer(Skill tokenSkillToSpend)
+    {
+        PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
+        Token tokenToUse = GetToken(tokenSkillToSpend);
+        mainPlayer.inventory.SpendToken(tokenToUse);
+      
+    }
+    public void OnClickSpendCutToken()
+    {
+        payingMethod = PayingMethod.Token;
+        ShowMap(Skill.Cut);
+    }
+    public void OnClickSpendBombToken()
+    {
+        payingMethod = PayingMethod.Token;
+        SpendTokenOnMainPlayer(Skill.Paint);
+    }
+    public void OnClickSpendSpawnToken()
+    {
+        payingMethod = PayingMethod.Token;
+        ShowMap(Skill.Spawn);
+    }
+    public void OnClickSpendTeleportToken()
+    {
+        payingMethod = PayingMethod.Token;
+        SpendTokenOnMainPlayer(Skill.Teleport);
+    }
+    public void OnClickSpendAddToken()
+    {
+        payingMethod = PayingMethod.Token;
+        GameManager.Instance.GetMainPlayer().playerStats.AddEnergy(3);
+    }
+    public void OnClickSpendStealToken()
+    {
+        payingMethod = PayingMethod.Token;
+        SpendTokenOnMainPlayer(Skill.StealEnergy);
+    }
+
+    //Actions
     public void MoveCameraToHighlight()
     {
         GameManager.Instance.ShowMinimap();
@@ -193,6 +275,18 @@ public class SkillsUI : MonoBehaviour
         if (skillExists)
         {
             return skills.First(info => info.skill == skill);
+        }
+        else
+        {
+            return null;
+        }
+    }
+    public Token GetToken(Skill skill)
+    {
+        bool tokenExists = tokens.Any(info => info.skillToUse == skill);
+        if (tokenExists)
+        {
+            return tokens.First(info => info.skillToUse == skill);
         }
         else
         {
@@ -278,8 +372,12 @@ public enum Skill
 {
     None, Sticky, Cut, Spawn, Paint, AddEnergy, StealEnergy, Teleport
 }
+public enum PayingMethod
+{
+    None, Energy, Token
+}
 
-[System.Serializable]
+[Serializable]
 public class SkillInfo
 {
     [SerializeField]
@@ -298,7 +396,7 @@ public class SkillInfo
     public Sprite tokenIcon;
 }
 
-[System.Serializable]
+[Serializable]
 public class SkillButton
 {
     public GameObject obj;
@@ -337,6 +435,75 @@ public class SkillButton
     public bool CanAfford()
     {
         if (GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft() >= associatedSkill.energyCost)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+[System.Serializable]
+public class TokenButton
+{
+    public GameObject obj;
+    public TextMeshProUGUI skillNameText;
+    public TextMeshProUGUI amountText;
+    public Image skillIcon;
+    public Token associatedToken;
+    public void InitializeFromToken(Token token)
+    {
+        associatedToken = token;
+        skillNameText.text = token.verboseName;
+        amountText.text = $"{GameManager.Instance.GetMainPlayer().inventory.GetTokenAmount(token.code)}";
+        skillIcon.sprite = token.iconWithBackground;
+        Button button = obj.GetComponent<Button>();
+        button.onClick.RemoveAllListeners();
+        switch (token.skillToUse)
+        {
+            case Skill.Cut:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendCutToken);
+                break;
+            case Skill.Paint:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendBombToken);
+                button.interactable = false;
+                break;
+            case Skill.Spawn:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendSpawnToken);
+                break;
+            case Skill.AddEnergy:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendAddToken);
+                button.interactable = false;
+                break;
+            case Skill.StealEnergy:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendStealToken);
+                button.interactable = false;
+                break;
+            case Skill.Teleport:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendTeleportToken);
+                button.interactable = false;
+                break;
+        }
+        PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
+        mainPlayer.inventory.TokensChanged += (sender, args) => TokenChangeHandler(args);
+    }
+
+    private void TokenChangeHandler(Inventory.TokensChangedArgs args)
+    {
+        if (args.TokenCode == associatedToken.code)
+        {
+            UpdateAmount();
+        }
+    }
+    public void UpdateAmount()
+    {
+        amountText.text = $"{GameManager.Instance.GetMainPlayer().inventory.GetTokenAmount(associatedToken.code)}";
+    }
+    public bool CanAfford()
+    {
+        if (GameManager.Instance.GetMainPlayer().inventory.GetTokenAmount(associatedToken.code) > 0)
         {
             return true;
         }

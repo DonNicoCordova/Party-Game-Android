@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "be44cabb0407",
         "name": "com.DefaultCompany.LaFiestita",
-        "processId": 2231,
+        "processId": 10193,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -54,6 +54,12 @@
             "deviceId": "be44cabb0407",
             "name": "com.DefaultCompany.LaFiestita",
             "processId": 2231,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 10193,
             "exited": false
         },
         {

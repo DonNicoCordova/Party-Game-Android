@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: 227faac3fd86bd145a8bc2610eafbd37
+guid: 891ad3024c11ca344b45f4b4a6c28685
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2672083563233753690
-    second: ErrorButton_0
+      213: 9219854567474968545
+    second: DisabledButton_0
   - first:
-      213: 6800339083720931532
-    second: ErrorButton_1
+      213: 6812111234341408566
+    second: DisabledButton_1
   - first:
-      213: -258131042719600712
-    second: ErrorButton_2
+      213: 1344840112644841841
+    second: DisabledButton_2
   - first:
-      213: 5179129014285323639
-    second: ErrorButton_3
+      213: 3963941026985913860
+    second: DisabledButton_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -45,11 +45,11 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: -1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -58,7 +58,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 200
+  spritePixelsToUnits: 150
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -127,85 +127,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ErrorButton_0
+      name: DisabledButton_0
       rect:
         serializedVersion: 2
         x: 0
         y: 10
         width: 64
         height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 6, y: 16, z: 7, w: 5}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6a5ca43182adaead0800000000000000
-      internalID: -2672083563233753690
+      spriteID: 1e7bb1751e083ff70800000000000000
+      internalID: 9219854567474968545
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ErrorButton_1
+      name: DisabledButton_1
       rect:
         serializedVersion: 2
         x: 64
         y: 10
         width: 64
         height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 6, y: 13, z: 7, w: 8}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cc8346ded58af5e50800000000000000
-      internalID: 6800339083720931532
+      spriteID: 63f0e55531b798e50800000000000000
+      internalID: 6812111234341408566
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ErrorButton_2
+      name: DisabledButton_2
       rect:
         serializedVersion: 2
         x: 128
         y: 10
         width: 64
         height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 6, y: 10, z: 7, w: 11}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8bf623d2f2fea6cf0800000000000000
-      internalID: -258131042719600712
+      spriteID: 17164e905f4d9a210800000000000000
+      internalID: 1344840112644841841
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ErrorButton_3
+      name: DisabledButton_3
       rect:
         serializedVersion: 2
         x: 192
         y: 10
         width: 64
         height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 6, y: 8, z: 7, w: 13}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 77d4566f566ffd740800000000000000
-      internalID: 5179129014285323639
+      spriteID: 40ea718bc5fb20730800000000000000
+      internalID: 3963941026985913860
       vertices: []
       indices: 
       edges: []
@@ -213,7 +213,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: c3084c4f5af245c439e0ee9e11781f82
+    spriteID: c162ed6b9c682a8448236bce398059d4
     internalID: 0
     vertices: []
     indices: 
