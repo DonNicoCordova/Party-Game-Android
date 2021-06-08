@@ -183,7 +183,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
             {
                 if (agent.remainingDistance <= agent.stoppingDistance)
                 {
-                    if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+                    if (!agent.hasPath || (agent.velocity.sqrMagnitude <= 0.2f && agent.velocity.sqrMagnitude >= -0.2f))
                     {
                         buttonChecker.CheckForButtonsNearby();
                         enabledToMove = true;

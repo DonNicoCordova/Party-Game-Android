@@ -15,6 +15,12 @@ public class FallingGameManager : GenericPunSingletonClass<FallingGameManager>
     public GameObject instructionsCanvas;
     public GameObject gameResultsCanvas;
     public GameObject guiCanvas;
+    public GameObject[] fallingItems;
+    [Header("Basckets")]
+    public BasketController rightBasket;
+    public BasketController leftBasket;
+
+
     private int numberOfPlayers = 0;
 
     // Start is called before the first frame update
@@ -23,7 +29,7 @@ public class FallingGameManager : GenericPunSingletonClass<FallingGameManager>
         playersMinigameStats = new List<FallingMinigameStats>();
 
         UpdatePointsText();
-        foreach(PlayerController player in GameManager.Instance.players)
+        foreach (PlayerController player in GameManager.Instance.players)
         {
             FallingMinigameStats newPlayerMinigameStat = new FallingMinigameStats();
             newPlayerMinigameStat.playerId = player.playerStats.id;
@@ -33,6 +39,7 @@ public class FallingGameManager : GenericPunSingletonClass<FallingGameManager>
         }
         LevelLoader.Instance.FadeIn();
         StartCoroutine(InitializeGuiProcess());
+
     }
     public bool AllPlayersStateDone()
     {
@@ -145,7 +152,7 @@ public class FallingGameManager : GenericPunSingletonClass<FallingGameManager>
         if (playerId == GameManager.Instance.GetMainPlayer().playerStats.id)
         {
             if (!itemSpawner.FireLeftCannon())
-                this.photonView.RPC("QueueAttack",RpcTarget.MasterClient,"left");
+                this.photonView.RPC("QueueAttack", RpcTarget.MasterClient, "left");
         }
     }
     [PunRPC]
@@ -164,7 +171,7 @@ public class FallingGameManager : GenericPunSingletonClass<FallingGameManager>
             foreach (FallingMinigameStats playerMinigameStats in playersMinigameStats)
             {
                 if (!playerMinigameStats.playerSpawnerDone)
-                { 
+                {
                     return false;
                 }
             }
@@ -216,6 +223,28 @@ public class FallingGameManager : GenericPunSingletonClass<FallingGameManager>
             yield return new WaitForSeconds(0.5f);
         }
         ladderController.Initialize();
+
+    }
+
+    public void ShuffleBaskets()
+    {
+        int randIndex = Random.Range(0, fallingItems.Length);
+        int randIndex2 = Random.Range(0, fallingItems.Length);
+        FallingItem leftFallingItem = fallingItems[randIndex].GetComponent<FallingItemController>().fallingItem;
+        FallingItem rightFallingItem = fallingItems[randIndex2].GetComponent<FallingItemController>().fallingItem;
+
+        while (leftFallingItem.isAttackItem)
+        {
+            randIndex = Random.Range(0, fallingItems.Length);
+            leftFallingItem = fallingItems[randIndex].GetComponent<FallingItemController>().fallingItem;
+        }
+        while (rightFallingItem.isAttackItem || rightFallingItem.id == leftFallingItem.id)
+        {
+            randIndex = Random.Range(0, fallingItems.Length);
+            rightFallingItem = fallingItems[randIndex].GetComponent<FallingItemController>().fallingItem;
+        }
+        leftBasket.SetItemToCatch(leftFallingItem);
+        rightBasket.SetItemToCatch(rightFallingItem);
     }
 }
 public class FallingMinigameStats 

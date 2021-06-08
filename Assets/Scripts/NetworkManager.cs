@@ -24,7 +24,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsConnected)
             PhotonNetwork.ConnectUsingSettings();
     }
-
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log($"Disconnected from photonServer {cause}");
+        PhotonNetwork.ConnectUsingSettings();
+        base.OnDisconnected(cause);
+    }
     public override void OnConnectedToMaster()
     {
     }

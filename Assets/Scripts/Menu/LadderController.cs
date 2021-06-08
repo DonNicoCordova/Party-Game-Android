@@ -35,8 +35,16 @@ public class LadderController : MonoBehaviourPunCallbacks
         {
             if (container.obj.activeSelf)
             {
-                container.UpdatePlayerPlace();
-                container.UpdateIndicator();
+                if (container.playerPlaceText == null)
+                {
+                    Initialize();
+                }
+                if (container.associatedPlayer != null)
+                {
+                    container.UpdatePlayerPlace();
+                    container.UpdateIndicator();
+                }
+                
             }
         }
     }
@@ -64,7 +72,7 @@ public class PlayerInfoContainer
     public TextMeshProUGUI playerPlaceText;
     public Image playingIndicator;
     public Image playerColor;
-    private PlayerController associatedPlayer;
+    public PlayerController associatedPlayer;
     public void InitializeFromPlayer(PlayerController player)
     {
         nicknameText.text = player.playerStats.nickName;

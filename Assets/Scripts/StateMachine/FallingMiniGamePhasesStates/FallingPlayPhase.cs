@@ -30,6 +30,7 @@ internal class FallingPlayPhase : IState
         {
             FallingGameManager.Instance.photonView.RPC("SetCurrentState", RpcTarget.OthersBuffered, this.GetType().Name);
         }
+        FallingGameManager.Instance.ShuffleBaskets();
         //reset state done
         FallingGameManager.Instance.itemSpawner.Activate();
     }

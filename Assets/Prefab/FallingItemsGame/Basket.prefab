@@ -244,13 +244,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd0ea2a96212334fa6082536a7bb832, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionCollider: {fileID: 0}
+  detectionCollider: {fileID: 6033983626203988143}
   itemToCatch:
     name: 
     id: 
     sprite: {fileID: 0}
     isAttackItem: 0
-  itemSpriteRenderer: {fileID: 0}
+  itemSpriteRenderer: {fileID: 7866704023426939922}
+  animator: {fileID: 8948994044266585848}
   cannonToTrigger: 1
 --- !u!1 &7826305906652044937
 GameObject:
@@ -348,6 +349,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7170438706513332571}
+  - component: {fileID: 8948994044266585848}
   m_Layer: 5
   m_Name: Grafics
   m_TagString: Untagged
@@ -377,6 +379,25 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0, y: 0}
+--- !u!95 &8948994044266585848
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8550964052784583366}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 958f0cdecda105541b8138af284ad6a5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8917053016280123161
 GameObject:
   m_ObjectHideFlags: 0
