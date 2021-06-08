@@ -41,7 +41,6 @@ public class ResumeCommand : Command
             GameObject locationGo = GameObject.Find(locationName);
             LocationController location = locationGo.GetComponent<LocationController>();
             oldPlayerStats.SetEnergyLeft(1);
-            Debug.Log("CAPTURING ZONE IN EXECUTE OF RESUMME COMMAND");
             oldPlayerStats.CaptureZone(location);
         }
         // set photon player

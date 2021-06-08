@@ -69,42 +69,81 @@ public class GameSystem : GenericSingletonClass<GameSystem>
 
         Func<bool> orderingThrowFinished() => () => {
             if (PhotonNetwork.IsMasterClient)
+            {
+                if (GameManager.Instance.AllPlayersThrown() && GameManager.Instance.AllPlayersStateDone())
+                {
+                    Debug.Log("orderingThrowFinished()... OK");
+                }
                 return GameManager.Instance.AllPlayersThrown() && GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };
         Func<bool> throwFinished() => () => {
 
             if (PhotonNetwork.IsMasterClient)
+            {
+                if (GameManager.Instance.AllPlayersThrown() && GameManager.Instance.AllPlayersStateDone())
+                {
+                    Debug.Log("throwFinished()... OK");
+                }
                 return GameManager.Instance.AllPlayersThrown() && GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };
         Func<bool> resultsDone() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
+            {
+                if (GameManager.Instance.AllPlayersStateDone())
+                {
+                    Debug.Log("resultsDone()... OK");
+                }
                 return GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };
         Func<bool> orderNotDefined() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
+            {
+                if (!GameManager.Instance.PlayersSetAndOrdered() && GameManager.Instance.AllPlayersStateDone())
+                {
+                    Debug.Log("orderNotDefined()... OK");
+                }
                 return !GameManager.Instance.PlayersSetAndOrdered() && GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };
         Func<bool> orderDefined() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
+            {
+                if (GameManager.Instance.PlayersSetAndOrdered() && GameManager.Instance.AllPlayersStateDone())
+                {
+                    Debug.Log("orderDefined()... OK");
+                } else
+                {
+                    Debug.Log($"GameManager.Instance.PlayersSetAndOrdered() && GameManager.Instance.AllPlayersStateDone() => {GameManager.Instance.PlayersSetAndOrdered()} && {GameManager.Instance.AllPlayersStateDone()}");
+                }
                 return GameManager.Instance.PlayersSetAndOrdered() && GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };
         Func<bool> orderingDone() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
+            {
+                if (GameManager.Instance.PlayersSetAndOrdered() && GameManager.Instance.AllPlayersStateDone())
+                {
+                    Debug.Log("orderingDone()... OK");
+                }
                 return GameManager.Instance.PlayersSetAndOrdered() && GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };
@@ -112,6 +151,10 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         {
             if (PhotonNetwork.IsMasterClient)
             {
+                if (GameManager.Instance.AllPlayersStateDone())
+                {
+                    Debug.Log("timerDone()... OK");
+                }
                 return GameManager.Instance.AllPlayersStateDone();
             }
             else
@@ -121,6 +164,10 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         {
             if (PhotonNetwork.IsMasterClient)
             {
+                if (GameManager.Instance.RoundDone() && GameManager.Instance.AllPlayersStateDone())
+                {
+                    Debug.Log("nothingElseToDo()... OK");
+                }
                 return GameManager.Instance.RoundDone() && GameManager.Instance.AllPlayersStateDone();
             }
             else
@@ -130,6 +177,10 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         {
             if (PhotonNetwork.IsMasterClient)
             {
+                if (GameManager.Instance.GameBoardDone() && GameManager.Instance.AllPlayersStateDone())
+                {
+                    Debug.Log("gameboardPhaseDone()... OK");
+                }
                 return GameManager.Instance.GameBoardDone() && GameManager.Instance.AllPlayersStateDone();
             } else
             {
@@ -140,7 +191,10 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                Debug.Log($"GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && GameManager.Instance.AllPlayersCharacterSpawned() && GameManager.Instance.miniGamesQueue.Count > 0 => {GameManager.Instance.NextRoundReady()} && {GameManager.Instance.AllPlayersStateDone()} && {GameManager.Instance.AllPlayersCharacterSpawned()} && {GameManager.Instance.miniGamesQueue.Count} > 0");
+                if (GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && GameManager.Instance.AllPlayersCharacterSpawned() && GameManager.Instance.miniGamesQueue.Count > 0)
+                {
+                    Debug.Log("nextRoundReady()... OK");
+                }
                 return GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && GameManager.Instance.AllPlayersCharacterSpawned() && GameManager.Instance.miniGamesQueue.Count > 0;
             }
             else
@@ -153,6 +207,10 @@ public class GameSystem : GenericSingletonClass<GameSystem>
             //Change to make sure the minigame has ended, for now checks the same as gameboard phase done
             if (PhotonNetwork.IsMasterClient)
             {
+                if (GameManager.Instance.GameBoardDone() && GameManager.Instance.AllPlayersMinigameOver() && GameManager.Instance.AllPlayersMinigameStateDone())
+                {
+                    Debug.Log("minigameOver()... OK");
+                }
                 return GameManager.Instance.GameBoardDone() && GameManager.Instance.AllPlayersMinigameOver() && GameManager.Instance.AllPlayersMinigameStateDone();
             }
             else
@@ -164,6 +222,10 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         {
             if (PhotonNetwork.IsMasterClient)
             {
+                if (GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && (GameManager.Instance.GetRound() == GameManager.Instance.maxRounds || GameManager.Instance.miniGamesQueue.Count == 0))
+                {
+                    Debug.Log("finalRoundFinished()... OK");
+                }
                 return GameManager.Instance.NextRoundReady() && GameManager.Instance.AllPlayersStateDone() && (GameManager.Instance.GetRound() == GameManager.Instance.maxRounds || GameManager.Instance.miniGamesQueue.Count == 0);
             } else
             {

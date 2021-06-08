@@ -179,6 +179,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     public float GetRound() => round;
     public bool PlayersSetAndOrdered()
     {
+        Debug.Log($"notActionTakenPlayers.Count == numberOfPlayers && playersOrdered => {notActionTakenPlayers.Count} == {numberOfPlayers} && {playersOrdered}");
         return notActionTakenPlayers.Count == numberOfPlayers && playersOrdered;
     }
     public bool RoundDone()
@@ -188,7 +189,6 @@ public class GameManager : GenericSingletonClass<GameManager>
     }
     public bool NextRoundReady()
     {
-        Debug.Log($"NEXT ROUND READY: notActionTakenPlayers.Count == numberOfPlayers && actionTakenPlayers.Count == 0 => {notActionTakenPlayers.Count} == {numberOfPlayers} && {actionTakenPlayers.Count} == 0");
         return notActionTakenPlayers.Count == numberOfPlayers && actionTakenPlayers.Count == 0;
     }
     public bool GameBoardDone()
