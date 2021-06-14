@@ -24,6 +24,8 @@ public class MainMenu : MonoBehaviourPunCallbacks
     public TextMeshProUGUI roomNameText;
     public Button launchGameButton;
 
+    [SerializeField]
+    private RoomListingMenu _roomListing;
     private void Awake()
     {
         LevelLoader.Instance.FadeIn();
@@ -101,6 +103,7 @@ public class MainMenu : MonoBehaviourPunCallbacks
             createRoom.SetActive(false);
 
         screen.SetActive(true);
+
     }
 
     public void OnCreateRoomButton(TMP_InputField roomNameInput)
@@ -146,6 +149,7 @@ public class MainMenu : MonoBehaviourPunCallbacks
         {
             createRoomButton.interactable = true;
             joinRoomButton.interactable = true;
+            _roomListing.UpdateList();
         }
     }
     public void OnReturnToMainMenu()

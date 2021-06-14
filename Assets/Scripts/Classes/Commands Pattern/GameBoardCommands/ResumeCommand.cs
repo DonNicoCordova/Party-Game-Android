@@ -46,8 +46,6 @@ public class ResumeCommand : Command
         // set photon player
         _playerController.photonPlayer = _newPhotonPlayer;
 
-        Debug.Log($"OLDPLAYER WINNED MINIGAME {oldPlayerStats.wonLastGame}");
-        Debug.Log($"NEWPLAYER WINNED MINIGAME {_playerController.playerStats.wonLastGame}");
         _playerController.playerStats = oldPlayerStats;
         // add player to player list
 

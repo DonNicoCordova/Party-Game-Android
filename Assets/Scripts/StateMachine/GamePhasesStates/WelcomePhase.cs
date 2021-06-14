@@ -58,7 +58,7 @@ internal class WelcomePhase : IState
         stayTime = defaultStayTime;
         if (GameSystem.Instance.initializePhaseTimerDone)
             GameSystem.Instance.initializePhaseTimerDone = false;
-        GameManager.Instance.throwController?.AnimateReadyToPlay();
         GameManager.Instance.throwController?.Initialize();
+        GameManager.Instance.playersLadder.InitializeFromPlayers();
     }
 }

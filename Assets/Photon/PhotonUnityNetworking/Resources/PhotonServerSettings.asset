@@ -80,6 +80,11 @@ MonoBehaviour:
   - SetActualPlayer
   - PlaceWallObstacle
   - MoveToTarget
+  - SetPlayersOnOrder
+  - StartThinking
+  - StopThinking
+  - SetPlayerUsingSkill
+  - SetSkill
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

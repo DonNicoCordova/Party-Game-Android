@@ -9,7 +9,6 @@ internal class MinigameResultsPhase : IState
 {
     private float defaultStayTime = 10f;
     private float stayTime;
-    private bool setupComplete = false;
     public MinigameResultsPhase(float minimumTime)
     {
         defaultStayTime = minimumTime;
@@ -28,6 +27,7 @@ internal class MinigameResultsPhase : IState
         }
         stayTime -= Time.deltaTime;
         stayTime = Mathf.Clamp(stayTime, 0f, Mathf.Infinity);
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
     public void FixedTick() { }
     public void OnEnter()
@@ -36,14 +36,29 @@ internal class MinigameResultsPhase : IState
         {
             GameManager.Instance.SetCurrentState(this.GetType().Name);
         }
-        if (GameManager.Instance.GetMainPlayer().playerStats.wonLastGame)
+        PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
+        List<PlayerController> winners = GameManager.Instance.LastMiniGameWinners;
+        if (mainPlayer.playerStats.id == winners[0].playerStats.id)
         {
             GameManager.Instance.ShowMessage("¡FELICIDADES! te ganaste todas estas cosas.");
             PrizesUI.Instance.GivePrizesToMainPlayer(5);
-        } else
+        } else if (mainPlayer.playerStats.id == winners[1].playerStats.id)
         {
-            GameManager.Instance.ShowMessage("¡Que penita! Mejor suerte para la proxima...");
+            GameManager.Instance.ShowMessage("¡FELICIDADES! te ganaste todas estas cosas.");
+            PrizesUI.Instance.GivePrizesToMainPlayer(3);
         }
+        else if (mainPlayer.playerStats.id == winners[2].playerStats.id)
+        {
+            GameManager.Instance.ShowMessage("¡FELICIDADES! te ganaste esta cosa.");
+            PrizesUI.Instance.GivePrizesToMainPlayer(1);
+        }
+        else
+        {
+            GameManager.Instance.ShowMessage("¡Que penita! Mejor suerte para la próxima...");
+        }
+
+        GameManager.Instance.timerBar.SetMaxTime(defaultStayTime);
+        GameManager.Instance.timerBar.SetTimeLeft(stayTime);
     }
     public void OnExit()
     {

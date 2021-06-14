@@ -1621,8 +1621,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 5928300889219613366}
   - {fileID: 5589924472248561665}
+  - {fileID: 5928300889219613366}
   - {fileID: 3660538072810905199}
   m_Father: {fileID: 2453164947415047432}
   m_RootOrder: 2
@@ -1897,26 +1897,32 @@ MonoBehaviour:
     verboseName: Cortar
     skillToUse: 2
     icon: {fileID: 21300000, guid: dd61cbefd79aec64ab2963bc2b7e8f6e, type: 3}
+    iconWithBackground: {fileID: 0}
   - code: STEAL
     verboseName: Robar
     skillToUse: 6
     icon: {fileID: 21300000, guid: ccb687e9c76b5174989fa1dd4966465f, type: 3}
+    iconWithBackground: {fileID: 0}
   - code: BUILD
     verboseName: Construir
     skillToUse: 3
     icon: {fileID: 21300000, guid: e4c0b872849e29d4cb5d9a77bbe696ff, type: 3}
+    iconWithBackground: {fileID: 0}
   - code: ADD
     verboseName: Aumentar
     skillToUse: 5
     icon: {fileID: 21300000, guid: 92d6734f13e637c4a9f38a61119f2d7c, type: 3}
+    iconWithBackground: {fileID: 0}
   - code: TELEPORT
     verboseName: Portal
     skillToUse: 7
     icon: {fileID: 21300000, guid: ae1ced29d2d9bcb4e85ad589947fd2b8, type: 3}
+    iconWithBackground: {fileID: 0}
   - code: PAINT
     verboseName: Pintar
     skillToUse: 4
     icon: {fileID: 21300000, guid: e7a2cad45b422584eaaa64ce5e7ed649, type: 3}
+    iconWithBackground: {fileID: 0}
   tokenButtons:
   - obj: {fileID: 1853457364217956227}
     skillNameText: {fileID: 1916551873704902129}
@@ -1927,6 +1933,7 @@ MonoBehaviour:
       verboseName: 
       skillToUse: 0
       icon: {fileID: 0}
+      iconWithBackground: {fileID: 0}
   - obj: {fileID: 178293392017440183}
     skillNameText: {fileID: 2352450364046980824}
     amountText: {fileID: 2135679063239259885}
@@ -1936,6 +1943,7 @@ MonoBehaviour:
       verboseName: 
       skillToUse: 0
       icon: {fileID: 0}
+      iconWithBackground: {fileID: 0}
   - obj: {fileID: 6658049606829252525}
     skillNameText: {fileID: 9062425007159066247}
     amountText: {fileID: 8210120022537921629}
@@ -1945,6 +1953,7 @@ MonoBehaviour:
       verboseName: 
       skillToUse: 0
       icon: {fileID: 0}
+      iconWithBackground: {fileID: 0}
   - obj: {fileID: 2835698592346475449}
     skillNameText: {fileID: 307244362121826540}
     amountText: {fileID: 7870446190839842616}
@@ -1954,6 +1963,7 @@ MonoBehaviour:
       verboseName: 
       skillToUse: 0
       icon: {fileID: 0}
+      iconWithBackground: {fileID: 0}
   - obj: {fileID: 4796579123926580124}
     skillNameText: {fileID: 6817560932761020516}
     amountText: {fileID: 6978680999895721490}
@@ -1963,6 +1973,7 @@ MonoBehaviour:
       verboseName: 
       skillToUse: 0
       icon: {fileID: 0}
+      iconWithBackground: {fileID: 0}
   - obj: {fileID: 1879766079660912043}
     skillNameText: {fileID: 5879118740097292974}
     amountText: {fileID: 3758099473683394394}
@@ -1972,6 +1983,7 @@ MonoBehaviour:
       verboseName: 
       skillToUse: 0
       icon: {fileID: 0}
+      iconWithBackground: {fileID: 0}
   skillsButton: {fileID: 8757183849484429306}
   backButton: {fileID: 3342922703437742891}
   noAnimationsPlaying: 1
@@ -3218,7 +3230,7 @@ RectTransform:
   m_Children:
   - {fileID: 142955627549716209}
   m_Father: {fileID: 7929625366020776742}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4860,7 +4872,7 @@ RectTransform:
   m_Children:
   - {fileID: 7552823158832187453}
   m_Father: {fileID: 7929625366020776742}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5703,16 +5715,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1853457364217956227 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8931497954452063143, guid: 307ca4bf445d68149bacbd7f9cef07dd, type: 3}
-  m_PrefabInstance: {fileID: 7082970028101157924}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &2773910059543730205 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4914882079378496569, guid: 307ca4bf445d68149bacbd7f9cef07dd, type: 3}
-  m_PrefabInstance: {fileID: 7082970028101157924}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6335115084161584906 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3864398732432689966, guid: 307ca4bf445d68149bacbd7f9cef07dd, type: 3}
@@ -5724,3 +5726,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &2773910059543730205 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4914882079378496569, guid: 307ca4bf445d68149bacbd7f9cef07dd, type: 3}
+  m_PrefabInstance: {fileID: 7082970028101157924}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1853457364217956227 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8931497954452063143, guid: 307ca4bf445d68149bacbd7f9cef07dd, type: 3}
+  m_PrefabInstance: {fileID: 7082970028101157924}
+  m_PrefabAsset: {fileID: 0}

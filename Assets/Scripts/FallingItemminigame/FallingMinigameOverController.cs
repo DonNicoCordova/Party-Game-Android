@@ -15,8 +15,13 @@ public class FallingMinigameOverController : MonoBehaviour
         gameObject.SetActive(false);
         //List<PlayerController> winners = new List<PlayerController>();
         List<FallingMinigameStats> winners = FallingGameManager.Instance.playersMinigameStats.OrderByDescending(o => o.points).ToList();
+        List<PlayerController> winnersController = new List<PlayerController>();
+        foreach(FallingMinigameStats winnerStats in winners)
+        {
+            winnersController.Add(GameManager.Instance.GetPlayer(winnerStats.playerId));
+        }
         PlayerController winner = GameManager.Instance.GetPlayer(winners[0].playerId);
-        winner.WonMiniGame();
+        GameManager.Instance.SetMiniGameWinners(winnersController);
         winnerName.text = $"{winner.playerStats.nickName}";
         winnerPoints.text = $"{winners[0].points}";
         winnerColor.color = winner.playerStats.mainColor.color;

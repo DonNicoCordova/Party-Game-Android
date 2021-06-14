@@ -280,7 +280,7 @@ SpriteRenderer:
   m_SortingLayerID: -1003760395
   m_SortingLayer: 3
   m_SortingOrder: 3
-  m_Sprite: {fileID: 823303787904558533, guid: 2146b1048bf85e94facef37f18a9ec53, type: 3}
+  m_Sprite: {fileID: 1459092399171360730, guid: 2146b1048bf85e94facef37f18a9ec53, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1160,7 +1160,7 @@ MonoBehaviour:
     playableCharacter: {fileID: 0}
     energy: 0
     turnDone: 0
-  inventory: {fileID: 0}
+  inventory: {fileID: 8639613654191536583}
   rig: {fileID: 4904780787545507650}
   IsGrounded: 0
   enabledToMove: 0
@@ -1479,7 +1479,7 @@ SpriteRenderer:
   m_SortingLayerID: -1003760395
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: -5287584587367298933, guid: 2146b1048bf85e94facef37f18a9ec53, type: 3}
+  m_Sprite: {fileID: 1866080457841430701, guid: 2146b1048bf85e94facef37f18a9ec53, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

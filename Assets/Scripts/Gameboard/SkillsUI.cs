@@ -27,7 +27,7 @@ public class SkillsUI : MonoBehaviour
     [SerializeField]
     private GameObject skillsButton;
     public Button backButton;
-    public Player playerUsingSkills;
+    public PlayerController playerUsingSkills;
     public bool noAnimationsPlaying = true;
 
     public CinemachineSmoothPath cinemachinePath;
@@ -137,7 +137,13 @@ public class SkillsUI : MonoBehaviour
     }
     public void OnClickHideSkills()
     {
-        playerUsingSkills = null;
+        PlayerController mainPlayer = GameManager.Instance.GetMainPlayer(); 
+
+        if (playerUsingSkills && (mainPlayer.playerStats.id == playerUsingSkills.playerStats.id))
+        {
+            mainPlayer.enabledToMove = true;
+            mainPlayer.photonView.RPC("StopThinking", RpcTarget.All);
+        }
         if (skillsPanel.activeSelf)
         {
             skillsPanel.SetActive(false);
@@ -149,7 +155,13 @@ public class SkillsUI : MonoBehaviour
         GameManager.Instance.energyCounter.Hide();
         if (cinemachineAnimator.GetCurrentAnimatorStateInfo(0).IsName("MoveToShowMap") || cinemachineAnimator.GetCurrentAnimatorStateInfo(0).IsName("MoveToPlace"))
         {
-            playerUsingSkills = null;
+            PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
+            if (playerUsingSkills && mainPlayer.playerStats.id == playerUsingSkills.playerStats.id)
+            {
+                mainPlayer.enabledToMove = true;
+                mainPlayer.photonView.RPC("StopThinking", RpcTarget.All);
+                GameboardRPCManager.Instance.photonView.RPC("SetPlayerUsingSkill", RpcTarget.Others, -1);
+            }
             bridges.ForEach(o => o.RemoveClickable());
             cinemachineAnimator.ResetTrigger("ShowMap");
             cinemachineAnimator.ResetTrigger("MoveToPlace");
@@ -160,10 +172,14 @@ public class SkillsUI : MonoBehaviour
                 GameManager.Instance.GetMainPlayer().buttonChecker.ShowButtons();
             }
         }
+        playerUsingSkills = null;
     }
     public void OnClickShowSkills()
     {
-        playerUsingSkills = GameManager.Instance.GetMainPlayer().photonPlayer;
+        PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
+        playerUsingSkills = mainPlayer;
+        GameboardRPCManager.Instance.photonView.RPC("SetPlayerUsingSkill", RpcTarget.Others, mainPlayer.playerStats.id);
+        mainPlayer.photonView.RPC("StartThinking", RpcTarget.All);
         GameManager.Instance.energyCounter.Show();
         if (!skillsPanel.activeSelf)
         {
@@ -186,7 +202,7 @@ public class SkillsUI : MonoBehaviour
                 Button button = tokenButton.obj.GetComponent<Button>();
                 if (tokenButton.CanAfford())
                 {
-                    if (tokenButton.associatedToken.skillToUse != Skill.Paint && tokenButton.associatedToken.skillToUse != Skill.Teleport)
+                    if (tokenButton.associatedToken.skillToUse != Skill.Paint && tokenButton.associatedToken.skillToUse != Skill.Teleport && tokenButton.associatedToken.skillToUse != Skill.StealEnergy)
                     {
                         button.interactable = true;
                     }
@@ -254,6 +270,7 @@ public class SkillsUI : MonoBehaviour
     {
         payingMethod = PayingMethod.Token;
         GameManager.Instance.GetMainPlayer().playerStats.AddEnergy(3);
+        SpendTokenOnMainPlayer(Skill.AddEnergy);
     }
     public void OnClickSpendStealToken()
     {
@@ -475,7 +492,6 @@ public class TokenButton
                 break;
             case Skill.AddEnergy:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickSpendAddToken);
-                button.interactable = false;
                 break;
             case Skill.StealEnergy:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickSpendStealToken);

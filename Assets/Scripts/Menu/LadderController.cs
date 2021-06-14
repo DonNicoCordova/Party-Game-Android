@@ -28,6 +28,27 @@ public class LadderController : MonoBehaviourPunCallbacks
         }
         gameObject.SetActive(true);
     }
+    public void InitializeFromPlayers()
+    {
+        GameManager.Instance.notActionTakenPlayers.Clear();
+        for (int i = 0; i < playerInfoContainers.Length; ++i)
+        {
+            PlayerInfoContainer container = playerInfoContainers[i];
+            if (i < GameManager.Instance.notActionTakenPlayers.Count)
+            {
+                Debug.Log($"ENABLING {i} CONTAINER WITH PLAYER: {GameManager.Instance.players[i].playerStats.nickName}");
+                container.obj.SetActive(true);
+                PlayerController controller = GameManager.Instance.players[i];
+                container.InitializeFromPlayer(controller);
+                GameManager.Instance.notActionTakenPlayers.Enqueue(controller);
+            }
+            else
+            {
+                container.obj.SetActive(false);
+            }
+        }
+        gameObject.SetActive(true);
+    }
     [PunRPC]
     public void UpdateLadderInfo()
     {
@@ -60,7 +81,20 @@ public class LadderController : MonoBehaviourPunCallbacks
             animator.SetTrigger("LadderIn");
         }
     }
-    
+    public void AnimateShuffle()
+    {
+        animator.ResetTrigger("LadderIn");
+        animator.ResetTrigger("LadderOut");
+        animator.ResetTrigger("ShuffleOut");
+        animator.SetTrigger("ShuffleIn");
+    }
+    public void StopShuffle()
+    {
+        animator.ResetTrigger("LadderIn");
+        animator.ResetTrigger("LadderOut");
+        animator.ResetTrigger("ShuffleIn");
+        animator.SetTrigger("ShuffleOut");
+    }
 }
 
 [System.Serializable]

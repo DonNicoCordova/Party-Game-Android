@@ -100,7 +100,7 @@ public class PrizesUI : GenericDestroyableSingletonClass<PrizesUI>
     }
     public void GivePrizesToMainPlayer(int numberOfTokens)
     {
-        Debug.Log($"TRYING TO GIVE PRIZES TO MAIN PLAYER: {displayTokens}");
+
         foreach (TokenController tokenController in displayTokens)
         {
             tokenController.Disable();

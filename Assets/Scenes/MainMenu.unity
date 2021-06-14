@@ -757,6 +757,10 @@ PrefabInstance:
       propertyPath: m_margin.z
       value: 3.9859571
       objectReference: {fileID: 0}
+    - target: {fileID: 7787921255075089327, guid: cd0bfe0a793acf24c95595f4cda60411, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd0bfe0a793acf24c95595f4cda60411, type: 3}
 --- !u!224 &611124322 stripped
@@ -767,6 +771,11 @@ RectTransform:
 --- !u!1 &611124323 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6194350674069069507, guid: cd0bfe0a793acf24c95595f4cda60411, type: 3}
+  m_PrefabInstance: {fileID: 611124321}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &611124324 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3942248025403307579, guid: cd0bfe0a793acf24c95595f4cda60411, type: 3}
   m_PrefabInstance: {fileID: 611124321}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &642261274
@@ -811,6 +820,7 @@ MonoBehaviour:
   playersCountText: {fileID: 828934430}
   roomNameText: {fileID: 791852569}
   launchGameButton: {fileID: 748490415}
+  _roomListing: {fileID: 1229442000}
 --- !u!4 &642261276
 Transform:
   m_ObjectHideFlags: 0
@@ -1357,6 +1367,7 @@ GameObject:
   - component: {fileID: 1229441998}
   - component: {fileID: 1229441997}
   - component: {fileID: 1229441996}
+  - component: {fileID: 1229442000}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1449,6 +1460,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1229442000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1229441995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1462ac77c9f8efe41947542c273db1e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _content: {fileID: 611124324}
+  _roomListing: {fileID: 6960842000505423107, guid: 87922bf59737ca5429097fe60ac81b74, type: 3}
 --- !u!1 &1363109372
 GameObject:
   m_ObjectHideFlags: 0

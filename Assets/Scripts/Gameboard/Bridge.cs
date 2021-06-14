@@ -67,7 +67,9 @@ public class Bridge : MonoBehaviourPunCallbacks
         {
             Vector3 position1 = cutPosition1.position;
             Vector3 position2 = cutPosition2.position;
-            SkillsUI.Instance.playerUsingSkills = info.Sender;
+            //PlayerController playerUsingSkills = GameManager.Instance.GetPlayer(info.Sender.ActorNumber);
+            //SkillsUI.Instance.playerUsingSkills = playerUsingSkills;
+            //GameboardRPCManager.Instance.photonView.RPC("SetPlayerUsingSkill", RpcTarget.Others, info.Sender.ActorNumber);
             AnimateCut();
         }
     }
@@ -83,7 +85,9 @@ public class Bridge : MonoBehaviourPunCallbacks
     {
         if (!Usable())
         {
-            SkillsUI.Instance.playerUsingSkills = info.Sender;
+            //PlayerController playerUsingSkills = GameManager.Instance.GetPlayer(info.Sender.ActorNumber);
+            //SkillsUI.Instance.playerUsingSkills = playerUsingSkills;
+            //GameboardRPCManager.Instance.photonView.RPC("SetPlayerUsingSkill", RpcTarget.Others, info.Sender.ActorNumber);
             AnimateSpawn();
         }
     }
@@ -111,6 +115,11 @@ public class Bridge : MonoBehaviourPunCallbacks
         SkillsUI.Instance.highlightCamera.ForceCameraPosition(cameraHighlighPosition.position, cameraHighlighPosition.rotation);
         SkillsUI.Instance.MoveCameraToHighlight();
     }
+    [PunRPC]
+    public void SetSkill(Skill mode)
+    {
+        skill = mode;
+    }
     public void BecomeClickable(Skill mode)
     {
         Button button = minimapIcon.GetComponent<Button>();
@@ -120,6 +129,7 @@ public class Bridge : MonoBehaviourPunCallbacks
         minimapIcon.sortingOrder += 10;
         minimapSelectableIcon.sortingOrder += 10;
         skill = mode;
+        photonView.RPC("SetSkill", RpcTarget.Others, mode);
     }
     public void RemoveClickable()
     {
