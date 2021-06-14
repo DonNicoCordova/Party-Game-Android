@@ -91,7 +91,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("ENABLED TO MOVE!");
                 if (SkillsUI.Instance.playerUsingSkills != null)
                     return;
                 RaycastHit hit;
