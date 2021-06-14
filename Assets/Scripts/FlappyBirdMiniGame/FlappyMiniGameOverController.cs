@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
 
 public class FlappyMiniGameOverController : MonoBehaviour
 {
@@ -11,13 +12,18 @@ public class FlappyMiniGameOverController : MonoBehaviour
     public void Initialize()
     {
         gameObject.SetActive(false);
-        FlappyRoyaleStats winner = FlappyRoyaleGameManager.Instance.GetWinner();
-        PlayerController winnerController = GameManager.Instance.GetPlayer(winner.playerId);
-        winnerController.WonMiniGame();
-        winnerName.text = $"{winnerController.playerStats.nickName}";
-        string timeAliveString = String.Format(winner.timeAlive % 1 == 0 ? "{0:0}" : "{0:0.00}", winner.timeAlive);
+        List<FlappyRoyaleStats> winners = FlappyRoyaleGameManager.Instance.GetWinners();
+        List<PlayerController> winnersController = new List<PlayerController>();
+        foreach (FlappyRoyaleStats winnerStats in winners)
+        {
+            winnersController.Add(GameManager.Instance.GetPlayer(winnerStats.playerId));
+        }
+        PlayerController winner = GameManager.Instance.GetPlayer(winners[0].playerId);
+        GameManager.Instance.SetMiniGameWinners(winnersController);
+        winnerName.text = $"{winner.playerStats.nickName}";
+        string timeAliveString = String.Format(winners[0].timeAlive % 1 == 0 ? "{0:0}" : "{0:0.00}", winners[0].timeAlive);
         winnerPoints.text = $"{timeAliveString} seg.";
-        winnerColor.color = winnerController.playerStats.mainColor.color;
+        winnerColor.color = winner.playerStats.mainColor.color;
         gameObject.SetActive(true);
     }
 }

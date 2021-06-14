@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
 {
     [Header("Info")]
     public PlayerStats playerStats = null;
+    public Inventory inventory;
     public Rigidbody rig;
     public Player photonPlayer;
     public bool IsGrounded;
@@ -25,8 +26,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     [Header("UI")]
     public TextMeshProUGUI playerNameText;
     public TextMeshProUGUI energyText;
-    
-    
+
+
     [SerializeField]
     private GameObject energyContainer;
     private Queue<Command> _commands = new Queue<Command>();
@@ -53,6 +54,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     }
     private void Start()
     {
+        inventory = gameObject.GetComponent<Inventory>();
         agent.updateRotation = false;
         buttonChecker = gameObject.GetComponentInChildren<ButtonChecker>();
     }
@@ -89,12 +91,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (Input.GetMouseButtonDown(0))
             {
+                Debug.Log("ENABLED TO MOVE!");
                 if (SkillsUI.Instance.playerUsingSkills != null)
                     return;
                 RaycastHit hit;
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 Debug.DrawRay(ray.origin, ray.direction * 50f, Color.red, 3f);
-                if (Physics.Raycast(ray, out hit, 50f,  1 << LayerMask.NameToLayer("UI")))
+                if (Physics.Raycast(ray, out hit, 50f, 1 << LayerMask.NameToLayer("UI")))
                 {
                     if (hit.collider.gameObject.CompareTag("MoveButton"))
                     {
@@ -118,14 +121,14 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         gameObject.SetActive(true);
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {   
+    {
         if (stream.IsWriting)
         {
             string playerStatsObj = JsonUtility.ToJson(playerStats);
             stream.SendNext(playerStatsObj);
         } else if (stream.IsReading)
         {
-            string playerStatsObj = (string) stream.ReceiveNext();
+            string playerStatsObj = (string)stream.ReceiveNext();
             PlayerStats receivedPlayerStats = JsonUtility.FromJson<PlayerStats>(playerStatsObj);
             playerStats.ladderPosition = receivedPlayerStats.ladderPosition;
             playerStats.wonLastGame = receivedPlayerStats.wonLastGame;
@@ -158,14 +161,14 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         playerStats.EnergyChanged -= (sender, args) => UpdateEnergy();
     }
-    public void ShowEnergyContainer() 
+    public void ShowEnergyContainer()
     {
         if (!energyContainer.activeSelf)
         {
             energyContainer.SetActive(true);
         }
     }
-    private void HideEnergyContainer() 
+    private void HideEnergyContainer()
     {
         energyContainer.SetActive(false);
     }
@@ -179,20 +182,23 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (!agent.pathPending)
             {
+                //Debug.Log($"CHECKING IF agent.remainingDistance <= agent.stoppingDistance => {agent.remainingDistance} <= {agent.stoppingDistance}");
                 if (agent.remainingDistance <= agent.stoppingDistance)
                 {
+                    //Debug.Log($"CHECKING IF !agent.hasPath || (agent.velocity.sqrMagnitude <= 0.2f && agent.velocity.sqrMagnitude >= -0.2f) => {!agent.hasPath} || ({agent.velocity.sqrMagnitude} <= {0.2f} && {agent.velocity.sqrMagnitude} >= -0.2f)");
                     if (!agent.hasPath || (agent.velocity.sqrMagnitude <= 0.2f && agent.velocity.sqrMagnitude >= -0.2f))
                     {
                         buttonChecker.CheckForButtonsNearby();
                         enabledToMove = true;
                         agent.isStopped = true;
                         agent.ResetPath();
+                        character.Move(new Vector3(0f, 0f, 0f));
                         rig.velocity = new Vector3(0f, 0f, 0f);
                         buttonChecker.ShowButtons();
                     }
                 }
             }
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.3f);
         }
     }
     //RPC SECTION
@@ -245,17 +251,20 @@ public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         playerStats.ladderPosition = position;
     }
-
+    [PunRPC]
+    public void StartThinking()
+    {
+        animator.SetBool("Thinking", true);
+    }
+    [PunRPC]
+    public void StopThinking()
+    {
+        animator.SetBool("Thinking", false);
+    }
     [PunRPC]
     public void MoveToTarget(Vector3 destination)
     {
         agent.SetDestination(destination);
-        if (agent.remainingDistance > agent.stoppingDistance)
-        {
-            character.Move(agent.desiredVelocity);
-        } else
-        {
-            character.Move(Vector3.zero);
-        }
+        character.Move(destination - transform.position);
     }
 }

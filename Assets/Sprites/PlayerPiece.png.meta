@@ -4,19 +4,19 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: 6140079778940132729
-    second: PlayerFace_0
+    second: Think Left Hand
   - first:
       213: -5199397063279452783
-    second: PlayerFace_1
+    second: Think Left Hand Back
   - first:
       213: 1268342033539389855
-    second: PlayerFace_2
+    second: Think Right Hand
   - first:
       213: 823303787904558533
-    second: PlayerFace_3
+    second: Think Face
   - first:
       213: -5287584587367298933
-    second: PlayerBackground_1
+    second: Think Right Hand Back
   - first:
       213: -2513683408918025286
     second: PlayerBackground_3
@@ -76,19 +76,19 @@ TextureImporter:
     second: PlayerRightFoot
   - first:
       213: 1596388539933836226
-    second: PlayerFace_0
+    second: Think Left Hand
   - first:
       213: -2004916744008336089
-    second: PlayerFace_1
+    second: Think Left Hand Back
   - first:
       213: 5213507463571577753
-    second: PlayerFace_2
+    second: Think Right Hand
   - first:
       213: 3565911194528355326
-    second: PlayerFace_3
+    second: Think Face
   - first:
       213: 5746296857994220323
-    second: PlayerBackground_1
+    second: Think Right Hand Back
   - first:
       213: 9199872598178344799
     second: PlayerBackground_3
@@ -131,12 +131,12 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
-    aniso: -1
-    mipBias: -100
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: -1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -154,6 +154,8 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
@@ -489,6 +491,111 @@ TextureImporter:
       bones: []
       spriteID: f55c392cc38d58290800000000000000
       internalID: -7888661416795454113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Think Left Hand
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 133
+        width: 78
+        height: 80
+      alignment: 9
+      pivot: {x: 1.871616, y: 0.5835831}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97d19440702f53550800000000000000
+      internalID: 6140079778940132729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Think Left Hand Back
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 138
+        width: 78
+        height: 80
+      alignment: 9
+      pivot: {x: 1.871616, y: 0.5835831}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19dd4052be708d7b0800000000000000
+      internalID: -5199397063279452783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Think Right Hand
+      rect:
+        serializedVersion: 2
+        x: 466
+        y: 130
+        width: 77
+        height: 77
+      alignment: 9
+      pivot: {x: -0.7881165, y: 0.5361831}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f99dfca0c5e0a9110800000000000000
+      internalID: 1268342033539389855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Think Face
+      rect:
+        serializedVersion: 2
+        x: 625
+        y: 544
+        width: 84
+        height: 86
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c5e84cde66fc6b00800000000000000
+      internalID: 823303787904558533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Think Right Hand Back
+      rect:
+        serializedVersion: 2
+        x: 730
+        y: 555
+        width: 77
+        height: 77
+      alignment: 9
+      pivot: {x: -0.7881165, y: 0.5361831}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b88442625d9be96b0800000000000000
+      internalID: -5287584587367298933
       vertices: []
       indices: 
       edges: []

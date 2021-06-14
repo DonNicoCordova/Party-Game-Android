@@ -45,7 +45,7 @@ internal class MovePiecePhase : IState
                 }
                 if (turnTimerDone && SkillsUI.Instance.noAnimationsPlaying && PhotonNetwork.IsMasterClient)
                 {
-
+                    actualPlayer.character.Move(Vector3.zero);
                     GameManager.Instance.GetNextPlayer();
                 }
             }
@@ -55,6 +55,7 @@ internal class MovePiecePhase : IState
                 fetchingPlayer = true;
                 if (PhotonNetwork.IsMasterClient)
                 {
+                    actualPlayer.character.Move(Vector3.zero);
                     GameManager.Instance.GetNextPlayer();
                 }
             }

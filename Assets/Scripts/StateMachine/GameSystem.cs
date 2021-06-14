@@ -28,7 +28,7 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         phases.Add(initialize);
         var welcome = new WelcomePhase(2f);
         phases.Add(initialize);
-        var orderingPhase = new OrderDecidingPhase(15f);
+        var orderingPhase = new OrderDecidingPhase(3f);
         phases.Add(orderingPhase);
         var orderingResultPhase = new OrderResultsPhase(2f);
         phases.Add(orderingResultPhase);
@@ -42,7 +42,9 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         phases.Add(moveResultsPhase);
         var minigamePhase = new MinigamePhase(90f);
         phases.Add(minigamePhase);
-        var minigameResultsPhase = new MinigameResultsPhase(5f);
+        var resumePhase = new ResumePhase(2f);
+        phases.Add(resumePhase);
+        var minigameResultsPhase = new MinigameResultsPhase(10f);
         phases.Add(minigameResultsPhase);
         var finalResultsPhase = new FinalResultsPhase(2f);
         phases.Add(finalResultsPhase);
@@ -51,57 +53,71 @@ public class GameSystem : GenericSingletonClass<GameSystem>
 
         At(welcome, orderingPhase, orderNotDefined());
         At(initialize, throwPhase, orderDefined());
-        At(orderingPhase, orderingResultPhase, orderingThrowFinished());
-        At(orderingResultPhase, initialize, orderingDone());
+
+        At(orderingPhase, initialize, orderingDone());
         At(throwPhase, throwResultsPhase, throwFinished());
         At(throwResultsPhase, movePiecePhase, resultsDone());
         At(movePiecePhase, moveResultsPhase, nothingElseToDo());
         At(moveResultsPhase, minigamePhase, gameboardPhaseDone());
-        At(minigamePhase, minigameResultsPhase, minigameOver());
+        At(minigamePhase, resumePhase, minigameOver());
+        At(resumePhase, minigameResultsPhase, timerDone());
         At(minigameResultsPhase, gameOverPhase, finalRoundFinished());
-        At(minigameResultsPhase, initialize, nextRoundReady());
+        At(minigameResultsPhase, orderingPhase, nextRoundReady());
 
         StartCoroutine(Setup(welcome));
         void At(IState from, IState to, Func<bool> condition) => _stateMachine.AddTransition(from, to, condition);
 
-        Func<bool> orderingThrowFinished() => () => {
-            if (PhotonNetwork.IsMasterClient)
-                return GameManager.Instance.AllPlayersThrown() && GameManager.Instance.AllPlayersStateDone();
-            else
-                return false;
-        };
         Func<bool> throwFinished() => () => {
 
             if (PhotonNetwork.IsMasterClient)
+            {
                 return GameManager.Instance.AllPlayersThrown() && GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };
         Func<bool> resultsDone() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
+            {
                 return GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };
         Func<bool> orderNotDefined() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
+            {
                 return !GameManager.Instance.PlayersSetAndOrdered() && GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };
         Func<bool> orderDefined() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
+            { 
                 return GameManager.Instance.PlayersSetAndOrdered() && GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };
         Func<bool> orderingDone() => () =>
         {
             if (PhotonNetwork.IsMasterClient)
+            {
                 return GameManager.Instance.PlayersSetAndOrdered() && GameManager.Instance.AllPlayersStateDone();
+            }
+            else
+                return false;
+        };
+        Func<bool> timerDone() => () =>
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                return GameManager.Instance.AllPlayersStateDone();
+            }
             else
                 return false;
         };

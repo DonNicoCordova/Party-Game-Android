@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using System.IO;
+using Random = UnityEngine.Random;
 
 public class GameManager : GenericSingletonClass<GameManager>
 {
@@ -36,6 +37,7 @@ public class GameManager : GenericSingletonClass<GameManager>
     public string playerPrefab;
     public List<PlayerController> players;
     public int numberOfPlayers;
+    public List<PlayerController> LastMiniGameWinners { get; private set; } = new List<PlayerController>();
 
     [Header("Game Configuration")]
     public int maxRounds = 10;
@@ -91,14 +93,6 @@ public class GameManager : GenericSingletonClass<GameManager>
             string state = statesQueue.Dequeue();
             StartCoroutine(processChangeState(state));
         }
-        if (Input.GetKeyDown("s"))
-        {
-            SaveBridges();
-        }
-        if (Input.GetKeyDown("l"))
-        {
-            LoadBridges();
-        }
         ProcessCommands();
     }
     public void ProcessCommands()
@@ -117,6 +111,10 @@ public class GameManager : GenericSingletonClass<GameManager>
             _commands.Enqueue(_currentCommand);
             _currentCommand = null;
         }
+    }
+    public void SetMiniGameWinners(List<PlayerController> newWinners)
+    {
+        LastMiniGameWinners = newWinners;
     }
     public void SetMainPlayer(PlayerController newPlayer)
     {
@@ -147,18 +145,22 @@ public class GameManager : GenericSingletonClass<GameManager>
     }
     public void OrderPlayers()
     {
-        List<Throw> orderedThrows = roundThrows.OrderByDescending(o => o.throwValue).ToList();
-        int throwOrder = 1;
-        foreach (Throw playerThrow in orderedThrows)
+        if (PhotonNetwork.IsMasterClient)
         {
-            PlayerController throwPlayer = GetPlayer(playerThrow.playerId);
-            throwPlayer.playerStats.throwOrder = throwOrder;
-            notActionTakenPlayers.Enqueue(throwPlayer);
-            throwOrder++;
+            List<Throw> orderingThrows = new List<Throw>();
+            foreach (PlayerController player in players)
+            {
+                orderingThrows.Add(new Throw(player.playerStats.id) { throwValue = Random.Range(1, 101) });
+            }
+            List<Throw> orderedThrows = orderingThrows.OrderByDescending(element => element.throwValue).ToList();
+            string playersOrder = "";
+            foreach (Throw newThrow in orderedThrows)
+            {
+                playersOrder += $"{newThrow.playerId},";
+            }
+            playersOrder = playersOrder.TrimEnd(',');
+            GameboardRPCManager.Instance.photonView.RPC("SetPlayersOnOrder", RpcTarget.All, playersOrder);
         }
-        playersOrdered = true;
-
-        playersLadder.Initialize();
     }
     public void StartNextRound()
     {
@@ -612,11 +614,19 @@ public class GameManager : GenericSingletonClass<GameManager>
             CapturedLocation playerCapturedLocations = new CapturedLocation();
             playerCapturedLocations.playerId = player.playerStats.id;
             string locationsNames = "";
-            foreach (LocationController location in player.playerStats.capturedZones)
+            if (player.playerStats.capturedZones.Count == 0)
             {
-                locationsNames += location.gameObject.name + ",";
+                LocationController playerSpawn = playerConfigs[PhotonNetwork.LocalPlayer.ActorNumber - 1].startingLocation;
+                locationsNames += playerSpawn.gameObject.name;
             }
-            locationsNames = locationsNames.Remove(locationsNames.Length - 1, 1);
+            else
+            {
+                foreach (LocationController location in player.playerStats.capturedZones)
+                {
+                    locationsNames += location.gameObject.name + ",";
+                }
+                locationsNames = locationsNames.Remove(locationsNames.Length - 1, 1);
+            }
             playerCapturedLocations.capturedLocations = locationsNames;
             savedPlayersString += JsonUtility.ToJson(player.playerStats) + ",";
             capturedLocationsString += JsonUtility.ToJson(playerCapturedLocations) + ",";

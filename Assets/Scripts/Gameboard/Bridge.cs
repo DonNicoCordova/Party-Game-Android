@@ -15,7 +15,7 @@ public class Bridge : MonoBehaviourPunCallbacks
     public Transform cameraHighlighPosition;
     public Animator animator;
     public MeshRenderer bridgeRenderer;
-    public SkillToUse skillToUse;
+    public Skill skill;
     public BridgeStats bridgeStats;
     
     [Header("Minimap")]
@@ -67,7 +67,9 @@ public class Bridge : MonoBehaviourPunCallbacks
         {
             Vector3 position1 = cutPosition1.position;
             Vector3 position2 = cutPosition2.position;
-            SkillsUI.Instance.playerUsingSkills = info.Sender;
+            //PlayerController playerUsingSkills = GameManager.Instance.GetPlayer(info.Sender.ActorNumber);
+            //SkillsUI.Instance.playerUsingSkills = playerUsingSkills;
+            //GameboardRPCManager.Instance.photonView.RPC("SetPlayerUsingSkill", RpcTarget.Others, info.Sender.ActorNumber);
             AnimateCut();
         }
     }
@@ -83,7 +85,9 @@ public class Bridge : MonoBehaviourPunCallbacks
     {
         if (!Usable())
         {
-            SkillsUI.Instance.playerUsingSkills = info.Sender;
+            //PlayerController playerUsingSkills = GameManager.Instance.GetPlayer(info.Sender.ActorNumber);
+            //SkillsUI.Instance.playerUsingSkills = playerUsingSkills;
+            //GameboardRPCManager.Instance.photonView.RPC("SetPlayerUsingSkill", RpcTarget.Others, info.Sender.ActorNumber);
             AnimateSpawn();
         }
     }
@@ -111,7 +115,12 @@ public class Bridge : MonoBehaviourPunCallbacks
         SkillsUI.Instance.highlightCamera.ForceCameraPosition(cameraHighlighPosition.position, cameraHighlighPosition.rotation);
         SkillsUI.Instance.MoveCameraToHighlight();
     }
-    public void BecomeClickable(SkillToUse mode)
+    [PunRPC]
+    public void SetSkill(Skill mode)
+    {
+        skill = mode;
+    }
+    public void BecomeClickable(Skill mode)
     {
         Button button = minimapIcon.GetComponent<Button>();
         button.interactable = true;
@@ -119,7 +128,8 @@ public class Bridge : MonoBehaviourPunCallbacks
         minimapSelectableIcon.enabled = true;
         minimapIcon.sortingOrder += 10;
         minimapSelectableIcon.sortingOrder += 10;
-        skillToUse = mode;
+        skill = mode;
+        photonView.RPC("SetSkill", RpcTarget.Others, mode);
     }
     public void RemoveClickable()
     {
@@ -141,25 +151,36 @@ public class Bridge : MonoBehaviourPunCallbacks
     {
         if (SkillsUI.Instance.noAnimationsPlaying)
         {
-            SkillInfo skillInfo = SkillsUI.Instance.GetSkillInfo(skillToUse);
+            SkillInfo skillInfo = SkillsUI.Instance.GetSkillInfo(skill);
             if (skillInfo != null)
             {
                 if (skillInfo.energyCost <= GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft())
                 {
-                    switch (skillToUse)
+                    switch (skill)
                     {
-                        case SkillToUse.Cut:
+                        case Skill.Cut:
                             photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
-                            GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "CUT");
+                            if (SkillsUI.Instance.payingMethod == PayingMethod.Token)
+                            {
+                                SkillsUI.Instance.SpendTokenOnMainPlayer(skill);
+                            }
+                            else if (SkillsUI.Instance.payingMethod == PayingMethod.Energy)
+                            {
+                                GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "CUT");
+                            }
                             StartCoroutine(DelayRPC("CutOut"));
                             break;
-                        case SkillToUse.Spawn:
+                        case Skill.Spawn:
                             photonView.RPC("MoveCameraToHighlightArea", RpcTarget.All);
-                            GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "SPAWN");
+                            if (SkillsUI.Instance.payingMethod == PayingMethod.Token)
+                            {
+                                SkillsUI.Instance.SpendTokenOnMainPlayer(skill);
+                            }
+                            else if (SkillsUI.Instance.payingMethod == PayingMethod.Energy)
+                            {
+                                GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "SPAWN");
+                            }
                             StartCoroutine(DelayRPC("Spawn"));
-                            break;
-                        case SkillToUse.Sticky:
-                            GameManager.Instance.GetMainPlayer().playerStats.ReduceEnergy(skillInfo.energyCost, "STICKY");
                             break;
                     }
                 }
@@ -168,7 +189,7 @@ public class Bridge : MonoBehaviourPunCallbacks
     }
     public void ShowMap()
     {
-        SkillsUI.Instance.ShowMap(skillToUse);
+        SkillsUI.Instance.ShowMap(skill);
     }
     private IEnumerator DelayRPC(string call)
     {

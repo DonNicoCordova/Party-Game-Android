@@ -14,13 +14,20 @@ public class SkillsUI : MonoBehaviour
     [SerializeField]
     private GameObject skillsPanel;
 
+    public PayingMethod payingMethod = PayingMethod.Energy;
+
     [Header("Skills")]
     public List<SkillInfo> skills = new List<SkillInfo>();
     public List<SkillButton> skillButtons = new List<SkillButton>();
+
+    [Header("Tokens")]
+    public List<Token> tokens = new List<Token>();
+    public List<TokenButton> tokenButtons = new List<TokenButton>();
+
     [SerializeField]
     private GameObject skillsButton;
     public Button backButton;
-    public Player playerUsingSkills;
+    public PlayerController playerUsingSkills;
     public bool noAnimationsPlaying = true;
 
     public CinemachineSmoothPath cinemachinePath;
@@ -90,6 +97,19 @@ public class SkillsUI : MonoBehaviour
                 skillButton.obj.SetActive(false);
             }
         }
+        for (int i = 0; i < tokenButtons.Count; ++i)
+        {
+            TokenButton tokenButton = tokenButtons[i];
+            if (i < tokens.Count)
+            {
+                tokenButton.InitializeFromToken(tokens[i]);
+                tokenButton.obj.SetActive(true);
+            }
+            else
+            {
+                tokenButton.obj.SetActive(false);
+            }
+        }
         DisableSkillsButton();
     }
     public virtual void Awake()
@@ -117,7 +137,13 @@ public class SkillsUI : MonoBehaviour
     }
     public void OnClickHideSkills()
     {
-        playerUsingSkills = null;
+        PlayerController mainPlayer = GameManager.Instance.GetMainPlayer(); 
+
+        if (playerUsingSkills && (mainPlayer.playerStats.id == playerUsingSkills.playerStats.id))
+        {
+            mainPlayer.enabledToMove = true;
+            mainPlayer.photonView.RPC("StopThinking", RpcTarget.All);
+        }
         if (skillsPanel.activeSelf)
         {
             skillsPanel.SetActive(false);
@@ -129,7 +155,13 @@ public class SkillsUI : MonoBehaviour
         GameManager.Instance.energyCounter.Hide();
         if (cinemachineAnimator.GetCurrentAnimatorStateInfo(0).IsName("MoveToShowMap") || cinemachineAnimator.GetCurrentAnimatorStateInfo(0).IsName("MoveToPlace"))
         {
-            playerUsingSkills = null;
+            PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
+            if (playerUsingSkills && mainPlayer.playerStats.id == playerUsingSkills.playerStats.id)
+            {
+                mainPlayer.enabledToMove = true;
+                mainPlayer.photonView.RPC("StopThinking", RpcTarget.All);
+                GameboardRPCManager.Instance.photonView.RPC("SetPlayerUsingSkill", RpcTarget.Others, -1);
+            }
             bridges.ForEach(o => o.RemoveClickable());
             cinemachineAnimator.ResetTrigger("ShowMap");
             cinemachineAnimator.ResetTrigger("MoveToPlace");
@@ -140,10 +172,14 @@ public class SkillsUI : MonoBehaviour
                 GameManager.Instance.GetMainPlayer().buttonChecker.ShowButtons();
             }
         }
+        playerUsingSkills = null;
     }
     public void OnClickShowSkills()
     {
-        playerUsingSkills = GameManager.Instance.GetMainPlayer().photonPlayer;
+        PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
+        playerUsingSkills = mainPlayer;
+        GameboardRPCManager.Instance.photonView.RPC("SetPlayerUsingSkill", RpcTarget.Others, mainPlayer.playerStats.id);
+        mainPlayer.photonView.RPC("StartThinking", RpcTarget.All);
         GameManager.Instance.energyCounter.Show();
         if (!skillsPanel.activeSelf)
         {
@@ -152,7 +188,7 @@ public class SkillsUI : MonoBehaviour
                 Button button = skillButton.obj.GetComponent<Button>();
                 if (skillButton.CanAfford())
                 {
-                    if (skillButton.associatedSkill.skill != SkillToUse.Paint && skillButton.associatedSkill.skill != SkillToUse.Sticky )
+                    if (skillButton.associatedSkill.skill != Skill.Paint && skillButton.associatedSkill.skill != Skill.Sticky )
                     {
                         button.interactable = true;
                     }
@@ -161,25 +197,88 @@ public class SkillsUI : MonoBehaviour
                     button.interactable = false;
                 }
             }
+            foreach (TokenButton tokenButton in tokenButtons)
+            {
+                Button button = tokenButton.obj.GetComponent<Button>();
+                if (tokenButton.CanAfford())
+                {
+                    if (tokenButton.associatedToken.skillToUse != Skill.Paint && tokenButton.associatedToken.skillToUse != Skill.Teleport && tokenButton.associatedToken.skillToUse != Skill.StealEnergy)
+                    {
+                        button.interactable = true;
+                    }
+                }
+                else
+                {
+                    button.interactable = false;
+                }
+            }
             skillsPanel.SetActive(true);
         }
     }
+
+    //SKILLS BUTTONS
     public void OnClickCutBridge()
     {
-        ShowMap(SkillToUse.Cut);
+        payingMethod = PayingMethod.Energy;
+        ShowMap(Skill.Cut);
     }
     public void OnClickSpawnBridge()
     {
-        ShowMap(SkillToUse.Spawn);
+        payingMethod = PayingMethod.Energy;
+        ShowMap(Skill.Spawn);
     }
     public void OnClickUseBombs()
     {
-        ShowMap(SkillToUse.Paint);
+        payingMethod = PayingMethod.Energy;
+        ShowMap(Skill.Paint);
     }
     public void OnClickStickyBridge()
     {
-        ShowMap(SkillToUse.Sticky);
+        payingMethod = PayingMethod.Energy;
+        ShowMap(Skill.Sticky);
     }
+
+    //INVENTORY BUTTONS
+    public void SpendTokenOnMainPlayer(Skill tokenSkillToSpend)
+    {
+        PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
+        Token tokenToUse = GetToken(tokenSkillToSpend);
+        mainPlayer.inventory.SpendToken(tokenToUse);
+      
+    }
+    public void OnClickSpendCutToken()
+    {
+        payingMethod = PayingMethod.Token;
+        ShowMap(Skill.Cut);
+    }
+    public void OnClickSpendBombToken()
+    {
+        payingMethod = PayingMethod.Token;
+        SpendTokenOnMainPlayer(Skill.Paint);
+    }
+    public void OnClickSpendSpawnToken()
+    {
+        payingMethod = PayingMethod.Token;
+        ShowMap(Skill.Spawn);
+    }
+    public void OnClickSpendTeleportToken()
+    {
+        payingMethod = PayingMethod.Token;
+        SpendTokenOnMainPlayer(Skill.Teleport);
+    }
+    public void OnClickSpendAddToken()
+    {
+        payingMethod = PayingMethod.Token;
+        GameManager.Instance.GetMainPlayer().playerStats.AddEnergy(3);
+        SpendTokenOnMainPlayer(Skill.AddEnergy);
+    }
+    public void OnClickSpendStealToken()
+    {
+        payingMethod = PayingMethod.Token;
+        SpendTokenOnMainPlayer(Skill.StealEnergy);
+    }
+
+    //Actions
     public void MoveCameraToHighlight()
     {
         GameManager.Instance.ShowMinimap();
@@ -187,7 +286,7 @@ public class SkillsUI : MonoBehaviour
         cinemachineAnimator.ResetTrigger("BackToOrigin");
         cinemachineAnimator.SetTrigger("MoveToPlace");
     }
-    public SkillInfo GetSkillInfo(SkillToUse skill)
+    public SkillInfo GetSkillInfo(Skill skill)
     {
         bool skillExists = skills.Any(info => info.skill == skill);
         if (skillExists)
@@ -199,7 +298,19 @@ public class SkillsUI : MonoBehaviour
             return null;
         }
     }
-    public void ShowMap(SkillToUse skill)
+    public Token GetToken(Skill skill)
+    {
+        bool tokenExists = tokens.Any(info => info.skillToUse == skill);
+        if (tokenExists)
+        {
+            return tokens.First(info => info.skillToUse == skill);
+        }
+        else
+        {
+            return null;
+        }
+    }
+    public void ShowMap(Skill skill)
     {
         HideSkills();
         GameManager.Instance.HideMinimap();
@@ -213,23 +324,23 @@ public class SkillsUI : MonoBehaviour
         
         switch (skill)
         {
-            case SkillToUse.Cut:
+            case Skill.Cut:
                 bridges.ForEach(o => CanCut(o));
                 break;
-            case SkillToUse.Spawn:
+            case Skill.Spawn:
                 bridges.ForEach(o => CanSpawn(o));
                 break;
-            case SkillToUse.Sticky:
+            case Skill.Sticky:
                 bridges.ForEach(o => CanGetSticky(o));
                 break;
-            case SkillToUse.Paint:
+            case Skill.Paint:
                 break;
         }
     }
     private void CanSpawn(Bridge bridge)
     {
         if (!bridge.bridgeRenderer.enabled) { 
-            bridge.BecomeClickable(SkillToUse.Spawn);
+            bridge.BecomeClickable(Skill.Spawn);
         } else
         {
             bridge.RemoveClickable();
@@ -240,7 +351,7 @@ public class SkillsUI : MonoBehaviour
         if (bridge.bridgeRenderer.enabled)
         {
 
-            bridge.BecomeClickable(SkillToUse.Cut);
+            bridge.BecomeClickable(Skill.Cut);
         } else
         {
             bridge.RemoveClickable();
@@ -250,7 +361,7 @@ public class SkillsUI : MonoBehaviour
     {
         if (bridge.bridgeRenderer.enabled)
         {
-            bridge.BecomeClickable(SkillToUse.Sticky);
+            bridge.BecomeClickable(Skill.Sticky);
         } else
         {
             bridge.RemoveClickable();
@@ -274,12 +385,16 @@ public class SkillsUI : MonoBehaviour
     }
 }
 
-public enum SkillToUse
+public enum Skill
 {
-    None, Sticky, Cut, Spawn, Paint,
+    None, Sticky, Cut, Spawn, Paint, AddEnergy, StealEnergy, Teleport
+}
+public enum PayingMethod
+{
+    None, Energy, Token
 }
 
-[System.Serializable]
+[Serializable]
 public class SkillInfo
 {
     [SerializeField]
@@ -287,16 +402,18 @@ public class SkillInfo
     [SerializeField]
     public string verboseName;
     [SerializeField]
-    public SkillToUse skill;
+    public Skill skill;
     [SerializeField]
     public string description;
     [SerializeField]
     public int energyCost;
     [SerializeField]
     public Sprite icon;
+    [SerializeField]
+    public Sprite tokenIcon;
 }
 
-[System.Serializable]
+[Serializable]
 public class SkillButton
 {
     public GameObject obj;
@@ -314,27 +431,95 @@ public class SkillButton
         button.onClick.RemoveAllListeners();
         switch (skill.skill)
         {
-            case SkillToUse.Cut:
+            case Skill.Cut:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickCutBridge);
                 break;
-            case SkillToUse.Paint:
+            case Skill.Paint:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickUseBombs);
                 button.interactable = false;
                 break;
-            case SkillToUse.Spawn:
+            case Skill.Spawn:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickSpawnBridge);
                 break;
-            case SkillToUse.Sticky:
+            case Skill.Sticky:
                 button.onClick.AddListener(SkillsUI.Instance.OnClickStickyBridge);
                 button.interactable = false;
                 break;
-            case SkillToUse.None:
+            case Skill.None:
                 break;
         }
     }
     public bool CanAfford()
     {
         if (GameManager.Instance.GetMainPlayer().playerStats.EnergyLeft() >= associatedSkill.energyCost)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+[System.Serializable]
+public class TokenButton
+{
+    public GameObject obj;
+    public TextMeshProUGUI skillNameText;
+    public TextMeshProUGUI amountText;
+    public Image skillIcon;
+    public Token associatedToken;
+    public void InitializeFromToken(Token token)
+    {
+        associatedToken = token;
+        skillNameText.text = token.verboseName;
+        amountText.text = $"{GameManager.Instance.GetMainPlayer().inventory.GetTokenAmount(token.code)}";
+        skillIcon.sprite = token.iconWithBackground;
+        Button button = obj.GetComponent<Button>();
+        button.onClick.RemoveAllListeners();
+        switch (token.skillToUse)
+        {
+            case Skill.Cut:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendCutToken);
+                break;
+            case Skill.Paint:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendBombToken);
+                button.interactable = false;
+                break;
+            case Skill.Spawn:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendSpawnToken);
+                break;
+            case Skill.AddEnergy:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendAddToken);
+                break;
+            case Skill.StealEnergy:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendStealToken);
+                button.interactable = false;
+                break;
+            case Skill.Teleport:
+                button.onClick.AddListener(SkillsUI.Instance.OnClickSpendTeleportToken);
+                button.interactable = false;
+                break;
+        }
+        PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
+        mainPlayer.inventory.TokensChanged += (sender, args) => TokenChangeHandler(args);
+    }
+
+    private void TokenChangeHandler(Inventory.TokensChangedArgs args)
+    {
+        if (args.TokenCode == associatedToken.code)
+        {
+            UpdateAmount();
+        }
+    }
+    public void UpdateAmount()
+    {
+        amountText.text = $"{GameManager.Instance.GetMainPlayer().inventory.GetTokenAmount(associatedToken.code)}";
+    }
+    public bool CanAfford()
+    {
+        if (GameManager.Instance.GetMainPlayer().inventory.GetTokenAmount(associatedToken.code) > 0)
         {
             return true;
         }

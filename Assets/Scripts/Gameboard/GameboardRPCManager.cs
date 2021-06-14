@@ -31,6 +31,7 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
                 {
                     PlayerController mainPlayer = GameManager.Instance.GetMainPlayer();
                     SkillsUI.Instance.DisableSkillsButton();
+                    mainPlayer.character.Move(Vector3.zero);
                     mainPlayer.enabledToMove = false;
                 }
             }
@@ -103,6 +104,24 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
     }
 
     [PunRPC]
+    public void SetPlayersOnOrder(string playersOrder, PhotonMessageInfo info)
+    {
+
+        int throwOrder = 1;
+        string[] players = playersOrder.Split(',');
+        foreach (string player in players)
+        {
+            PlayerController throwPlayer = GameManager.Instance.GetPlayer(int.Parse(player));
+            throwPlayer.playerStats.throwOrder = throwOrder;
+            GameManager.Instance.notActionTakenPlayers.Enqueue(throwPlayer);
+            throwOrder++;
+        }
+        GameManager.Instance.playersOrdered = true;
+
+        GameManager.Instance.playersLadder.Initialize();
+    }
+
+    [PunRPC]
     public void UpdateEnergy(int playerId, int newEnergy)
     {
         if (GameManager.Instance.GetMainPlayer().playerStats.id != playerId)
@@ -120,5 +139,20 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
         this.photonView.RPC("ImInGame", RpcTarget.AllBuffered);
 
     }
- 
+
+    [PunRPC]
+    public void SetPlayerUsingSkill(int playerId, PhotonMessageInfo info)
+    {
+        PlayerController playerUsingRPC = GameManager.Instance.GetPlayer(info.Sender.ActorNumber);
+        if (playerId != -1)
+        {
+            PlayerController playerUsingSkill = GameManager.Instance.GetPlayer(playerId);
+
+            SkillsUI.Instance.playerUsingSkills = playerUsingSkill;
+        } else
+        {
+            SkillsUI.Instance.playerUsingSkills = null;
+        }
+
+    }
 }

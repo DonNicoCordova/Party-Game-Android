@@ -191,9 +191,9 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
     {
         Physics.gravity = originalGravity;
     }
-    public FlappyRoyaleStats GetWinner()
+    public List<FlappyRoyaleStats> GetWinners()
     {
-        return playersStats.OrderByDescending(o => o.timeAlive).ToList()[0];
+        return playersStats.OrderByDescending(o => o.timeAlive).ToList();
     }
 
     public void RemoveBottomFences()
