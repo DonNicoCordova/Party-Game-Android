@@ -67,7 +67,8 @@ public class PathSpawner : MonoBehaviourPunCallbacks
                     this.photonView.RPC("PlaceObstacle", RpcTarget.All, yPosition);
                 } else if (chance < israChance + wallChance)
                 {
-                    this.photonView.RPC("PlaceWallObstacle", RpcTarget.All);
+                    float triggerChance = Random.value;
+                    this.photonView.RPC("PlaceWallObstacle", RpcTarget.All, triggerChance);
                 } else if (chance < israChance + wallChance + singleChance)
                 {
                     this.photonView.RPC("PlaceObstacle", RpcTarget.All, yPosition);
@@ -97,25 +98,24 @@ public class PathSpawner : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void PlaceWallObstacle()
+    private void PlaceWallObstacle(float triggerChance)
     {
         GameObject obstacleGo = ObjectPooler.Instance.SpawnFromPool("WallObstacle", wallSpawnPoint.position, wallSpawnPoint.rotation);
         WallObstacle wallController = obstacleGo.GetComponent<WallObstacle>();
         wallController.Show();
-        float chance = Random.value;
-        if (chance < 0.25)
+        if (triggerChance < 0.25)
         {
             wallController.EnableToClose();
             wallController.CloseLeft();
-        } else if (chance < 0.5)
+        } else if (triggerChance < 0.5)
         {
             wallController.EnableToClose();
             wallController.CloseRight();
-        } else if (chance < 0.75)
+        } else if (triggerChance < 0.75)
         {
             wallController.DisableToClose();
             wallController.CloseLeft();
-        } else if (chance < 1)
+        } else if (triggerChance < 1)
         {
             wallController.DisableToClose();
             wallController.CloseRight();

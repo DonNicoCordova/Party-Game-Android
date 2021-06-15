@@ -1,96 +1,42 @@
 {
     "m_SelectedDeviceId": "be44cabb0407",
     "m_SelectedPackage": {
-        "deviceId": "be44cabb0407",
-        "name": "com.DefaultCompany.LaFiestita",
-        "processId": 8716,
+        "deviceId": "",
+        "name": "",
+        "processId": 0,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
         {
             "deviceId": "be44cabb0407",
-            "name": "com.microsoft.launcher",
-            "processId": 9934,
-            "exited": false
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 12168,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 13555,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 14524,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 19820,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 24499,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 25647,
-            "exited": false
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 29978,
-            "exited": false
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 30630,
-            "exited": false
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 31525,
-            "exited": false
-        },
-        {
-            "deviceId": "be44cabb0407",
             "name": "com.DefaultCompany.LaFiestita",
             "processId": 31941,
-            "exited": false
+            "exited": true
         },
         {
             "deviceId": "be44cabb0407",
             "name": "com.DefaultCompany.LaFiestita",
             "processId": 6144,
-            "exited": false
+            "exited": true
         },
         {
             "deviceId": "be44cabb0407",
             "name": "com.DefaultCompany.LaFiestita",
             "processId": 7802,
-            "exited": false
+            "exited": true
         },
         {
             "deviceId": "be44cabb0407",
             "name": "com.DefaultCompany.LaFiestita",
             "processId": 8716,
-            "exited": false
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.DefaultCompany.LaFiestita",
+            "processId": 20814,
+            "exited": true
         }
     ],
     "m_Tags": {
