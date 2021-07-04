@@ -44,7 +44,7 @@ public class GameSystem : GenericSingletonClass<GameSystem>
         phases.Add(minigamePhase);
         var resumePhase = new ResumePhase(2f);
         phases.Add(resumePhase);
-        var minigameResultsPhase = new MinigameResultsPhase(10f);
+        var minigameResultsPhase = new MinigameResultsPhase(6f);
         phases.Add(minigameResultsPhase);
         var finalResultsPhase = new FinalResultsPhase(2f);
         phases.Add(finalResultsPhase);

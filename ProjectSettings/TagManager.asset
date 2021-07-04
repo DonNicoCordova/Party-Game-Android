@@ -34,6 +34,8 @@ TagManager:
   - WallObstacle
   - SingleObstacle
   - HideTrigger
+  - Plate
+  - Shield
   layers:
   - Default
   - TransparentFX
@@ -76,6 +78,9 @@ TagManager:
     locked: 0
   - name: Items
     uniqueID: 1927404679
+    locked: 0
+  - name: Environment
+    uniqueID: 3318888455
     locked: 0
   - name: Players
     uniqueID: 3291206901

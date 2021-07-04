@@ -93,6 +93,7 @@ public class FlappyRoyaleGameManager : GenericPunSingletonClass<FlappyRoyaleGame
         SpaceShipController spaceShip = playerShip.GetComponentInChildren<SpaceShipController>();
         spaceShip.photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
     }
+    
     [PunRPC]
     public void SetCurrentState(string state)
     {

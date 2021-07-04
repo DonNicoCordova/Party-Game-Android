@@ -85,6 +85,11 @@ MonoBehaviour:
   - StopThinking
   - SetPlayerUsingSkill
   - SetSkill
+  - BlockPlayer
+  - BlockLeftPlate
+  - BlockRightPlate
+  - SpawnHead
+  - UpdateTime
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

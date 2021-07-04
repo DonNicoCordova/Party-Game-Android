@@ -96,7 +96,7 @@ public class GameboardRPCManager : GenericPunSingletonClass<GameboardRPCManager>
         if (PhotonNetwork.IsMasterClient)
         {
             PlayerController player = GameManager.Instance.GetPlayer(playerId);
-            if (!player.playerStats.currentStateFinished)
+            if (player && !player.playerStats.currentStateFinished)
             {
                 player.playerStats.currentStateFinished = true;
             }

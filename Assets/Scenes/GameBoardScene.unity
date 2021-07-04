@@ -6234,7 +6234,7 @@ PrefabInstance:
       objectReference: {fileID: 613096729323318953}
     - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
       propertyPath: maxRounds
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
       propertyPath: throwText
@@ -6290,7 +6290,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
       propertyPath: miniGamesPool.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
       propertyPath: playerConfigs.Array.size
@@ -6311,6 +6311,10 @@ PrefabInstance:
     - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
       propertyPath: miniGamesPool.Array.data[1].scene
       value: FlappyBattleMiniGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
+      propertyPath: miniGamesPool.Array.data[2].scene
+      value: PoleHammeringMinigame
       objectReference: {fileID: 0}
     - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
       propertyPath: playerConfigs.Array.data[0].orbColor
@@ -6382,6 +6386,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
       propertyPath: miniGamesPool.Array.data[1].minimumPlayers
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}
+      propertyPath: miniGamesPool.Array.data[2].minimumPlayers
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3422301949176695023, guid: 52dbe8eba7853b4448c905e4c081f5ad, type: 3}

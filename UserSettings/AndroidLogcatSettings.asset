@@ -1,31 +1,13 @@
 {
     "m_SelectedDeviceId": "be44cabb0407",
     "m_SelectedPackage": {
-        "deviceId": "",
-        "name": "",
-        "processId": 0,
+        "deviceId": "be44cabb0407",
+        "name": "com.AjiumanGame.LaFiestita",
+        "processId": 25540,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 31941,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 6144,
-            "exited": true
-        },
-        {
-            "deviceId": "be44cabb0407",
-            "name": "com.DefaultCompany.LaFiestita",
-            "processId": 7802,
-            "exited": true
-        },
         {
             "deviceId": "be44cabb0407",
             "name": "com.DefaultCompany.LaFiestita",
@@ -37,6 +19,120 @@
             "name": "com.DefaultCompany.LaFiestita",
             "processId": 20814,
             "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.microsoft.launcher",
+            "processId": 25349,
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 18270,
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 30497,
+            "exited": true
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.microsoft.launcher",
+            "processId": 3974,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.miui.securitycenter",
+            "processId": 30243,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 7000,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 5295,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 16810,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 21171,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 22013,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 31545,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 32721,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 2444,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 2051,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 4439,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 15701,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 18622,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 22761,
+            "exited": false
+        },
+        {
+            "deviceId": "be44cabb0407",
+            "name": "com.AjiumanGame.LaFiestita",
+            "processId": 25540,
+            "exited": false
         }
     ],
     "m_Tags": {
