@@ -78,6 +78,15 @@ public class SkillsUI : MonoBehaviour
                             bridgeSelected.ProcessClick();
                         }
                     }
+                    if (hit.collider.gameObject.tag == "CapturePointIcon")
+                    {
+                        LocationController locationSelected = hit.collider.gameObject.GetComponentInParent<LocationController>();
+                        Button minimapButton = hit.collider.gameObject.GetComponent<Button>();
+                        if (minimapButton.interactable)
+                        {
+                            locationSelected.ProcessClick();
+                        }
+                    }
                 }
             }
         }
@@ -188,10 +197,7 @@ public class SkillsUI : MonoBehaviour
                 Button button = skillButton.obj.GetComponent<Button>();
                 if (skillButton.CanAfford())
                 {
-                    if (skillButton.associatedSkill.skill != Skill.Paint && skillButton.associatedSkill.skill != Skill.Sticky )
-                    {
-                        button.interactable = true;
-                    }
+                    button.interactable = true;
                 } else
                 {
                     button.interactable = false;
@@ -202,10 +208,7 @@ public class SkillsUI : MonoBehaviour
                 Button button = tokenButton.obj.GetComponent<Button>();
                 if (tokenButton.CanAfford())
                 {
-                    if (tokenButton.associatedToken.skillToUse != Skill.Paint && tokenButton.associatedToken.skillToUse != Skill.Teleport && tokenButton.associatedToken.skillToUse != Skill.StealEnergy)
-                    {
-                        button.interactable = true;
-                    }
+                    button.interactable = true;
                 }
                 else
                 {
@@ -255,6 +258,7 @@ public class SkillsUI : MonoBehaviour
     {
         payingMethod = PayingMethod.Token;
         SpendTokenOnMainPlayer(Skill.Paint);
+        ShowMap(Skill.Paint);
     }
     public void OnClickSpendSpawnToken()
     {
@@ -321,7 +325,11 @@ public class SkillsUI : MonoBehaviour
         {
             bridges = GameObject.FindObjectsOfType<Bridge>().ToList();
         }
-        
+
+        if (locations.Count == 0)
+        {
+            locations = GameObject.FindObjectsOfType<LocationController>().ToList();
+        }
         switch (skill)
         {
             case Skill.Cut:
@@ -334,6 +342,7 @@ public class SkillsUI : MonoBehaviour
                 bridges.ForEach(o => CanGetSticky(o));
                 break;
             case Skill.Paint:
+                locations.ForEach(l => l.CanPaint(SkillsUI.Instance.playerUsingSkills));
                 break;
         }
     }
@@ -369,10 +378,14 @@ public class SkillsUI : MonoBehaviour
     }
     public void DisableSkillsButton()
     {
-        Button skills = skillsButton.GetComponent<Button>();
-        if (skills.interactable)
+        if (skillsButton != null)
         {
-            skills.interactable = false;
+            Button skills = skillsButton.GetComponent<Button>();
+            if (skills.interactable)
+            {
+                skills.interactable = false;
+            }
+
         }
     }
     public void EnableSkillsButton()
